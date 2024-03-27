@@ -141,14 +141,15 @@ For this, we must create the data layer of our app according to [our frontend ar
 **Note that you must first add your firebase project settings to our frontend. Instructions are described [here](link_to_instructions)**
 
 
-## 3. PR AND REPORT
+## 3. REPORT
 Now, you have finished your application... TON TON TON!!!!
-TRherefore, you must create a PR to merge your code to the 'main' branch. Then, you must merge this code if there are not any errors.
 
-However... before merging the code you must create a Report explaining your experience.
-// TODO: EXPLAIN WHAT HAS TO BE ADDED IN THE REPORT
+However... before completely finishing your application you must create a Report explaining your experience.
+This report is crucial for reviewers to understand your work so please do not ignore it.
+[Here](./docs/REPORT_INSTRUCTIONS.md) are instructions on what should be added to the report: [Report Instructions](./docs/REPORT_INSTRUCTIONS.md)
+**The report should be written in `/docs/REPORT.md`** 
 
-### Extra: Is there more?
+## Extra: Is there more?
 This is for the machines, for the leaders, for the people who want to take it to the next level.
 Do you want to add more functionality? Do you want to create more prototypes? Do you want to suggest new feature ideas? Do you want to recommend new technologies or better architectures?  Do you want to add feedback to the project? 
 Do you want to show that you want this to improve and not stay the same? This is your moment then. 
@@ -160,13 +161,13 @@ This is only extra so it's fine if you don't want to do it.
 # Index
 This index contains all the links to the project's documentation.
 
-## Frontend Documentation
+**Frontend Documentation**
 [Understanding the Frontend and getting started](./frontend/README.md)
 
-## Backend Documentation
+**Backend Documentation**
 [Understanding the Backend and getting started](./backend/README.md)
 
-## Contributions and Violations
+**Contributions and Violations**
 1. [Contribution Guidelines](./docs/CONTRIBUTION_GUIDELINES.md)
 2. [Architecture Violations](./docs/ARCHITECTURE_VIOLATIONS.md)
 3. [Code Quality Violations](./docs/CODING_GUIDELINES.md)
