@@ -4,7 +4,7 @@ Welcome to the repository for our Applicant Showcase App - an application design
 ## Who will see this project?
 This project will be reviewed by senior developers at Symmetry to determine whether your capacities are suited to our fast-paced development environment. 
 We are not looking for MASTERS of their craft, we are looking for people who have the ability to learn extremely quickly and adapt to an ever-changing environment where the ability to improve is a requirement.
-That being said, this project may also be used simply to learn [Flutter](https://docs.flutter.dev/) or to create a project of your own which you can showcase to employers in the future.
+That being said, this project may also be used simply to learn [Flutter](https://docs.flutter.dev/) or to create a project of your own which you can showcase to employers in the future (you are completely welcome to use this project to showcase your skills to employers).
 However, we will only review your project if you are applying for a Programming Job at Symmetry so the question remains: how will we judge your work?
 
 ## To what standards will we judge your work?
@@ -52,7 +52,7 @@ This can of course be skipped (or replaced by other resources) if you already kn
 - [Online Documentation](https://flutter.dev/docs)
 - [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 2. Learn how to combine a Flutter frontend and Firebase backend:
-- [Flutter and Firebase](https://www.classcentral.com/classroom/youtube-flutter-firebase-app-build-45850https://www.classcentral.com/classroom/youtube-flutter-firebase-app-build-45850)
+- [Flutter and Firebase](https://www.youtube.com/watch?v=sfA3NWDBPZ4&list=PL4cUxeGkcC9j--TKIdkb3ISfRbJeJYQwC)
 3. Learn the BLoc technology for reliable state management in Flutter:
 - [Flutter BLoc Technology Tutorial](https://youtube.com/playlist?list=PLB_RxclDAkeYBOTIJ8qUubHx9aQLoiHeM&si=VagmSkUCzC2xsBZb)
 - [BLoc Library Docs](https://bloclibrary.dev/)
@@ -107,7 +107,7 @@ The guidelines we follow at Symmetry for building a good frontend are the follow
 - Your 90 year old grandmother must be able to use the app (sorry if she's dead :/)
 - An 18 year old male NPC must use the app and think "this shit goes hard"
 However, we will not bore you with designing the application since this will not be part of your job at Symmetry (unless of course, you want to improve the design yourself...)
-You will, however, implement the frontend of the [following figma prototype](https://www.link-dont-exist-yet.com)
+You will, however, implement the frontend of the [following figma prototype](https://www.figma.com/file/EVpa82aUzPJuJfewjAA5ke/High-Fidelity-Prototype?type=design&mode=design&t=RbLJDR7BRI8ZtRDP-1)
 
 ### 2.0 Setup
 Before even beginning to build the frontend of the application, you need to connect the Flutter frontend with the Firebase backend. 
@@ -117,7 +117,7 @@ In order to do this, read the [following documentation](./frontend/README.md)
 After setting up, we do not recommend you get into developing the actual UI of the frontend until you have done the business layer.
 
 This is the most important layer, and we recommend you create it with extreme care and attention to detail.
-To understand the business layer well, take a look at [our architecture](link_to_our_architecture_docs) and a [tutorial explaining the domain layer](https://www.youtube.com/watch?v=AlOVRC6eJqE)
+To understand the business layer well, take a look at [our architecture](./docs/APP_ARCHITECTURE.md) and a [tutorial explaining the domain layer](https://www.youtube.com/watch?v=AlOVRC6eJqE)
 
 Now, implement the domain layer, but instead of using the data layer to get real data for the application, **use mock data inside the usecases** to be used by the presentation layer.
 
@@ -137,8 +137,8 @@ Notes:
 
 ## 2.3 THE DATA LAYER
 Now that you have implemented the UI, the business logic, and the backend required for our functionality to work, it remains to write the code to ensure that the Flutter frontend and the Firebase backend will be synchronized so that any data you upload will not be lost when you close the application.
-For this, we must create the data layer of our app according to [our frontend architecture](link_to_our_architecture_docs)'s restrictions so that the use_cases in our application use the actual data providers and not mock data.
-**Note that you must first add your firebase project settings to our frontend. Instructions are described [here](link_to_instructions)**
+For this, we must create the data layer of our app according to [our frontend architecture](./docs/APP_ARCHITECTURE.md)'s restrictions so that the use_cases in our application use the actual data providers and not mock data.
+**Note that you must first add your firebase project settings to our frontend. Instructions are described [here](./backend/README.md)**
 
 
 ## 3. REPORT
