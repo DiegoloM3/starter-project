@@ -49,7 +49,7 @@ Furthermore, the **`test` folder directly mirrors the structure of the `lib` fol
 ## Clean Folders
 All the functionality of our app will follow a clean structure, and when used, the 3 layers
 together form a *clean folder* and they satisfy a set of very restrictive
-conditions. The violations to this restrictions are technically explained [here](./ARCHITECTURE_RESTRICTIONS.md)
+conditions. The violations to this restrictions are technically explained [here](./ARCHITECTURE_VIOLATIONS.md)
 ### Clean Folder Requirements
 1. A clean folder must follow a clean structure which is divided into 3 layers (represented as
 folders in the database)
