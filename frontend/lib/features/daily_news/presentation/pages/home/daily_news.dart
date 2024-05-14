@@ -1,14 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_state.dart';
-
-import '../../../domain/entities/article.dart';
-import '../../widgets/article_tile.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/article_tile.dart';
 
 class DailyNews extends StatelessWidget {
-  const DailyNews({Key? key}) : super(key: key);
+  const DailyNews({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +16,7 @@ class DailyNews extends StatelessWidget {
 
   _buildAppbar(BuildContext context) {
     return AppBar(
-      title: const Text(
-        'Daily News',
-        style: TextStyle(color: Colors.black),
-      ),
+      title: const Text("Daily News", style: TextStyle(color: Colors.black)),
       actions: [
         GestureDetector(
           onTap: () => _onShowSavedArticlesViewTapped(context),
@@ -71,6 +67,7 @@ class DailyNews extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          print("Button pressed");
           // TODO: REPLACE ROUTE WITH YOUR "ADD ARTICLE" PAGE
         },
         child: const Icon(Icons.add),

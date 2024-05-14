@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "636418638343",
+    "project_id": "symmetry-starter-project-99781",
+    "storage_bucket": "symmetry-starter-project-99781.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:636418638343:android:e563802d6ecbda83e960a2",
+        "android_client_info": {
+          "package_name": "com.symmetry.news_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMXfAWBdRVl0omQHAIQmkTgiHgdz5pw9s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
