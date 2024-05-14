@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../domain/entities/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
 class ArticleWidget extends StatelessWidget {
   final ArticleEntity? article;
@@ -10,12 +10,12 @@ class ArticleWidget extends StatelessWidget {
   final void Function(ArticleEntity article)? onArticlePressed;
 
   const ArticleWidget({
-    Key? key,
+    super.key,
     this.article,
     this.onArticlePressed,
     this.isRemovable = false,
     this.onRemove,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -57,14 +57,14 @@ class ArticleWidget extends StatelessWidget {
         progressIndicatorBuilder: (context, url, downloadProgress) => Padding(
               padding: const EdgeInsetsDirectional.only(end: 14),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(15.0),
                 child: Container(
                   width: MediaQuery.of(context).size.width / 3,
                   height: double.maxFinite,
-                  child: CupertinoActivityIndicator(),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.08),
                   ),
+                  child: const CupertinoActivityIndicator(),
                 ),
               ),
             ),
@@ -75,10 +75,10 @@ class ArticleWidget extends StatelessWidget {
                 child: Container(
                   width: MediaQuery.of(context).size.width / 3,
                   height: double.maxFinite,
-                  child: Icon(Icons.error),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.08),
                   ),
+                  child: const Icon(Icons.error),
                 ),
               ),
             ));
@@ -110,7 +110,7 @@ class ArticleWidget extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  article!.description ?? '',
+                  article!.description!,
                   maxLines: 2,
                 ),
               ),
@@ -122,7 +122,7 @@ class ArticleWidget extends StatelessWidget {
                 const Icon(Icons.timeline_outlined, size: 16),
                 const SizedBox(width: 4),
                 Text(
-                  article!.publishedAt!,
+                  article!.publishedAt ?? '',
                   style: const TextStyle(
                     fontSize: 12,
                   ),

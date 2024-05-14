@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:ionicons/ionicons.dart';
-import '../../../../../injection_container.dart';
-import '../../../domain/entities/article.dart';
-import '../../bloc/article/local/local_article_bloc.dart';
-import '../../bloc/article/local/local_article_event.dart';
-import '../../bloc/article/local/local_article_state.dart';
-import '../../widgets/article_tile.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_event.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_state.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/article_tile.dart';
+import 'package:news_app_clean_architecture/injection_container.dart';
 
 class SavedArticles extends HookWidget {
-  const SavedArticles({Key ? key}) : super(key: key);
+  const SavedArticles({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,8 @@ class SavedArticles extends HookWidget {
           child: const Icon(Ionicons.chevron_back, color: Colors.black),
         ),
       ),
-      title: const Text('Saved Articles', style: TextStyle(color: Colors.black)),
+      title:
+          const Text('Saved Articles', style: TextStyle(color: Colors.black)),
     );
   }
 
