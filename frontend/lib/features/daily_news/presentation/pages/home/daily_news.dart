@@ -67,8 +67,7 @@ class DailyNews extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print("Button pressed");
-          // TODO: REPLACE ROUTE WITH YOUR "ADD ARTICLE" PAGE
+          _onAddArticleFormPressed(context);
         },
         child: const Icon(Icons.add),
       ),
@@ -81,5 +80,9 @@ class DailyNews extends StatelessWidget {
 
   void _onShowSavedArticlesViewTapped(BuildContext context) {
     Navigator.pushNamed(context, '/SavedArticles');
+  }
+
+  void _onAddArticleFormPressed(BuildContext context) {
+    Navigator.pushNamed(context, '/AddArticle');
   }
 }
