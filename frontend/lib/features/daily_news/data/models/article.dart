@@ -40,4 +40,19 @@ class ArticleModel extends ArticleEntity {
         publishedAt: entity.publishedAt,
         content: entity.content);
   }
+
+  factory ArticleModel.fromMap(Map<String, dynamic> map) {
+    return ArticleModel(
+      id: map['id'] ?? "",
+      author: map['author'] ?? "",
+      title: map['title'] ?? "",
+      description: map['description'] ?? "",
+      url: map['url'] ?? "",
+      urlToImage: map['urlToImage'] != null && map['urlToImage'] != ""
+          ? map['urlToImage']
+          : kDefaultImage,
+      publishedAt: map['publishedAt'] ?? "",
+      content: map['content'] ?? "",
+    );
+  }
 }

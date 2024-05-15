@@ -1,7 +1,8 @@
 {
   "projects": {
-    "default": // TODO: ADD PROJECT ID
+    "default": "symmetry-starter-project-99781"
   },
   "targets": {},
-  "etags": {}
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }
