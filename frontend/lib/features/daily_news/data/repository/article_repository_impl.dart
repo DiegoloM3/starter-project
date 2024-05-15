@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:news_app_clean_architecture/core/constants/constants.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/app_database.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/firestore_database.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/news_api_service.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/models/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
@@ -12,7 +14,10 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/repositor
 class ArticleRepositoryImpl implements ArticleRepository {
   final NewsApiService _newsApiService;
   final AppDatabase _appDatabase;
-  ArticleRepositoryImpl(this._newsApiService, this._appDatabase);
+  final FirestoreDatabaseService _firestoreDatabaseService;
+
+  ArticleRepositoryImpl(
+      this._newsApiService, this._appDatabase, this._firestoreDatabaseService);
 
   @override
   Future<DataState<List<ArticleModel>>> getNewsArticles() async {
@@ -49,5 +54,21 @@ class ArticleRepositoryImpl implements ArticleRepository {
   Future<void> saveArticle(ArticleEntity article) {
     return _appDatabase.articleDAO
         .insertArticle(ArticleModel.fromEntity(article));
+  }
+
+  @override
+  Future<void> addArticleToFirestore(ArticleEntity article) async {
+    return _firestoreDatabaseService
+        .addArticle(ArticleModel.fromEntity(article));
+  }
+
+  @override
+  Future<DataState<List<ArticleEntity>>> getArticlesFromFirestore() async {
+    try {
+      final articles = await _firestoreDatabaseService.getArticles();
+      return DataSuccess(articles.map((model) => model).toList());
+    } catch (e) {
+      return FireFailed(FirebaseException(plugin: ''));
+    }
   }
 }
