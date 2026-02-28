@@ -1,5 +1,7 @@
-const String newsAPIBaseURL = 'https://newsapi.org/v2';
-const String newsAPIKey = 'ff957763c54c44d8b00e5e082bc76cb0';
-const String countryQuery = 'us';
-const String categoryQuery = 'general';
-const String kDefaultImage = "https://www.google.com/search?q=default+image&client=firefox-b-d&sxsrf=APq-WBskmtr-ix6NUAqqiHFNpsJX6JSOTg:1650026644151&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjEi_qfjJb3AhXvQd8KHd02BKUQ_AUoAXoECAEQAw#imgrc=A0pMe2lq2NT_jM";
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+String newsAPIBaseURL = dotenv.env['NEWS_API_BASE_URL']!;
+String newsAPIKey = dotenv.env['NEWS_API_KEY']!;
+String countryQuery = dotenv.env['NEWS_COUNTRY_QUERY']!;
+String categoryQuery = dotenv.env['NEWS_CATEGORY_QUERY']!;
+String kDefaultImage = dotenv.env['DEFAULT_IMAGE_URL']!;

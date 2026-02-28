@@ -8,7 +8,19 @@ abstract class ArticleRepository {
   // Database methods
   Future < List < ArticleEntity >> getSavedArticles();
 
+  Future<DataState<List<ArticleEntity>>> getArticlesByAuthor(String authorId);
+
+  Future<DataState<List<ArticleEntity>>> getCommunityArticles();
+
+  Future<String> uploadArticleImage({
+    required String authorId,
+    required String localPath,
+  });
+
+  Future<void> deleteMyArticle(ArticleEntity article);
+
   Future < void > saveArticle(ArticleEntity article);
+  Future < void > saveArticleLocally(ArticleEntity article);
 
   Future < void > removeArticle(ArticleEntity article);
 }

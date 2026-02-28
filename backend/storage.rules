@@ -2,6 +2,25 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+
+    // Helper
+    function isSignedIn() {
+      return request.auth != null;
     }
+
+    // Thumbnails de artículos: media/articles/{fileName}
+    match /media/articles/{fileName} {
+      // Lectura pública (las imágenes de portada se pueden mostrar a cualquiera)
+      allow read: if true;
+
+      // Subir/borrar solo si el usuario está autenticado.
+      // (Si quieres ser más estricto, se puede cruzar con Firestore más adelante.)
+      allow write: if isSignedIn();
+    }
+
+    // Bloquear cualquier otra ruta de Storage por defecto
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
 }
