@@ -3,17 +3,43 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
-    match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2026, 3, 28);
+    // Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Propietario del artículo en peticiones de creación
+    function isArticleOwnerOnCreate() {
+      return isSignedIn()
+        && request.resource.data.authorId is string
+        && request.resource.data.authorId == request.auth.uid;
+    }
+
+    // Propietario del artículo en operaciones sobre documentos existentes
+    function isArticleOwner() {
+      return isSignedIn()
+        && resource.data.authorId is string
+        && resource.data.authorId == request.auth.uid;
+    }
+
+    function hasValidArticleFieldsOnCreate() {
+      return request.resource.data.keys().hasAll(['authorId', 'title', 'createdAt'])
+        && request.resource.data.authorId is string
+        && request.resource.data.title is string
+        && request.resource.data.createdAt is timestamp;
+    }
+
+    // Colección de artículos
+    match /articles/{articleId} {
+      // Los artículos son públicos
+      allow read: if true;
+
+      // Crear artículo: usuario autenticado y owner = authorId
+      allow create: if isArticleOwnerOnCreate()
+        && hasValidArticleFieldsOnCreate();
+
+      // Actualizar / borrar solo si eres el autor
+      allow update, delete: if isArticleOwner();
     }
   }
 }
