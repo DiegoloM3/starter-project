@@ -4,16 +4,16 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 
 import '../../../../domain/usecases/get_saved_article.dart';
 import '../../../../domain/usecases/remove_article.dart';
-import '../../../../domain/usecases/save_article.dart';
+import '../../../../domain/usecases/save_local_article.dart';
 
 class LocalArticleBloc extends Bloc<LocalArticlesEvent,LocalArticlesState> {
   final GetSavedArticleUseCase _getSavedArticleUseCase;
-  final SaveArticleUseCase _saveArticleUseCase;
+  final SaveLocalArticleUseCase _saveLocalArticleUseCase;
   final RemoveArticleUseCase _removeArticleUseCase;
 
   LocalArticleBloc(
     this._getSavedArticleUseCase,
-    this._saveArticleUseCase,
+    this._saveLocalArticleUseCase,
     this._removeArticleUseCase
   ) : super(const LocalArticlesLoading()){
     on <GetSavedArticles> (onGetSavedArticles);
@@ -34,7 +34,7 @@ class LocalArticleBloc extends Bloc<LocalArticlesEvent,LocalArticlesState> {
   }
 
   void onSaveArticle(SaveArticle saveArticle,Emitter<LocalArticlesState> emit) async {
-    await _saveArticleUseCase(params: saveArticle.article);
+    await _saveLocalArticleUseCase(params: saveArticle.article);
     final articles = await _getSavedArticleUseCase();
     emit(LocalArticlesDone(articles));
   }

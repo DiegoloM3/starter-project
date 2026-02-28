@@ -5,7 +5,7 @@ import '../../domain/entities/article.dart';
 
 class ArticleWidget extends StatelessWidget {
   final ArticleEntity? article;
-  final bool? isRemovable;
+  final bool isRemovable;
   final void Function(ArticleEntity article)? onRemove;
   final void Function(ArticleEntity article)? onArticlePressed;
 
@@ -38,8 +38,13 @@ class ArticleWidget extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context) {
+    final imageUrl = article?.urlToImage;
+    if (imageUrl == null || imageUrl.isEmpty) {
+      return _buildImagePlaceholder(context);
+    }
+
     return CachedNetworkImage(
-        imageUrl: article!.urlToImage!,
+        imageUrl: imageUrl,
         imageBuilder: (context, imageProvider) => Padding(
               padding: const EdgeInsetsDirectional.only(end: 14),
               child: ClipRRect(
@@ -48,7 +53,7 @@ class ArticleWidget extends StatelessWidget {
                   width: MediaQuery.of(context).size.width / 3,
                   height: double.maxFinite,
                   decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.08),
+                      color: Colors.black.withValues(alpha: 0.08),
                       image: DecorationImage(
                           image: imageProvider, fit: BoxFit.cover)),
                 ),
@@ -61,9 +66,9 @@ class ArticleWidget extends StatelessWidget {
                 child: Container(
                   width: MediaQuery.of(context).size.width / 3,
                   height: double.maxFinite,
-                  child: CupertinoActivityIndicator(),
+                  child: const CupertinoActivityIndicator(),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                   ),
                 ),
               ),
@@ -75,13 +80,30 @@ class ArticleWidget extends StatelessWidget {
                 child: Container(
                   width: MediaQuery.of(context).size.width / 3,
                   height: double.maxFinite,
-                  child: Icon(Icons.error),
+                  child: const Icon(Icons.error),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                   ),
                 ),
               ),
             ));
+  }
+
+  Widget _buildImagePlaceholder(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(end: 14),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20.0),
+        child: Container(
+          width: MediaQuery.of(context).size.width / 3,
+          height: double.maxFinite,
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.08),
+          ),
+          child: const Icon(Icons.image_not_supported_outlined),
+        ),
+      ),
+    );
   }
 
   Widget _buildTitleAndDescription() {
@@ -94,7 +116,7 @@ class ArticleWidget extends StatelessWidget {
           children: [
             // Title
             Text(
-              article!.title ?? '',
+              article?.title ?? '',
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -110,7 +132,7 @@ class ArticleWidget extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  article!.description ?? '',
+                  article?.description ?? '',
                   maxLines: 2,
                 ),
               ),
@@ -122,7 +144,7 @@ class ArticleWidget extends StatelessWidget {
                 const Icon(Icons.timeline_outlined, size: 16),
                 const SizedBox(width: 4),
                 Text(
-                  article!.publishedAt!,
+                  article?.publishedAt ?? '',
                   style: const TextStyle(
                     fontSize: 12,
                   ),
@@ -136,7 +158,7 @@ class ArticleWidget extends StatelessWidget {
   }
 
   Widget _buildRemovableArea() {
-    if (isRemovable!) {
+    if (isRemovable) {
       return GestureDetector(
         onTap: _onRemove,
         child: const Padding(
@@ -149,13 +171,13 @@ class ArticleWidget extends StatelessWidget {
   }
 
   void _onTap() {
-    if (onArticlePressed != null) {
+    if (onArticlePressed != null && article != null) {
       onArticlePressed!(article!);
     }
   }
 
   void _onRemove() {
-    if (onRemove != null) {
+    if (onRemove != null && article != null) {
       onRemove!(article!);
     }
   }
