@@ -2,6 +2,111 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+    
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if user owns the resource
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Validate required string field
+    function isValidString(field, maxLength) {
+      return field is string && field.size() > 0 && field.size() <= maxLength;
+    }
+    
+    // Validate optional string field (can be empty)
+    function isValidOptionalString(field, maxLength) {
+      return field == null || (field is string && field.size() <= maxLength);
+    }
+    
+    // Validate article data on create
+    function isValidArticleCreate() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['title', 'authorId', 'authorName', 'isDraft', 'createdAt', 'updatedAt'])
+        && isValidString(data.title, 200)
+        && data.authorId == request.auth.uid
+        && data.authorId is string
+        && data.authorName is string
+        && data.isDraft is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp
+        // content is required for publishing, optional for drafts
+        && (data.isDraft == true || (data.content is string && data.content.size() > 0))
+        // categories must be a list if present
+        && (!('categories' in data.keys()) || (data.categories is list && data.categories.size() <= 5));
+    }
+    
+    // Validate article data on update
+    function isValidArticleUpdate() {
+      let data = request.resource.data;
+      return data.title is string
+        && data.title.size() > 0
+        && data.title.size() <= 200
+        && data.authorId == resource.data.authorId  // Cannot change author
+        && data.isDraft is bool
+        && data.updatedAt is timestamp
+        // content is required for publishing, optional for drafts
+        && (data.isDraft == true || (data.content is string && data.content.size() > 0))
+        // categories must be a list if present
+        && (!('categories' in data.keys()) || (data.categories is list && data.categories.size() <= 5));
+    }
+    
+    // Validate user profile data
+    function isValidUserProfile() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['id', 'email', 'displayName', 'createdAt', 'updatedAt'])
+        && data.id == request.auth.uid
+        && isValidString(data.email, 320)
+        && isValidString(data.displayName, 100)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+    
+    // ============================================
+    // USERS COLLECTION
+    // ============================================
+    
+    match /users/{userId} {
+      // Anyone authenticated can read user profiles (for displaying author info)
+      allow read: if isAuthenticated();
+      
+      // Users can only create their own profile
+      allow create: if isOwner(userId) && isValidUserProfile();
+      
+      // Users can only update their own profile
+      allow update: if isOwner(userId) && isValidUserProfile();
+      
+      // Prevent profile deletion
+      allow delete: if false;
+    }
+    
+    // ============================================
+    // ARTICLES COLLECTION
+    // ============================================
+    
+    match /articles/{articleId} {
+      // Published articles: anyone authenticated can read
+      // Draft articles: only the author can read
+      allow read: if isAuthenticated() && 
+                    (resource.data.isDraft == false || isOwner(resource.data.authorId));
+      
+      // Only authenticated users can create articles
+      // Article must belong to the creating user
+      allow create: if isAuthenticated() && isValidArticleCreate();
+      
+      // Only author can update their articles
+      allow update: if isOwner(resource.data.authorId) && isValidArticleUpdate();
+      
+      // Only author can delete their articles
+      allow delete: if isOwner(resource.data.authorId);
+    }
   }
 }

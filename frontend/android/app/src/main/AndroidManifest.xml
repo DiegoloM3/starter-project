@@ -1,5 +1,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.news_app_clean_architecture">
+    
+   <!-- Required for url_launcher on Android 11+ (API 30+) -->
+   <queries>
+       <intent>
+           <action android:name="android.intent.action.VIEW" />
+           <data android:scheme="https" />
+       </intent>
+       <intent>
+           <action android:name="android.intent.action.VIEW" />
+           <data android:scheme="http" />
+       </intent>
+   </queries>
+   
    <application
         android:label="news_app_clean_architecture"
         android:name="androidx.multidex.MultiDexApplication"

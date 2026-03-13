@@ -2,3 +2,12 @@
 node_modules/
 *.log
 venv/
+
+# Environment variables and sensitive files
+.env
+.env.local
+.env.*.local
+
+# Firebase service account keys
+serviceAccountKey.json
+*-firebase-adminsdk-*.json
