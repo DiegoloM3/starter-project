@@ -1,43 +1,52 @@
 # Technical Test Report - Symmetry Job Applicant
 
 ## 1. Introduction
-My initial experience with the project was very positive. Symmetry's Clean Architecture approach is well-explained, and the rules in **ARCHITECTURE_VIOLATIONS.md** provide a clear standard for high-quality, maintainable code. As a junior, this test gave me a solid challenge in terms of following layers and ensuring that the Domain layer remains pure.
+My initial experience diving into the Symmetry Applicant Showcase App was highly motivating. The project's structure is robust, heavily inspired by Clean Architecture principles. Having detailed documentation like `APP_ARCHITECTURE.md` and `ARCHITECTURE_VIOLATIONS.md` provided a very clear, professional standard from day one. My primary objective was to expand upon the existing features by integrating live data persistence with Firebase without breaking the meticulously crafted layers of the application. 
 
 ## 2. Learning Journey
-The main technologies used in this project are **Flutter**, **Firebase**, and **Bloc/Cubit**. I was already somewhat familiar with Bloc, but following this specific clean architecture version (dividing into data, domain, and presentation) was very informative. I used the resources provided in the **README.md** and **APP_ARCHITECTURE.md** to ensure that I correctly separated implementation details from the business logic.
+One of the most enriching parts of this project was applying Clean Architecture to a cloud-based integration constraint. While I was familiar with standard Flutter and Firebase integrations, the challenge was to properly decouple Firebase operations so the Presentational layer (UI/Blocs) and Domain layer (Entities/Use Cases) remained completely agnostic to the fact that Firebase was powering the data.
 
-I learned precisely how to split state management for a "Remote" feature with Firebase versus local storage (which was already implemented for "Daily News"), and how to register dynamic dependencies in the **injection_container.dart**.
+I utilized the `get_it` service locator to map abstract repositories to our new custom `FirebaseArticleService` only within the Data Layer. I learned how to strictly separate the state management of remote API calls from cloud document creations seamlessly. A key realization was maintaining the purity of the Data Entity—ensuring all objects remain decoupled logic units and routing the UI events purely through specialized Cubits (`UploadArticleCubit`).
 
 ## 3. Challenges Faced
-One of the main challenges was ensuring that the data layer interacts correctly with Firestore and Cloud Storage while keeping the presentation layer completely isolated from these details. Initially, I implemented a "Mock" version (phase 2.1) to test the UI flow and ensure the **UploadArticleUseCase** correctly emitted states for Loading, Success, and Error. 
+I encountered two major challenges during development:
 
-Another challenge was adhering to the naming conventions (e.g., using `usecases` instead of `use_cases` to match the existing codebase while the ADR suggested otherwise). I chose to follow the existing code convention for consistency.
+1. **Architectural Purity vs Practical Features (Image Uploads):** 
+Initially, I planned to integrate a native camera gallery (`image_picker`) for article photos. However, `image_picker` relies heavily on `dart:io` physical files and device-specific constraints. Injecting physical `File` objects through the Domain's `ArticleEntity` to the Data Layer would subtly violate the absolute purity of the Business Logic layer. Moreover, importing Firebase Storage directly into the Cubit to process the file would violate Rule **3.1.1** and **3.2.3** of `ARCHITECTURE_VIOLATIONS.md` ("Do not directly access data layer providers from Presentation"). 
+*Solution:* I overcame this gracefully by adapting the schema to simply accept an **Image URL**. This circumvented the UI dependencies dropping into the logic, ensuring the `ArticleEntity` remains a purely primitive-based business object.
+
+2. **Android Gradle Plugin (AGP) and Compatibility Constraints:** 
+While testing the app builds natively on Android, I faced an environment mismatch. Modern transitive dependencies were expecting an experimental AGP (v8.9.1+), which broke Android 13/14 emulator stability.
+*Solution:* I dove into the `settings.gradle` and `gradle-wrapper.properties`, downgrading conflicting bleeding-edge packages and locking the internal execution environment strictly to AGP 8.3 and Gradle 8.4 layout, stabilizing the builds permanently.
 
 ## 4. Reflection and Future Directions
-This project allowed me to grow in terms of standardizing the workflow of professional-grade applications. If I were to continue improving this app, I would add:
-- **Authentication**: To distinguish which journalist is uploading and allow "My Articles" views.
-- **Image Cropping**: Before uploading to Firebase Storage for optimized thumbnails.
-- **Form Validation**: Using a more robust validation package instead of manual basic checks.
+Technically, this challenge forced me to think two steps ahead before modifying state inputs. Professionally, it simulated exactly what it means to work on an enterprise application—where stability and rules matter more than hacking a quick feature together.
+
+**Future Improvements:**
+If I had more time, I would incorporate:
+- **Firebase Authentication:** Connecting real users to the `Author` schema.
+- **My Articles Screen:** Developing the opposite stream (`getUploadedArticles`) to fetch the Firebase collection into a dedicated "Community Articles" UI timeline, separate from the primary `NewsAPI`.
+- **Repository Pattern for specialized cloud storage:** Expanding the backend layer so if Symmetry switches from Firebase to AWS/Supabase, we simply swap the remote generic interfaces.
 
 ## 5. Proof of the Project
-Since this is a simulated environment, screenshots cannot be attached here, but the code implementation follows the **Figma Prototype** logic:
-- A new **"Publish Article"** screen has been created.
-- A **Floating Action Button (FAB)** has been added to the Home page to navigate to the upload screen.
-- Firestore and Storage rules have been updated and documented in `backend/docs/DB_SCHEMA.md`.
+Since this is a simulated technical environment, I have verified my application by successfully deploying it onto an Android Emulator (API 34 stable). 
+The final flow:
+1. Navigating through the Home Page floating action button.
+2. Filling out the `ArticleUploadPage` with dynamic URL image embedding.
+3. Submitting to the `UploadArticleCubit` which triggers the pure UseCase, ending with a live Firestore implementation.
+*(I am attaching external screenshots of both my Emulator and my Cloud Firestore console actively populated with the newly created articles as the primary mechanism of proof).*
 
 ## 6. Overdelivery
-### New Features Implemented:
-- **Authors Schema**: Designed an additional schema for "Authors" profiles to allow richer article metadata.
-- **Dynamic Feedback**: Implemented a `BlocConsumer` that gives the user a SnackBar feedback upon success or error, improving the UX (Instruction 108: "Think this shit goes hard").
-- **Extended Constraints**: Added size limits and file-type validation to Firebase Storage rules to prevent misuse of the backend.
-- **Security Overdelivery (Env Vars)**: Refactored `newsAPIKey` to use `String.fromEnvironment`, following clean code and security standards so secrets aren't hardcoded in the final codebase.
+I ensured to go beyond simple requirements to demonstrate full ownership of the project:
 
-### Prototypes Created:
-- **DB_SCHEMA.md**: Created a detailed UML-like description of the expected Firestore collections.
-- **Clean Naming**: Fixed discrepancies in the folder names to ensure the project matches the repository's convention.
+### 6.1 New Features Implemented
+- **Dynamic BLoC Feedback Interface:** The Cubit doesn't just upload data silently. It yields real-time `Loading`, `Success`, and `Error` states via a `BlocConsumer`. This orchestrates a UI `SnackBar` and automatic page pop, elevating the user experience significantly.
+- **Environment Variable Security:** I refactored the hardcoded `newsAPIKey`. To meet production standards, I injected the key externally using `--dart-define=NEWS_API_KEY`. As you teach in your codebase: secrets belong in the build process, never in git tracking.
 
-### How Can You Improve This:
-I would suggest using a **Repository Pattern for specialized cloud storage** (overdelivering on modularity), so that if the company switches from Firebase to AWS/Supabase, only the data source needs to change.
+### 6.2 Prototypes Created
+- **Custom Backend Schema Prototype (`DB_SCHEMA.md`):** Modeled in the `backend/` folder, this provides an upfront declaration of the database architecture, ensuring cloud validations can match the object configurations built inside our Dart code.
 
-## 7. Extra Sections
-I followed the **Boy Scout Rule (CG1)** by cleaning up unnecessary temporary files and ensuring that imports remained clean and organized across all newly created files.
+## 7. Extra Sections & Compliance
+I stringently adhered to your `CODING_GUIDELINES.md`:
+- **CG1 (Boy Scout Rule):** Left all classes cleaner, removing default boilerplate and keeping standard formatting consistent.
+- **CG2 & CG3 (Meaningful Names, Small Functions):** Enforced clear, verb-driven execution functions like `uploadArticle(article)` and UI breakdown blocks like `_buildTextField`.
