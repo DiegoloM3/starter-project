@@ -5,10 +5,13 @@ abstract class ArticleRepository {
   // API methods
   Future<DataState<List<ArticleEntity>>> getNewsArticles();
 
+  // New Article methods
+  Future<void> uploadArticle(ArticleEntity article);
+
   // Database methods
-  Future < List < ArticleEntity >> getSavedArticles();
+  Future<List<ArticleEntity>> getSavedArticles();
 
-  Future < void > saveArticle(ArticleEntity article);
+  Future<void> saveArticle(ArticleEntity article);
 
-  Future < void > removeArticle(ArticleEntity article);
+  Future<void> removeArticle(ArticleEntity article);
 }

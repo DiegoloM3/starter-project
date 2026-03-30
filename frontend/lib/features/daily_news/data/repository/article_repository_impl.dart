@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:news_app_clean_architecture/core/constants/constants.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/app_database.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/firebase_article_service.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/models/article.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
@@ -12,8 +13,10 @@ import '../data_sources/remote/news_api_service.dart';
 
 class ArticleRepositoryImpl implements ArticleRepository {
   final NewsApiService _newsApiService;
+  final FirebaseArticleService _firebaseArticleService;
   final AppDatabase _appDatabase;
-  ArticleRepositoryImpl(this._newsApiService,this._appDatabase);
+
+  ArticleRepositoryImpl(this._newsApiService, this._firebaseArticleService, this._appDatabase);
   
   @override
   Future<DataState<List<ArticleModel>>> getNewsArticles() async {
@@ -55,5 +58,9 @@ class ArticleRepositoryImpl implements ArticleRepository {
   Future<void> saveArticle(ArticleEntity article) {
     return _appDatabase.articleDAO.insertArticle(ArticleModel.fromEntity(article));
   }
-  
+
+  @override
+  Future<void> uploadArticle(ArticleEntity article) {
+    return _firebaseArticleService.uploadArticle(ArticleModel.fromEntity(article));
+  }
 }
