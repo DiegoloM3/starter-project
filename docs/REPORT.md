@@ -45,6 +45,35 @@ I ensured to go beyond simple requirements to demonstrate full ownership of the 
 
 ### 6.2 Prototypes Created
 - **Custom Backend Schema Prototype (`DB_SCHEMA.md`):** Modeled in the `backend/` folder, this provides an upfront declaration of the database architecture, ensuring cloud validations can match the object configurations built inside our Dart code.
+- **Architectural Modules Document (`modules.md`):** I created a separate document splitting the entire implementation into its corresponding Clean Architecture modules (Data, Domain, Presentation, Security).
+- **Architecture Use Case Diagram:** A high-level visual representation of how the new feature integrates through the Clean Architecture layers, ensuring separation of concerns:
+
+```mermaid
+graph TD
+    UI[ArticleUploadPage] -->|Triggers Event| Cubit[UploadArticleCubit]
+    Cubit -->|Emits Loading/Done| UI
+    Cubit -->|Executes| UseCase[UploadArticleUseCase]
+    
+    subgraph Domain Layer
+        UseCase
+        Entity[ArticleEntity]
+        RepoInt[ArticleRepository Interface]
+    end
+    
+    UseCase -->|References| Entity
+    UseCase -->|Calls| RepoInt
+    
+    subgraph Data Layer
+        RepoImpl[ArticleRepositoryImpl]
+        Model[ArticleModel]
+        Service[FirebaseArticleService]
+    end
+    
+    RepoImpl -.->|Implements| RepoInt
+    RepoImpl -->|Converts Entity to| Model
+    RepoImpl -->|Uses| Service
+    Service -->|Uploads to| Cloud[(Firestore cloud)]
+```
 
 ## 7. Extra Sections & Compliance
 I stringently adhered to your `CODING_GUIDELINES.md`:
