@@ -30,11 +30,14 @@ If I had more time, I would incorporate:
 
 ## 5. Proof of the Project
 Since this is a simulated technical environment, I have verified my application by successfully deploying it onto an Android Emulator (API 34 stable). 
+
 The final flow:
-1. Navigating through the Home Page floating action button.
+1. Navigating through the Home Page.
+![Home Page](media/app.png)
 2. Filling out the `ArticleUploadPage` with dynamic URL image embedding.
+![Publish Article](media/PublishArcicle.png)
 3. Submitting to the `UploadArticleCubit` which triggers the pure UseCase, ending with a live Firestore implementation.
-*(I am attaching external screenshots of both my Emulator and my Cloud Firestore console actively populated with the newly created articles as the primary mechanism of proof).*
+![Firebase Console Status](media/FireBase.png)
 
 ## 6. Overdelivery
 I ensured to go beyond simple requirements to demonstrate full ownership of the project:
@@ -47,33 +50,8 @@ I ensured to go beyond simple requirements to demonstrate full ownership of the 
 - **Custom Backend Schema Prototype (`DB_SCHEMA.md`):** Modeled in the `backend/` folder, this provides an upfront declaration of the database architecture, ensuring cloud validations can match the object configurations built inside our Dart code.
 - **Architectural Modules Document (`modules.md`):** I created a separate document splitting the entire implementation into its corresponding Clean Architecture modules (Data, Domain, Presentation, Security).
 - **Architecture Use Case Diagram:** A high-level visual representation of how the new feature integrates through the Clean Architecture layers, ensuring separation of concerns:
+![Use Case Diagram](media/useCaseDiagram.png)
 
-```mermaid
-graph TD
-    UI[ArticleUploadPage] -->|Triggers Event| Cubit[UploadArticleCubit]
-    Cubit -->|Emits Loading/Done| UI
-    Cubit -->|Executes| UseCase[UploadArticleUseCase]
-    
-    subgraph Domain Layer
-        UseCase
-        Entity[ArticleEntity]
-        RepoInt[ArticleRepository Interface]
-    end
-    
-    UseCase -->|References| Entity
-    UseCase -->|Calls| RepoInt
-    
-    subgraph Data Layer
-        RepoImpl[ArticleRepositoryImpl]
-        Model[ArticleModel]
-        Service[FirebaseArticleService]
-    end
-    
-    RepoImpl -.->|Implements| RepoInt
-    RepoImpl -->|Converts Entity to| Model
-    RepoImpl -->|Uses| Service
-    Service -->|Uploads to| Cloud[(Firestore cloud)]
-```
 
 ## 7. Extra Sections & Compliance
 I stringently adhered to your `CODING_GUIDELINES.md`:
