@@ -184,17 +184,48 @@ the user-visible behaviour but a future engineer should know they exist.
 
 The existing `daily_news` feature uses BLoCs with explicit event classes
 (`flutter_bloc`'s `Bloc<Event, State>`). The new community feed uses a `Cubit`
-(`Cubit<State>`) instead — `start()`, `uploadImage()`, and `publish()` are
-called directly as methods on the cubit.
+(`Cubit<State>`) instead — `start()`, `publish()`, `uploadImage()`,
+`updateArticle()`, and `deleteArticle()` are called directly as methods on
+the cubit.
 
-**Why:** the community feed has no event-driven flow worth modelling. The only
-inputs are "page mounted" (start the snapshots stream) and "user tapped publish"
-(write to Firestore). A Cubit removes ~3 boilerplate event files without losing
-any capability.
+**Why this is the right choice for this feature, not just the easy one:**
+
+1. **Awaitable methods with return values fight the Bloc model.** `publish`
+   returns the new doc id. `uploadImage` returns the download URL. `update`
+   and `delete` need explicit success/failure signalling so the form can pop
+   the navigator on success and show a snackbar on failure. With a Cubit:
+   ```dart
+   try {
+     await cubit.publish(article);
+     Navigator.pop(context);
+   } catch (_) { showSnackBar('...'); }
+   ```
+   A pure-Bloc rewrite would force three new states per action
+   (`Publishing`, `PublishSuccess(docId)`, `PublishFailure(error)`), a
+   `BlocListener`, and disambiguation logic for "this success is mine, not
+   someone else's". A lot of boilerplate for zero behaviour change.
+
+2. **None of Bloc's actual benefits apply here.** Bloc events shine when
+   you need an audit log for time-travel debugging, throttling/debouncing
+   via `bloc_concurrency` transformers, or an explicit state machine of
+   user intent. Community has 5 simple, distinct actions and none of those
+   needs.
+
+3. **`LocalArticleBloc` in `daily_news` is functionally a Cubit with an
+   event wrapper.** Its handlers call use cases that wrap single repo
+   calls and emit a new state — exactly what a Cubit method does, with
+   more ceremony. Imitating it would propagate the over-engineering, not
+   resolve an inconsistency.
+
+The full reasoning is preserved in `specs/008-community-cubit-to-bloc/spec.md`
+as a deprecated spec — that migration was considered after spec 003 shipped
+and was explicitly aborted on technical merit.
 
 **Tradeoff:** mixing Cubit and Bloc in the same codebase is a minor
-inconsistency. If the team prefers strict consistency, the cubit can be promoted
-to a Bloc later without changing public API.
+visual inconsistency. If the team grows and the inconsistency starts
+costing onboarding time, the cleaner fix at that point would be to
+migrate `daily_news` to Cubit, not the other way around — but that
+work is out of scope and not a current priority.
 
 ### 2. `daily_news` did not become a tab inside an existing screen — a new
 `RootScreen` was introduced

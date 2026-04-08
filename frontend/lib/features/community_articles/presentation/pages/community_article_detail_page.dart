@@ -1,9 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/community_articles/presentation/bloc/community_feed_cubit.dart';
 import 'package:news_app_clean_architecture/features/community_articles/presentation/pages/publish_article_page.dart';
+import 'package:news_app_clean_architecture/features/community_articles/presentation/widgets/community_article_detail_body.dart';
+import 'package:news_app_clean_architecture/features/community_articles/presentation/widgets/community_article_detail_deleting_indicator.dart';
+import 'package:news_app_clean_architecture/features/community_articles/presentation/widgets/community_article_detail_hero_image.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
 class CommunityArticleDetailPage extends StatefulWidget {
@@ -129,68 +131,14 @@ class _CommunityArticleDetailPageState
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (article.urlToImage != null && article.urlToImage!.isNotEmpty)
-                CachedNetworkImage(
-                  imageUrl: article.urlToImage!,
-                  fit: BoxFit.cover,
-                  placeholder: (_, __) => Container(
-                    height: 240,
-                    color: const Color(0xFFEEEEEE),
-                    alignment: Alignment.center,
-                    child: const CircularProgressIndicator(),
-                  ),
-                  errorWidget: (_, __, ___) => Container(
-                    height: 240,
-                    color: const Color(0xFFEEEEEE),
-                    alignment: Alignment.center,
-                    child: const Icon(Icons.broken_image_outlined,
-                        size: 40, color: Color(0xFF9E9E9E)),
-                  ),
-                ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      article.title ?? '(untitled)',
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    if (article.publishedAt != null)
-                      Text(
-                        article.publishedAt!.substring(0, 10),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF999999),
-                        ),
-                      ),
-                    const SizedBox(height: 16),
-                    if ((article.description ?? '').isNotEmpty) ...[
-                      Text(
-                        article.description!,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF444444),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                    Text(
-                      article.content ?? '',
-                      style: const TextStyle(fontSize: 15, height: 1.5),
-                    ),
-                  ],
-                ),
+                CommunityArticleDetailHeroImage(imageUrl: article.urlToImage!),
+              CommunityArticleDetailBody(
+                title: article.title ?? '(untitled)',
+                publishedAt: article.publishedAt,
+                description: article.description ?? '',
+                content: article.content ?? '',
               ),
-              if (_deleting)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
+              if (_deleting) const CommunityArticleDetailDeletingIndicator(),
             ],
           ),
         ),

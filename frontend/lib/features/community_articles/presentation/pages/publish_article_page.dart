@@ -1,11 +1,14 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:news_app_clean_architecture/features/community_articles/presentation/bloc/community_feed_cubit.dart';
+import 'package:news_app_clean_architecture/features/community_articles/presentation/widgets/image_picker_section.dart';
+import 'package:news_app_clean_architecture/features/community_articles/presentation/widgets/publish_action.dart';
+import 'package:news_app_clean_architecture/features/community_articles/presentation/widgets/publish_form.dart';
+import 'package:news_app_clean_architecture/features/community_articles/presentation/widgets/submit_progress.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
 const _maxImageBytes = 5 * 1024 * 1024; // 5 MB
@@ -116,8 +119,6 @@ class _PublishArticlePageState extends State<PublishArticlePage> {
 
     final cubit = context.read<CommunityFeedCubit>();
 
-    // Upload a new image if the user picked one. In edit mode, this overrides
-    // the existing image.
     String? imageUrlForWrite;
     if (_pickedImage != null) {
       try {
@@ -137,8 +138,6 @@ class _PublishArticlePageState extends State<PublishArticlePage> {
         return;
       }
     } else {
-      // No new image was picked. Use whatever the existing one is (which may
-      // be null if the user removed it).
       imageUrlForWrite = _existingImageUrl;
     }
 
@@ -156,8 +155,6 @@ class _PublishArticlePageState extends State<PublishArticlePage> {
           oldImageUrl: initial.urlToImage,
         );
         if (!mounted) return;
-        // Return the updated entity so the detail page can refresh in place,
-        // preserving firestoreId, uid, and publishedAt from the original.
         final updated = ArticleEntity(
           firestoreId: initial.firestoreId,
           uid: initial.uid,
@@ -224,24 +221,14 @@ class _PublishArticlePageState extends State<PublishArticlePage> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.isEditMode;
-    final title = isEdit ? 'Edit Article' : 'Publish Article';
-    final actionLabel = isEdit ? 'Save' : 'Publish';
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(isEdit ? 'Edit Article' : 'Publish Article'),
         actions: [
-          TextButton(
-            onPressed: _submitting ? null : _submit,
-            child: Text(
-              actionLabel,
-              style: TextStyle(
-                color: _submitting
-                    ? const Color(0xFFBBBBBB)
-                    : const Color(0xFF1976D2),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+          PublishAction(
+            label: isEdit ? 'Save' : 'Publish',
+            disabled: _submitting,
+            onPressed: _submit,
           ),
         ],
       ),
@@ -252,145 +239,26 @@ class _PublishArticlePageState extends State<PublishArticlePage> {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Title'),
-                validator: (v) => _validateLength(
-                  v,
-                  min: 1,
-                  max: 120,
-                  label: 'Title',
-                ),
-                maxLength: 120,
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
-                validator: (v) => _validateLength(
-                  v,
-                  min: 1,
-                  max: 280,
-                  label: 'Description',
-                ),
-                maxLength: 280,
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _contentController,
-                decoration: const InputDecoration(labelText: 'Content'),
-                validator: (v) => _validateLength(
-                  v,
-                  min: 1,
-                  max: 5000,
-                  label: 'Content',
-                ),
-                maxLength: 5000,
-                minLines: 6,
-                maxLines: 12,
+              PublishForm(
+                titleController: _titleController,
+                descriptionController: _descriptionController,
+                contentController: _contentController,
+                validateLength: _validateLength,
               ),
               const SizedBox(height: 16),
-              _ImagePickerSection(
+              ImagePickerSection(
                 pickedImage: _pickedImage,
-                existingImageUrl: _pickedImage == null ? _existingImageUrl : null,
+                existingImageUrl:
+                    _pickedImage == null ? _existingImageUrl : null,
                 onPick: _pickImage,
                 onRemove: _removeImage,
               ),
               const SizedBox(height: 24),
-              if (_submitting)
-                Column(
-                  children: [
-                    const CircularProgressIndicator(),
-                    const SizedBox(height: 8),
-                    Text(_stageLabel()),
-                  ],
-                ),
+              if (_submitting) SubmitProgress(label: _stageLabel()),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class _ImagePickerSection extends StatelessWidget {
-  /// Local file the user just picked. Wins over [existingImageUrl].
-  final File? pickedImage;
-
-  /// URL of the image the article already has (edit mode). Shown only when
-  /// no local file has been picked yet.
-  final String? existingImageUrl;
-
-  final VoidCallback onPick;
-  final VoidCallback onRemove;
-
-  const _ImagePickerSection({
-    required this.pickedImage,
-    required this.existingImageUrl,
-    required this.onPick,
-    required this.onRemove,
-  });
-
-  bool get _hasAnyImage =>
-      pickedImage != null ||
-      (existingImageUrl != null && existingImageUrl!.isNotEmpty);
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_hasAnyImage) {
-      return OutlinedButton.icon(
-        onPressed: onPick,
-        icon: const Icon(Icons.image_outlined),
-        label: const Text('Add image (optional)'),
-      );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: pickedImage != null
-              ? Image.file(
-                  pickedImage!,
-                  height: 200,
-                  fit: BoxFit.cover,
-                )
-              : CachedNetworkImage(
-                  imageUrl: existingImageUrl!,
-                  height: 200,
-                  fit: BoxFit.cover,
-                  placeholder: (_, __) => Container(
-                    height: 200,
-                    color: const Color(0xFFEEEEEE),
-                    alignment: Alignment.center,
-                    child: const CircularProgressIndicator(),
-                  ),
-                  errorWidget: (_, __, ___) => Container(
-                    height: 200,
-                    color: const Color(0xFFEEEEEE),
-                    alignment: Alignment.center,
-                    child: const Icon(Icons.broken_image_outlined,
-                        color: Color(0xFF9E9E9E)),
-                  ),
-                ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            TextButton.icon(
-              onPressed: onPick,
-              icon: const Icon(Icons.swap_horiz),
-              label: const Text('Replace'),
-            ),
-            TextButton.icon(
-              onPressed: onRemove,
-              icon: const Icon(Icons.delete_outline),
-              label: const Text('Remove'),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }

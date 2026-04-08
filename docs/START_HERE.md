@@ -54,7 +54,7 @@ Emulator UI: http://localhost:4000
 cd /path/to/starter-project/frontend
 
 # iOS (iPhone 17 Pro simulator used during development)
-flutter run -d C7A114D1-545E-46ED-BCAB-7390CFE849DD
+flutter run -d {DEVICE_ID_FOR_IPHONE}
 
 # Android (default emulator)
 flutter run -d emulator-5554
@@ -90,6 +90,8 @@ flutter run -d emulator-5554
 | 003 — User article publishing | `implemented` | Cubit + repository + widget tests; some widget tests are debt (IMP-001) |
 | 004 — View and delete your own community article | `implemented` | First spec that shipped with tests written alongside the code |
 | 005 — Edit your own community article | `implemented` | Cubit + repository unit tests; widget tests for the edit form are debt (IMP-001) |
+| 006 — Refactor presentation widgets to composition | `implemented` | Pure refactor — proved by the existing 41-test suite passing without modification + manual smoke test |
+| 007 — Extract widgets to their own files under `widgets/` | `implemented` | Same exception as 006 — pure file move, 41/41 tests pass without modification |
 
 Each spec has a `## Test Coverage` section listing what is covered and what is
 not. Items not covered are tracked in `docs/improvements.md`.
