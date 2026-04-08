@@ -40,6 +40,26 @@ class CommunityArticleFirestoreDataSource
   }
 
   @override
+  Future<void> deleteArticle({
+    required String firestoreId,
+    String? imageUrl,
+  }) async {
+    // Delete the Firestore document first. If this fails, the security rule
+    // rejected the operation (or the network is down) — propagate the error.
+    await _articlesRef.doc(firestoreId).delete();
+
+    // Best-effort image cleanup. A missing file or transient Storage error
+    // must NOT roll back the successful doc deletion.
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      try {
+        await _storage.refFromURL(imageUrl).delete();
+      } catch (_) {
+        // Swallowed — orphan logged in improvements.md (IMP-005).
+      }
+    }
+  }
+
+  @override
   Future<String> publishArticle(ArticleEntity article) async {
     final uid = article.uid;
     if (uid == null) {

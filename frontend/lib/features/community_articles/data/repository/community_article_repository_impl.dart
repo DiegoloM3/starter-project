@@ -22,4 +22,11 @@ class CommunityArticleRepositoryImpl implements CommunityArticleRepository {
   @override
   Future<String> publishArticle(ArticleEntity article) =>
       _remote.publishArticle(article);
+
+  @override
+  Future<void> deleteArticle({
+    required String firestoreId,
+    String? imageUrl,
+  }) =>
+      _remote.deleteArticle(firestoreId: firestoreId, imageUrl: imageUrl);
 }

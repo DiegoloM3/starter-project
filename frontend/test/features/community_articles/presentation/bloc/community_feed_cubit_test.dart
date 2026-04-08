@@ -19,11 +19,14 @@ class _FakeRepository implements CommunityArticleRepository {
 
   Object? publishError;
   Object? uploadError;
+  Object? deleteError;
   String publishReturnId = 'doc-1';
   String uploadReturnUrl = 'https://example.com/uploaded.jpg';
 
   ArticleEntity? lastPublished;
   String? lastUploadUid;
+  String? lastDeletedFirestoreId;
+  String? lastDeletedImageUrl;
 
   void emit(List<ArticleEntity> articles) => _controller.add(articles);
   void emitError(Object error) => _controller.addError(error);
@@ -47,6 +50,16 @@ class _FakeRepository implements CommunityArticleRepository {
     if (uploadError != null) throw uploadError!;
     lastUploadUid = uid;
     return uploadReturnUrl;
+  }
+
+  @override
+  Future<void> deleteArticle({
+    required String firestoreId,
+    String? imageUrl,
+  }) async {
+    if (deleteError != null) throw deleteError!;
+    lastDeletedFirestoreId = firestoreId;
+    lastDeletedImageUrl = imageUrl;
   }
 }
 
@@ -126,6 +139,32 @@ void main() {
 
       expect(
         () => cubit.uploadImage(uid: 'u', imageFile: File('/tmp/x.jpg')),
+        throwsException,
+      );
+    });
+
+    test('deleteArticle forwards firestoreId and imageUrl', () async {
+      await cubit.deleteArticle(
+        firestoreId: 'doc-1',
+        imageUrl: 'https://example.com/img.jpg',
+      );
+
+      expect(repository.lastDeletedFirestoreId, 'doc-1');
+      expect(repository.lastDeletedImageUrl, 'https://example.com/img.jpg');
+    });
+
+    test('deleteArticle accepts a null imageUrl', () async {
+      await cubit.deleteArticle(firestoreId: 'doc-2');
+
+      expect(repository.lastDeletedFirestoreId, 'doc-2');
+      expect(repository.lastDeletedImageUrl, isNull);
+    });
+
+    test('deleteArticle rethrows when the repository fails', () async {
+      repository.deleteError = Exception('permission denied');
+
+      expect(
+        () => cubit.deleteArticle(firestoreId: 'doc-1'),
         throwsException,
       );
     });

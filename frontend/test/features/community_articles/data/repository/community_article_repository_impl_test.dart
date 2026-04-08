@@ -16,10 +16,14 @@ class _FakeRemoteDataSource implements CommunityArticleRemoteDataSource {
   final String? publishReturnId;
   Object? uploadError;
   Object? publishError;
+  Object? deleteError;
 
   String? lastUploadUid;
   File? lastUploadFile;
   ArticleEntity? lastPublishArticle;
+  String? lastDeletedFirestoreId;
+  String? lastDeletedImageUrl;
+  int deleteCallCount = 0;
 
   _FakeRemoteDataSource({
     this.emitted = const [],
@@ -46,6 +50,17 @@ class _FakeRemoteDataSource implements CommunityArticleRemoteDataSource {
     if (publishError != null) throw publishError!;
     lastPublishArticle = article;
     return publishReturnId ?? 'doc-123';
+  }
+
+  @override
+  Future<void> deleteArticle({
+    required String firestoreId,
+    String? imageUrl,
+  }) async {
+    deleteCallCount++;
+    if (deleteError != null) throw deleteError!;
+    lastDeletedFirestoreId = firestoreId;
+    lastDeletedImageUrl = imageUrl;
   }
 }
 
@@ -89,6 +104,31 @@ void main() {
 
       expect(id, 'doc-xyz');
       expect(remote.lastPublishArticle, article);
+    });
+
+    test('deleteArticle forwards both firestoreId and imageUrl', () async {
+      final remote = _FakeRemoteDataSource();
+      final repo = CommunityArticleRepositoryImpl(remote);
+
+      await repo.deleteArticle(
+        firestoreId: 'doc-1',
+        imageUrl: 'https://x/y.jpg',
+      );
+
+      expect(remote.deleteCallCount, 1);
+      expect(remote.lastDeletedFirestoreId, 'doc-1');
+      expect(remote.lastDeletedImageUrl, 'https://x/y.jpg');
+    });
+
+    test('deleteArticle accepts a null imageUrl', () async {
+      final remote = _FakeRemoteDataSource();
+      final repo = CommunityArticleRepositoryImpl(remote);
+
+      await repo.deleteArticle(firestoreId: 'doc-1');
+
+      expect(remote.deleteCallCount, 1);
+      expect(remote.lastDeletedFirestoreId, 'doc-1');
+      expect(remote.lastDeletedImageUrl, isNull);
     });
   });
 }

@@ -14,4 +14,10 @@ abstract class CommunityArticleRepository {
 
   /// Publishes a new article and returns the Firestore document ID.
   Future<String> publishArticle(ArticleEntity article);
+
+  /// Deletes a community article (and its Storage image if present).
+  Future<void> deleteArticle({
+    required String firestoreId,
+    String? imageUrl,
+  });
 }

@@ -13,4 +13,12 @@ abstract class CommunityArticleRemoteDataSource {
   });
 
   Future<String> publishArticle(ArticleEntity article);
+
+  /// Deletes a community article. If [imageUrl] is non-null, the underlying
+  /// Storage object is deleted on a best-effort basis (failures are swallowed
+  /// so a missing or already-deleted file does not block the doc deletion).
+  Future<void> deleteArticle({
+    required String firestoreId,
+    String? imageUrl,
+  });
 }

@@ -32,6 +32,16 @@ class CommunityFeedCubit extends Cubit<CommunityFeedState> {
     return _repository.publishArticle(article);
   }
 
+  Future<void> deleteArticle({
+    required String firestoreId,
+    String? imageUrl,
+  }) {
+    return _repository.deleteArticle(
+      firestoreId: firestoreId,
+      imageUrl: imageUrl,
+    );
+  }
+
   @override
   Future<void> close() {
     _subscription?.cancel();

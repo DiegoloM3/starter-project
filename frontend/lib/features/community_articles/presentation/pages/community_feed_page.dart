@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/community_articles/presentation/bloc/community_feed_cubit.dart';
 import 'package:news_app_clean_architecture/features/community_articles/presentation/bloc/community_feed_state.dart';
+import 'package:news_app_clean_architecture/features/community_articles/presentation/pages/community_article_detail_page.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
 class CommunityFeedPage extends StatelessWidget {
   const CommunityFeedPage({Key? key}) : super(key: key);
@@ -45,10 +47,8 @@ class CommunityFeedPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final article = state.articles[index];
                 return _CommunityArticleCard(
-                  title: article.title ?? '(untitled)',
-                  description: article.description ?? '',
-                  imageUrl: article.urlToImage,
-                  publishedAt: article.publishedAt?.substring(0, 10) ?? '',
+                  article: article,
+                  onTap: () => _openDetail(context, article),
                 );
               },
             );
@@ -58,35 +58,49 @@ class CommunityFeedPage extends StatelessWidget {
       ),
     );
   }
+
+  void _openDetail(BuildContext context, ArticleEntity article) {
+    final cubit = context.read<CommunityFeedCubit>();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: cubit,
+          child: CommunityArticleDetailPage(article: article),
+        ),
+      ),
+    );
+  }
 }
 
 class _CommunityArticleCard extends StatelessWidget {
-  final String title;
-  final String description;
-  final String? imageUrl;
-  final String publishedAt;
+  final ArticleEntity article;
+  final VoidCallback onTap;
 
   const _CommunityArticleCard({
-    required this.title,
-    required this.description,
-    required this.imageUrl,
-    required this.publishedAt,
+    required this.article,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final title = article.title ?? '(untitled)';
+    final description = article.description ?? '';
+    final imageUrl = article.urlToImage;
+    final publishedAt = article.publishedAt?.substring(0, 10) ?? '';
     return Card(
       clipBehavior: Clip.antiAlias,
       elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (imageUrl != null && imageUrl!.isNotEmpty)
+          if (imageUrl != null && imageUrl.isNotEmpty)
             CachedNetworkImage(
-              imageUrl: imageUrl!,
+              imageUrl: imageUrl,
               height: 180,
               fit: BoxFit.cover,
               placeholder: (_, __) => Container(
@@ -145,6 +159,7 @@ class _CommunityArticleCard extends StatelessWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }
