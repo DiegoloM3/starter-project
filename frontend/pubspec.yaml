@@ -45,8 +45,11 @@ dependencies:
   #Hooks
   flutter_hooks: ^0.18.3
 
-  #chached image 
+  #chached image
   cached_network_image: ^3.2.0
+
+  #image picker (gallery)
+  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:

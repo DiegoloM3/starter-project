@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
 import 'community_article_remote_datasource.dart';
@@ -8,8 +11,9 @@ class CommunityArticleFirestoreDataSource
   static const _collection = 'articles';
 
   final FirebaseFirestore _firestore;
+  final FirebaseStorage _storage;
 
-  CommunityArticleFirestoreDataSource(this._firestore);
+  CommunityArticleFirestoreDataSource(this._firestore, this._storage);
 
   CollectionReference<Map<String, dynamic>> get _articlesRef =>
       _firestore.collection(_collection);
@@ -21,6 +25,18 @@ class CommunityArticleFirestoreDataSource
         .limit(50)
         .snapshots()
         .map((snapshot) => snapshot.docs.map(_docToEntity).toList());
+  }
+
+  @override
+  Future<String> uploadArticleImage({
+    required String uid,
+    required File imageFile,
+  }) async {
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final filename = imageFile.path.split('/').last;
+    final ref = _storage.ref('articles/$uid/${timestamp}_$filename');
+    final task = await ref.putFile(imageFile);
+    return task.ref.getDownloadURL();
   }
 
   @override

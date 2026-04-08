@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/community_articles/domain/repository/community_article_repository.dart';
@@ -20,6 +21,12 @@ class CommunityFeedCubit extends Cubit<CommunityFeedState> {
               emit(CommunityFeedError(error.toString())),
         );
   }
+
+  Future<String> uploadImage({
+    required String uid,
+    required File imageFile,
+  }) =>
+      _repository.uploadArticleImage(uid: uid, imageFile: imageFile);
 
   Future<String> publish(ArticleEntity article) {
     return _repository.publishArticle(article);

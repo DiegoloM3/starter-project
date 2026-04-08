@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:news_app_clean_architecture/features/community_articles/data/data_sources/remote/community_article_firestore_datasource.dart';
@@ -30,6 +31,7 @@ Future<void> initializeDependencies() async {
 
   // Firebase
   sl.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
+  sl.registerSingleton<FirebaseStorage>(FirebaseStorage.instance);
 
   // Data sources
   sl.registerSingleton<ArticleLocalDataSource>(
@@ -37,7 +39,7 @@ Future<void> initializeDependencies() async {
   );
 
   sl.registerSingleton<CommunityArticleRemoteDataSource>(
-    CommunityArticleFirestoreDataSource(sl()),
+    CommunityArticleFirestoreDataSource(sl(), sl()),
   );
 
   // Dependencies

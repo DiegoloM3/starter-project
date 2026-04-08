@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:news_app_clean_architecture/features/community_articles/data/data_sources/remote/community_article_remote_datasource.dart';
 import 'package:news_app_clean_architecture/features/community_articles/domain/repository/community_article_repository.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
@@ -9,6 +11,13 @@ class CommunityArticleRepositoryImpl implements CommunityArticleRepository {
 
   @override
   Stream<List<ArticleEntity>> watchArticles() => _remote.watchArticles();
+
+  @override
+  Future<String> uploadArticleImage({
+    required String uid,
+    required File imageFile,
+  }) =>
+      _remote.uploadArticleImage(uid: uid, imageFile: imageFile);
 
   @override
   Future<String> publishArticle(ArticleEntity article) =>
