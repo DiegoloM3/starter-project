@@ -8,6 +8,10 @@ class ArticleEntity {
   final String ? publishedAt;
   final String ? content;
 
+  // Community article fields. Both null for NewsAPI articles.
+  final String ? firestoreId;
+  final String ? uid;
+
   const ArticleEntity({
     this.id,
     this.author,
@@ -17,6 +21,8 @@ class ArticleEntity {
     this.urlToImage,
     this.publishedAt,
     this.content,
+    this.firestoreId,
+    this.uid,
   });
 
   @override
@@ -30,7 +36,9 @@ class ArticleEntity {
         other.url == url &&
         other.urlToImage == urlToImage &&
         other.publishedAt == publishedAt &&
-        other.content == content;
+        other.content == content &&
+        other.firestoreId == firestoreId &&
+        other.uid == uid;
   }
 
   @override
@@ -43,5 +51,7 @@ class ArticleEntity {
         urlToImage,
         publishedAt,
         content,
+        firestoreId,
+        uid,
       );
 }

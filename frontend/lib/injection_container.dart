@@ -1,5 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
+import 'package:news_app_clean_architecture/features/community_articles/data/data_sources/remote/community_article_firestore_datasource.dart';
+import 'package:news_app_clean_architecture/features/community_articles/data/data_sources/remote/community_article_remote_datasource.dart';
+import 'package:news_app_clean_architecture/features/community_articles/data/repository/community_article_repository_impl.dart';
+import 'package:news_app_clean_architecture/features/community_articles/domain/repository/community_article_repository.dart';
+import 'package:news_app_clean_architecture/features/community_articles/presentation/bloc/community_feed_cubit.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/article_local_datasource.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/article_local_datasource_impl.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/news_api_service.dart';
@@ -22,9 +28,16 @@ Future<void> initializeDependencies() async {
   // Dio
   sl.registerSingleton<Dio>(Dio());
 
+  // Firebase
+  sl.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
+
   // Data sources
   sl.registerSingleton<ArticleLocalDataSource>(
     ArticleLocalDataSourceImpl(database.articleDAO),
+  );
+
+  sl.registerSingleton<CommunityArticleRemoteDataSource>(
+    CommunityArticleFirestoreDataSource(sl()),
   );
 
   // Dependencies
@@ -32,6 +45,10 @@ Future<void> initializeDependencies() async {
 
   sl.registerSingleton<ArticleRepository>(
     ArticleRepositoryImpl(sl(), sl()),
+  );
+
+  sl.registerSingleton<CommunityArticleRepository>(
+    CommunityArticleRepositoryImpl(sl()),
   );
   
   //UseCases
@@ -59,6 +76,10 @@ Future<void> initializeDependencies() async {
 
   sl.registerFactory<LocalArticleBloc>(
     ()=> LocalArticleBloc(sl(),sl(),sl())
+  );
+
+  sl.registerFactory<CommunityFeedCubit>(
+    () => CommunityFeedCubit(sl()),
   );
 
 
