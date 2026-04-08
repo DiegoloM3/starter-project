@@ -54,7 +54,7 @@ post_install do |installer|
     # Builds, the precompiled module step treats this as a hard error. Setting
     # DEFINES_MODULE = NO skips module precompilation for these pods while still
     # letting Xcode link them as normal frameworks.
-    if ['firebase_storage', 'cloud_firestore'].include?(target.name)
+    if ['firebase_storage', 'cloud_firestore', 'firebase_auth'].include?(target.name)
       target.build_configurations.each do |config|
         config.build_settings['DEFINES_MODULE'] = 'NO'
       end

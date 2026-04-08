@@ -25,8 +25,12 @@ class CommunityArticleFirestoreDataSource
 
   @override
   Future<String> publishArticle(ArticleEntity article) async {
+    final uid = article.uid;
+    if (uid == null) {
+      throw ArgumentError('uid is required to publish a community article');
+    }
     final docRef = await _articlesRef.add({
-      'uid': article.uid ?? 'anonymous',
+      'uid': uid,
       'title': article.title,
       'description': article.description,
       'content': article.content,

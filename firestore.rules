@@ -2,12 +2,14 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Community articles: anyone can read; tracer bullet allows any write.
-    // Strict ownership rules will be re-enabled in spec 002 final pass once
-    // Firebase Auth is wired in the app.
+    // Community articles: anyone can read; only authenticated users can write
+    // their own documents (uid in the document must match the auth UID).
     match /articles/{articleId} {
       allow read: if true;
-      allow write: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if request.auth != null
+                             && resource.data.uid == request.auth.uid;
     }
   }
 }

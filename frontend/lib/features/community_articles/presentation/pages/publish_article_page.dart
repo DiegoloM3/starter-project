@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/community_articles/presentation/bloc/community_feed_cubit.dart';
@@ -29,10 +30,14 @@ class _PublishArticlePageState extends State<PublishArticlePage> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) {
+        throw StateError('Not signed in');
+      }
       final cubit = context.read<CommunityFeedCubit>();
       await cubit.publish(
         ArticleEntity(
-          uid: 'anonymous',
+          uid: uid,
           title: _titleController.text.trim(),
           description: _descriptionController.text.trim(),
           content: _contentController.text.trim(),
