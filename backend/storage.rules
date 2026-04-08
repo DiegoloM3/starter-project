@@ -2,6 +2,40 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+    function isSignedIn() {
+      return request.auth != null;
     }
+
+    function userExists() {
+      return isSignedIn()
+        && exists(/databases/(default)/documents/users/$(request.auth.uid));
+    }
+
+    function role() {
+      return userExists()
+        ? get(/databases/(default)/documents/users/$(request.auth.uid)).data.role
+        : "";
+    }
+
+    function isJournalistOrAdmin() {
+      return role() == "journalist" || role() == "admin";
+    }
+
+    function hasValidImageMetadata() {
+      return request.resource != null
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
+    }
+
+    // Public read for article thumbnails.
+    allow read: if true;
+
+    // Restrict uploads/updates/deletes to journalists/admins.
+    match /media/articles/{fileName} {
+      allow create, update: if isSignedIn()
+        && isJournalistOrAdmin()
+        && hasValidImageMetadata();
+      allow delete: if isSignedIn() && isJournalistOrAdmin();
+    }
+  }
 }

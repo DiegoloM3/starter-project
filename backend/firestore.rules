@@ -2,6 +2,163 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function userExists() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function role() {
+      return userExists() ? userDoc().data.role : "";
+    }
+
+    function isAdmin() {
+      return role() == "admin";
+    }
+
+    function isJournalist() {
+      return role() == "journalist";
+    }
+
+    function isJournalistOrAdmin() {
+      return isJournalist() || isAdmin();
+    }
+
+    function isValidText(value, min, max) {
+      return value is string && value.size() >= min && value.size() <= max;
+    }
+
+    function isOptionalText(value, min, max) {
+      return value == null || (value is string && value.size() >= min && value.size() <= max);
+    }
+
+    function isValidStatus(value) {
+      return value in ["draft", "published", "archived"];
+    }
+
+    function hasValidSource(data) {
+      return data.source is map
+        && data.source.keys().hasAll(["name", "type"])
+        && data.source.keys().hasOnly(["id", "name", "type"])
+        && isValidText(data.source.name, 2, 120)
+        && isOptionalText(data.source.id, 0, 100)
+        && data.source.type in ["staff", "agency", "external", "user"];
+    }
+
+    function hasValidOptionalFields(data) {
+      return (!("tags" in data) || (
+          data.tags is list
+          && data.tags.size() <= 10
+        ))
+        && (!("language" in data) || (
+          data.language is string
+          && data.language.size() == 2
+        ))
+        && (!("readingTimeMinutes" in data) || (
+          data.readingTimeMinutes is int
+          && data.readingTimeMinutes >= 1
+        ));
+    }
+
+    function hasValidArticleShape(data) {
+      return data.keys().hasAll([
+          "author",
+          "title",
+          "description",
+          "content",
+          "urlToImage",
+          "publishedAt",
+          "createdAt",
+          "updatedAt",
+          "createdBy",
+          "status",
+          "source"
+        ])
+        && data.keys().hasOnly([
+          "author",
+          "title",
+          "description",
+          "content",
+          "url",
+          "urlToImage",
+          "publishedAt",
+          "createdAt",
+          "updatedAt",
+          "createdBy",
+          "status",
+          "source",
+          "tags",
+          "language",
+          "readingTimeMinutes"
+        ])
+        && isValidText(data.author, 2, 120)
+        && isValidText(data.title, 5, 180)
+        && isValidText(data.description, 10, 400)
+        && isValidText(data.content, 30, 20000)
+        && (!("url" in data) || isOptionalText(data.url, 0, 2048))
+        && isValidText(data.urlToImage, 1, 4096)
+        && data.publishedAt is timestamp
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp
+        && isValidText(data.createdBy, 1, 128)
+        && isValidStatus(data.status)
+        && hasValidSource(data)
+        && hasValidOptionalFields(data);
+    }
+
+    function isValidArticleCreate() {
+      let data = request.resource.data;
+      return hasValidArticleShape(data)
+        && data.createdBy == request.auth.uid;
+    }
+
+    function isValidStatusTransition() {
+      let oldStatus = resource.data.status;
+      let newStatus = request.resource.data.status;
+      return oldStatus == newStatus
+        || (oldStatus == "draft" && newStatus in ["published", "archived"])
+        || (oldStatus == "published" && newStatus == "archived");
+    }
+
+    function isValidArticleUpdate() {
+      let oldData = resource.data;
+      let newData = request.resource.data;
+      return hasValidArticleShape(newData)
+        && newData.createdBy == oldData.createdBy
+        && newData.createdAt == oldData.createdAt
+        && isValidStatusTransition();
+    }
+
+    match /articles/{articleId} {
+      // Public readers can consume published content.
+      allow get, list: if resource.data.status == "published" || isSignedIn();
+
+      // Only journalists/admins can publish content, and only as themselves.
+      allow create: if isSignedIn()
+        && isJournalistOrAdmin()
+        && isValidArticleCreate();
+
+      // Owners can update their own articles; admins can update any article.
+      allow update: if isSignedIn()
+        && (isAdmin() || resource.data.createdBy == request.auth.uid)
+        && isValidArticleUpdate();
+
+      // Delete is restricted to admins for audit safety.
+      allow delete: if isSignedIn() && isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && (isAdmin() || request.auth.uid == userId);
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() && (isAdmin() || request.auth.uid == userId);
+      allow delete: if isSignedIn() && isAdmin();
+    }
   }
 }
