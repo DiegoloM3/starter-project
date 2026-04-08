@@ -24,7 +24,18 @@ class ArticleModel extends ArticleEntity {
     content: content,
   );
 
-  factory ArticleModel.fromJson(Map < String, dynamic > map) {
+  ArticleEntity toEntity() => ArticleEntity(
+        id: id,
+        author: author,
+        title: title,
+        description: description,
+        url: url,
+        urlToImage: urlToImage,
+        publishedAt: publishedAt,
+        content: content,
+      );
+
+  factory ArticleModel.fromRawData(Map < String, dynamic > map) {
     return ArticleModel(
       author: map['author'] ?? "",
       title: map['title'] ?? "",

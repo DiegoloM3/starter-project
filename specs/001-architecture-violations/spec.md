@@ -1,7 +1,7 @@
 ---
 id: 001-architecture-violations
 title: "Architecture Violations — Baseline Cleanup"
-status: draft
+status: accepted
 version: 1.0.0
 ---
 
