@@ -25,6 +25,15 @@ class _FakeRemoteDataSource implements CommunityArticleRemoteDataSource {
   String? lastDeletedImageUrl;
   int deleteCallCount = 0;
 
+  String? lastUpdatedFirestoreId;
+  String? lastUpdatedTitle;
+  String? lastUpdatedDescription;
+  String? lastUpdatedContent;
+  String? lastUpdatedImageUrl;
+  String? lastUpdatedOldImageUrl;
+  int updateCallCount = 0;
+  Object? updateError;
+
   _FakeRemoteDataSource({
     this.emitted = const [],
     this.uploadReturnUrl,
@@ -61,6 +70,25 @@ class _FakeRemoteDataSource implements CommunityArticleRemoteDataSource {
     if (deleteError != null) throw deleteError!;
     lastDeletedFirestoreId = firestoreId;
     lastDeletedImageUrl = imageUrl;
+  }
+
+  @override
+  Future<void> updateArticle({
+    required String firestoreId,
+    required String title,
+    required String description,
+    required String content,
+    String? imageUrl,
+    String? oldImageUrl,
+  }) async {
+    updateCallCount++;
+    if (updateError != null) throw updateError!;
+    lastUpdatedFirestoreId = firestoreId;
+    lastUpdatedTitle = title;
+    lastUpdatedDescription = description;
+    lastUpdatedContent = content;
+    lastUpdatedImageUrl = imageUrl;
+    lastUpdatedOldImageUrl = oldImageUrl;
   }
 }
 
@@ -129,6 +157,44 @@ void main() {
       expect(remote.deleteCallCount, 1);
       expect(remote.lastDeletedFirestoreId, 'doc-1');
       expect(remote.lastDeletedImageUrl, isNull);
+    });
+
+    test('updateArticle forwards every field including oldImageUrl', () async {
+      final remote = _FakeRemoteDataSource();
+      final repo = CommunityArticleRepositoryImpl(remote);
+
+      await repo.updateArticle(
+        firestoreId: 'doc-1',
+        title: 't',
+        description: 'd',
+        content: 'c',
+        imageUrl: 'https://x/new.jpg',
+        oldImageUrl: 'https://x/old.jpg',
+      );
+
+      expect(remote.updateCallCount, 1);
+      expect(remote.lastUpdatedFirestoreId, 'doc-1');
+      expect(remote.lastUpdatedTitle, 't');
+      expect(remote.lastUpdatedDescription, 'd');
+      expect(remote.lastUpdatedContent, 'c');
+      expect(remote.lastUpdatedImageUrl, 'https://x/new.jpg');
+      expect(remote.lastUpdatedOldImageUrl, 'https://x/old.jpg');
+    });
+
+    test('updateArticle accepts null imageUrl and oldImageUrl', () async {
+      final remote = _FakeRemoteDataSource();
+      final repo = CommunityArticleRepositoryImpl(remote);
+
+      await repo.updateArticle(
+        firestoreId: 'doc-1',
+        title: 't',
+        description: 'd',
+        content: 'c',
+      );
+
+      expect(remote.updateCallCount, 1);
+      expect(remote.lastUpdatedImageUrl, isNull);
+      expect(remote.lastUpdatedOldImageUrl, isNull);
     });
   });
 }

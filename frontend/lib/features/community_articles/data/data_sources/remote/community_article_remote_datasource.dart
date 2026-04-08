@@ -21,4 +21,17 @@ abstract class CommunityArticleRemoteDataSource {
     required String firestoreId,
     String? imageUrl,
   });
+
+  /// Updates `title`, `description`, `content`, and `imageUrl` for an existing
+  /// article. `publishedAt` and `uid` are NOT touched. If [oldImageUrl] is
+  /// different from [imageUrl] and non-null, the previous Storage object is
+  /// deleted on a best-effort basis.
+  Future<void> updateArticle({
+    required String firestoreId,
+    required String title,
+    required String description,
+    required String content,
+    String? imageUrl,
+    String? oldImageUrl,
+  });
 }

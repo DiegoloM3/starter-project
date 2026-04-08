@@ -29,4 +29,22 @@ class CommunityArticleRepositoryImpl implements CommunityArticleRepository {
     String? imageUrl,
   }) =>
       _remote.deleteArticle(firestoreId: firestoreId, imageUrl: imageUrl);
+
+  @override
+  Future<void> updateArticle({
+    required String firestoreId,
+    required String title,
+    required String description,
+    required String content,
+    String? imageUrl,
+    String? oldImageUrl,
+  }) =>
+      _remote.updateArticle(
+        firestoreId: firestoreId,
+        title: title,
+        description: description,
+        content: content,
+        imageUrl: imageUrl,
+        oldImageUrl: oldImageUrl,
+      );
 }

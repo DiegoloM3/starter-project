@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/community_articles/presentation/bloc/community_feed_cubit.dart';
+import 'package:news_app_clean_architecture/features/community_articles/presentation/pages/publish_article_page.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
 class CommunityArticleDetailPage extends StatefulWidget {
@@ -18,11 +19,33 @@ class CommunityArticleDetailPage extends StatefulWidget {
 
 class _CommunityArticleDetailPageState
     extends State<CommunityArticleDetailPage> {
+  late ArticleEntity _article;
   bool _deleting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _article = widget.article;
+  }
 
   bool get _isOwner {
     final currentUid = FirebaseAuth.instance.currentUser?.uid;
-    return currentUid != null && currentUid == widget.article.uid;
+    return currentUid != null && currentUid == _article.uid;
+  }
+
+  Future<void> _openEdit() async {
+    final cubit = context.read<CommunityFeedCubit>();
+    final updated = await Navigator.of(context).push<ArticleEntity>(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: cubit,
+          child: PublishArticlePage(initialArticle: _article),
+        ),
+      ),
+    );
+    if (updated != null && mounted) {
+      setState(() => _article = updated);
+    }
   }
 
   Future<void> _confirmDelete() async {
@@ -48,7 +71,7 @@ class _CommunityArticleDetailPageState
     if (confirmed != true) return;
     if (!mounted) return;
 
-    final firestoreId = widget.article.firestoreId;
+    final firestoreId = _article.firestoreId;
     if (firestoreId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Could not delete: missing article id.')),
@@ -61,7 +84,7 @@ class _CommunityArticleDetailPageState
     try {
       await context.read<CommunityFeedCubit>().deleteArticle(
             firestoreId: firestoreId,
-            imageUrl: widget.article.urlToImage,
+            imageUrl: _article.urlToImage,
           );
       if (!mounted) return;
       Navigator.of(context).pop();
@@ -80,17 +103,23 @@ class _CommunityArticleDetailPageState
 
   @override
   Widget build(BuildContext context) {
-    final article = widget.article;
+    final article = _article;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Article'),
         actions: [
-          if (_isOwner)
+          if (_isOwner) ...[
+            IconButton(
+              icon: const Icon(Icons.edit_outlined),
+              tooltip: 'Edit',
+              onPressed: _deleting ? null : _openEdit,
+            ),
             IconButton(
               icon: const Icon(Icons.delete_outline),
               tooltip: 'Delete',
               onPressed: _deleting ? null : _confirmDelete,
             ),
+          ],
         ],
       ),
       body: AbsorbPointer(

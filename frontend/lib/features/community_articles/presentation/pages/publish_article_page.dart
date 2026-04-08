@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,8 +10,19 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/entities/
 
 const _maxImageBytes = 5 * 1024 * 1024; // 5 MB
 
+/// One form, two modes:
+///
+/// - **Publish mode** (default): empty fields, submit creates a new Firestore
+///   document.
+/// - **Edit mode**: pass [initialArticle]. Fields are pre-populated, the
+///   submit action says "Save", and submit calls `updateArticle` which
+///   preserves `publishedAt` and `uid`.
 class PublishArticlePage extends StatefulWidget {
-  const PublishArticlePage({Key? key}) : super(key: key);
+  final ArticleEntity? initialArticle;
+
+  const PublishArticlePage({Key? key, this.initialArticle}) : super(key: key);
+
+  bool get isEditMode => initialArticle != null;
 
   @override
   State<PublishArticlePage> createState() => _PublishArticlePageState();
@@ -18,14 +30,33 @@ class PublishArticlePage extends StatefulWidget {
 
 class _PublishArticlePageState extends State<PublishArticlePage> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _contentController = TextEditingController();
+  late final TextEditingController _titleController;
+  late final TextEditingController _descriptionController;
+  late final TextEditingController _contentController;
   final _picker = ImagePicker();
 
+  /// A new image picked locally for upload (overrides any existing image).
   File? _pickedImage;
+
+  /// In edit mode, the URL of the image that the article currently has on
+  /// Firestore. Used to (a) show a preview before the user picks a new one,
+  /// and (b) tell the data source which old image to clean up after a
+  /// successful save. Cleared when the user taps "Remove".
+  String? _existingImageUrl;
+
   bool _submitting = false;
-  String? _submitStage; // 'uploading' | 'publishing'
+  String? _submitStage; // 'uploading' | 'publishing' | 'saving'
+
+  @override
+  void initState() {
+    super.initState();
+    final initial = widget.initialArticle;
+    _titleController = TextEditingController(text: initial?.title ?? '');
+    _descriptionController =
+        TextEditingController(text: initial?.description ?? '');
+    _contentController = TextEditingController(text: initial?.content ?? '');
+    _existingImageUrl = initial?.urlToImage;
+  }
 
   @override
   void dispose() {
@@ -49,14 +80,19 @@ class _PublishArticlePageState extends State<PublishArticlePage> {
         _showSnack('Image is too large. Pick one under 5 MB.');
         return;
       }
-      setState(() => _pickedImage = file);
+      setState(() {
+        _pickedImage = file;
+      });
     } catch (_) {
       if (!mounted) return;
       _showSnack('Could not open the gallery. Try again.');
     }
   }
 
-  void _removeImage() => setState(() => _pickedImage = null);
+  void _removeImage() => setState(() {
+        _pickedImage = null;
+        _existingImageUrl = null;
+      });
 
   void _showSnack(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -75,19 +111,24 @@ class _PublishArticlePageState extends State<PublishArticlePage> {
 
     setState(() {
       _submitting = true;
-      _submitStage = _pickedImage != null ? 'uploading' : 'publishing';
+      _submitStage = _pickedImage != null ? 'uploading' : 'saving';
     });
 
     final cubit = context.read<CommunityFeedCubit>();
 
-    String? imageUrl;
+    // Upload a new image if the user picked one. In edit mode, this overrides
+    // the existing image.
+    String? imageUrlForWrite;
     if (_pickedImage != null) {
       try {
-        imageUrl = await cubit.uploadImage(uid: uid, imageFile: _pickedImage!);
+        imageUrlForWrite = await cubit.uploadImage(
+          uid: uid,
+          imageFile: _pickedImage!,
+        );
       } catch (_) {
         if (!mounted) return;
         _showSnack(
-          'Could not upload image. Try again or publish without image.',
+          'Could not upload image. Try again or save without image.',
         );
         setState(() {
           _submitting = false;
@@ -95,25 +136,58 @@ class _PublishArticlePageState extends State<PublishArticlePage> {
         });
         return;
       }
+    } else {
+      // No new image was picked. Use whatever the existing one is (which may
+      // be null if the user removed it).
+      imageUrlForWrite = _existingImageUrl;
     }
 
-    setState(() => _submitStage = 'publishing');
+    setState(() => _submitStage = widget.isEditMode ? 'saving' : 'publishing');
 
     try {
-      await cubit.publish(
-        ArticleEntity(
-          uid: uid,
+      if (widget.isEditMode) {
+        final initial = widget.initialArticle!;
+        await cubit.updateArticle(
+          firestoreId: initial.firestoreId!,
           title: _titleController.text.trim(),
           description: _descriptionController.text.trim(),
           content: _contentController.text.trim(),
-          urlToImage: imageUrl,
-        ),
-      );
-      if (!mounted) return;
-      Navigator.of(context).pop();
+          imageUrl: imageUrlForWrite,
+          oldImageUrl: initial.urlToImage,
+        );
+        if (!mounted) return;
+        // Return the updated entity so the detail page can refresh in place,
+        // preserving firestoreId, uid, and publishedAt from the original.
+        final updated = ArticleEntity(
+          firestoreId: initial.firestoreId,
+          uid: initial.uid,
+          publishedAt: initial.publishedAt,
+          title: _titleController.text.trim(),
+          description: _descriptionController.text.trim(),
+          content: _contentController.text.trim(),
+          urlToImage: imageUrlForWrite,
+        );
+        Navigator.of(context).pop(updated);
+      } else {
+        await cubit.publish(
+          ArticleEntity(
+            uid: uid,
+            title: _titleController.text.trim(),
+            description: _descriptionController.text.trim(),
+            content: _contentController.text.trim(),
+            urlToImage: imageUrlForWrite,
+          ),
+        );
+        if (!mounted) return;
+        Navigator.of(context).pop();
+      }
     } catch (_) {
       if (!mounted) return;
-      _showSnack('Could not publish. Check your connection and try again.');
+      _showSnack(
+        widget.isEditMode
+            ? 'Could not save. Check your connection and try again.'
+            : 'Could not publish. Check your connection and try again.',
+      );
       setState(() {
         _submitting = false;
         _submitStage = null;
@@ -134,22 +208,33 @@ class _PublishArticlePageState extends State<PublishArticlePage> {
     return null;
   }
 
+  String _stageLabel() {
+    switch (_submitStage) {
+      case 'uploading':
+        return 'Uploading image…';
+      case 'saving':
+        return 'Saving…';
+      case 'publishing':
+        return 'Publishing…';
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final stageLabel = _submitStage == 'uploading'
-        ? 'Uploading image…'
-        : _submitStage == 'publishing'
-            ? 'Publishing…'
-            : null;
+    final isEdit = widget.isEditMode;
+    final title = isEdit ? 'Edit Article' : 'Publish Article';
+    final actionLabel = isEdit ? 'Save' : 'Publish';
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Publish Article'),
+        title: Text(title),
         actions: [
           TextButton(
             onPressed: _submitting ? null : _submit,
             child: Text(
-              'Publish',
+              actionLabel,
               style: TextStyle(
                 color: _submitting
                     ? const Color(0xFFBBBBBB)
@@ -206,7 +291,8 @@ class _PublishArticlePageState extends State<PublishArticlePage> {
               ),
               const SizedBox(height: 16),
               _ImagePickerSection(
-                image: _pickedImage,
+                pickedImage: _pickedImage,
+                existingImageUrl: _pickedImage == null ? _existingImageUrl : null,
                 onPick: _pickImage,
                 onRemove: _removeImage,
               ),
@@ -215,10 +301,8 @@ class _PublishArticlePageState extends State<PublishArticlePage> {
                 Column(
                   children: [
                     const CircularProgressIndicator(),
-                    if (stageLabel != null) ...[
-                      const SizedBox(height: 8),
-                      Text(stageLabel),
-                    ],
+                    const SizedBox(height: 8),
+                    Text(_stageLabel()),
                   ],
                 ),
             ],
@@ -230,19 +314,30 @@ class _PublishArticlePageState extends State<PublishArticlePage> {
 }
 
 class _ImagePickerSection extends StatelessWidget {
-  final File? image;
+  /// Local file the user just picked. Wins over [existingImageUrl].
+  final File? pickedImage;
+
+  /// URL of the image the article already has (edit mode). Shown only when
+  /// no local file has been picked yet.
+  final String? existingImageUrl;
+
   final VoidCallback onPick;
   final VoidCallback onRemove;
 
   const _ImagePickerSection({
-    required this.image,
+    required this.pickedImage,
+    required this.existingImageUrl,
     required this.onPick,
     required this.onRemove,
   });
 
+  bool get _hasAnyImage =>
+      pickedImage != null ||
+      (existingImageUrl != null && existingImageUrl!.isNotEmpty);
+
   @override
   Widget build(BuildContext context) {
-    if (image == null) {
+    if (!_hasAnyImage) {
       return OutlinedButton.icon(
         onPressed: onPick,
         icon: const Icon(Icons.image_outlined),
@@ -254,11 +349,30 @@ class _ImagePickerSection extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Image.file(
-            image!,
-            height: 200,
-            fit: BoxFit.cover,
-          ),
+          child: pickedImage != null
+              ? Image.file(
+                  pickedImage!,
+                  height: 200,
+                  fit: BoxFit.cover,
+                )
+              : CachedNetworkImage(
+                  imageUrl: existingImageUrl!,
+                  height: 200,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => Container(
+                    height: 200,
+                    color: const Color(0xFFEEEEEE),
+                    alignment: Alignment.center,
+                    child: const CircularProgressIndicator(),
+                  ),
+                  errorWidget: (_, __, ___) => Container(
+                    height: 200,
+                    color: const Color(0xFFEEEEEE),
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.broken_image_outlined,
+                        color: Color(0xFF9E9E9E)),
+                  ),
+                ),
         ),
         const SizedBox(height: 8),
         Row(

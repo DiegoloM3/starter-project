@@ -81,13 +81,15 @@ flutter run -d emulator-5554
 | The collaboration / SDD protocol used | `AGENTS.md` |
 | Why the iOS Podfile has manual overrides | `docs/DISCOVERY.md` § "iOS Podfile — Key Decisions" |
 
-## Status of the three specs
+## Status of the specs
 
 | Spec | Status | Tests |
 |------|--------|-------|
 | 001 — Architecture violations | `implemented` | Entity, model, repository unit tests |
 | 002 — Firebase backend (emulator) | `implemented` | Manual + cubit tests; rules tests are debt (IMP-003) |
-| 003 — User article publishing | `implemented` | Cubit + repository unit tests; widget tests are debt (IMP-001) |
+| 003 — User article publishing | `implemented` | Cubit + repository + widget tests; some widget tests are debt (IMP-001) |
+| 004 — View and delete your own community article | `implemented` | First spec that shipped with tests written alongside the code |
+| 005 — Edit your own community article | `implemented` | Cubit + repository unit tests; widget tests for the edit form are debt (IMP-001) |
 
 Each spec has a `## Test Coverage` section listing what is covered and what is
 not. Items not covered are tracked in `docs/improvements.md`.
@@ -99,7 +101,7 @@ cd frontend
 flutter test --no-pub
 ```
 
-Expected: **23 tests pass** in ~3 seconds.
+Expected: **41 tests pass** in ~2 seconds.
 
 ## Shortcuts taken — read this before judging code quality
 

@@ -42,6 +42,24 @@ class CommunityFeedCubit extends Cubit<CommunityFeedState> {
     );
   }
 
+  Future<void> updateArticle({
+    required String firestoreId,
+    required String title,
+    required String description,
+    required String content,
+    String? imageUrl,
+    String? oldImageUrl,
+  }) {
+    return _repository.updateArticle(
+      firestoreId: firestoreId,
+      title: title,
+      description: description,
+      content: content,
+      imageUrl: imageUrl,
+      oldImageUrl: oldImageUrl,
+    );
+  }
+
   @override
   Future<void> close() {
     _subscription?.cancel();

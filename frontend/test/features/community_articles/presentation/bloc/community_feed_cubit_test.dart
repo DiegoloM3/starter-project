@@ -20,6 +20,7 @@ class _FakeRepository implements CommunityArticleRepository {
   Object? publishError;
   Object? uploadError;
   Object? deleteError;
+  Object? updateError;
   String publishReturnId = 'doc-1';
   String uploadReturnUrl = 'https://example.com/uploaded.jpg';
 
@@ -27,6 +28,12 @@ class _FakeRepository implements CommunityArticleRepository {
   String? lastUploadUid;
   String? lastDeletedFirestoreId;
   String? lastDeletedImageUrl;
+  String? lastUpdatedFirestoreId;
+  String? lastUpdatedTitle;
+  String? lastUpdatedDescription;
+  String? lastUpdatedContent;
+  String? lastUpdatedImageUrl;
+  String? lastUpdatedOldImageUrl;
 
   void emit(List<ArticleEntity> articles) => _controller.add(articles);
   void emitError(Object error) => _controller.addError(error);
@@ -60,6 +67,24 @@ class _FakeRepository implements CommunityArticleRepository {
     if (deleteError != null) throw deleteError!;
     lastDeletedFirestoreId = firestoreId;
     lastDeletedImageUrl = imageUrl;
+  }
+
+  @override
+  Future<void> updateArticle({
+    required String firestoreId,
+    required String title,
+    required String description,
+    required String content,
+    String? imageUrl,
+    String? oldImageUrl,
+  }) async {
+    if (updateError != null) throw updateError!;
+    lastUpdatedFirestoreId = firestoreId;
+    lastUpdatedTitle = title;
+    lastUpdatedDescription = description;
+    lastUpdatedContent = content;
+    lastUpdatedImageUrl = imageUrl;
+    lastUpdatedOldImageUrl = oldImageUrl;
   }
 }
 
@@ -165,6 +190,50 @@ void main() {
 
       expect(
         () => cubit.deleteArticle(firestoreId: 'doc-1'),
+        throwsException,
+      );
+    });
+
+    test('updateArticle forwards every field', () async {
+      await cubit.updateArticle(
+        firestoreId: 'doc-1',
+        title: 'new title',
+        description: 'new desc',
+        content: 'new content',
+        imageUrl: 'https://x/new.jpg',
+        oldImageUrl: 'https://x/old.jpg',
+      );
+
+      expect(repository.lastUpdatedFirestoreId, 'doc-1');
+      expect(repository.lastUpdatedTitle, 'new title');
+      expect(repository.lastUpdatedDescription, 'new desc');
+      expect(repository.lastUpdatedContent, 'new content');
+      expect(repository.lastUpdatedImageUrl, 'https://x/new.jpg');
+      expect(repository.lastUpdatedOldImageUrl, 'https://x/old.jpg');
+    });
+
+    test('updateArticle accepts null imageUrl and oldImageUrl', () async {
+      await cubit.updateArticle(
+        firestoreId: 'doc-1',
+        title: 't',
+        description: 'd',
+        content: 'c',
+      );
+
+      expect(repository.lastUpdatedImageUrl, isNull);
+      expect(repository.lastUpdatedOldImageUrl, isNull);
+    });
+
+    test('updateArticle rethrows when the repository fails', () async {
+      repository.updateError = Exception('permission denied');
+
+      expect(
+        () => cubit.updateArticle(
+          firestoreId: 'doc-1',
+          title: 't',
+          description: 'd',
+          content: 'c',
+        ),
         throwsException,
       );
     });

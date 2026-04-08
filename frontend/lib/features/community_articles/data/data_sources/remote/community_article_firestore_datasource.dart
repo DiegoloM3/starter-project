@@ -60,6 +60,39 @@ class CommunityArticleFirestoreDataSource
   }
 
   @override
+  Future<void> updateArticle({
+    required String firestoreId,
+    required String title,
+    required String description,
+    required String content,
+    String? imageUrl,
+    String? oldImageUrl,
+  }) async {
+    // Overwrite only the editable fields. publishedAt and uid are intentionally
+    // omitted so they are preserved by Firestore's merge semantics.
+    await _articlesRef.doc(firestoreId).update({
+      'title': title,
+      'description': description,
+      'content': content,
+      'imageUrl': imageUrl,
+    });
+
+    // Best-effort cleanup of the previous image when it has been replaced or
+    // removed. A missing or already-deleted file must not roll back the doc
+    // update.
+    final shouldCleanupOldImage = oldImageUrl != null &&
+        oldImageUrl.isNotEmpty &&
+        oldImageUrl != imageUrl;
+    if (shouldCleanupOldImage) {
+      try {
+        await _storage.refFromURL(oldImageUrl).delete();
+      } catch (_) {
+        // Swallowed — orphan tracked in improvements.md (IMP-005).
+      }
+    }
+  }
+
+  @override
   Future<String> publishArticle(ArticleEntity article) async {
     final uid = article.uid;
     if (uid == null) {

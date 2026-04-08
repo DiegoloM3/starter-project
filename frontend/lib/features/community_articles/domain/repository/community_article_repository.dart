@@ -20,4 +20,15 @@ abstract class CommunityArticleRepository {
     required String firestoreId,
     String? imageUrl,
   });
+
+  /// Updates the editable fields of an existing article. `publishedAt` and
+  /// `uid` are preserved.
+  Future<void> updateArticle({
+    required String firestoreId,
+    required String title,
+    required String description,
+    required String content,
+    String? imageUrl,
+    String? oldImageUrl,
+  });
 }
