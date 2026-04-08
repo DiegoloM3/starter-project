@@ -1,0 +1,170 @@
+platform :ios, '12.0'
+require 'fileutils'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks! :linkage => :static
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  target 'RunnerTests' do
+    inherit! :search_paths
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+
+    # FirebaseStorage Swift header fix: ensure the module is defined so that
+    # Firebase.h umbrella header can find FirebaseStorage-Swift.h
+    if target.name == 'FirebaseStorage'
+      target.build_configurations.each do |config|
+        config.build_settings['DEFINES_MODULE'] = 'YES'
+        config.build_settings['SWIFT_OBJC_INTERFACE_HEADER_NAME'] = 'FirebaseStorage-Swift.h'
+      end
+    end
+
+    # These Flutter plugin pods import <Firebase/Firebase.h> (a non-modular header)
+    # inside their public headers. With use_frameworks! + Xcode 26 Explicit Module
+    # Builds, the precompiled module step treats this as a hard error. Setting
+    # DEFINES_MODULE = NO skips module precompilation for these pods while still
+    # letting Xcode link them as normal frameworks.
+    if ['firebase_storage', 'cloud_firestore'].include?(target.name)
+      target.build_configurations.each do |config|
+        config.build_settings['DEFINES_MODULE'] = 'NO'
+      end
+    end
+
+    target.build_configurations.each do |config|
+      # Force Apple Silicon simulator builds to arm64 only; avoids legacy
+      # x86_64 pod compile flags that fail with current Xcode toolchains.
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'i386 x86_64'
+      # Keep pod C++ compilation on a standard known to work with gRPC.
+      config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++17'
+      # Normalize older podspec deployment targets for current Xcode.
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+      # FlutterFire Objective-C wrappers include Firebase umbrella headers.
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+      # gRPC currently triggers a Clang diagnostic promoted to error on new Xcode.
+      flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] || '$(inherited)'
+      config.build_settings['OTHER_CPLUSPLUSFLAGS'] = "#{flags} -Wno-missing-template-arg-list-after-template-kw"
+
+      cflags = config.build_settings['OTHER_CFLAGS'] || '$(inherited)'
+      config.build_settings['OTHER_CFLAGS'] = "#{cflags} -Wno-error=non-modular-include-in-framework-module -Wno-non-modular-include-in-framework-module"
+
+      swift_flags = config.build_settings['OTHER_SWIFT_FLAGS'] || '$(inherited)'
+      config.build_settings['OTHER_SWIFT_FLAGS'] = "#{swift_flags} -Xcc -Wno-error=non-modular-include-in-framework-module -Xcc -Wno-non-modular-include-in-framework-module"
+    end
+
+    # Newer Clang treats '-G...' as an unsupported option for iOS targets.
+    # BoringSSL-GRPC includes '-GCC_WARN_INHIBIT_ALL_WARNINGS' in file-level
+    # compiler flags, so strip it out during pod project generation.
+    if target.name == 'BoringSSL-GRPC'
+      target.source_build_phase.files.each do |build_file|
+        next unless build_file.settings && build_file.settings['COMPILER_FLAGS']
+
+        current_flags = build_file.settings['COMPILER_FLAGS']
+        cleaned_flags = current_flags
+          .gsub('-GCC_WARN_INHIBIT_ALL_WARNINGS ', '')
+          .gsub(' -GCC_WARN_INHIBIT_ALL_WARNINGS', '')
+        build_file.settings['COMPILER_FLAGS'] = cleaned_flags
+      end
+    end
+
+    # Some CocoaPods/Xcode combinations inject a stale gRPC-Core modulemap path
+    # that does not exist, causing gRPC-C++ compilation to fail on simulator.
+    if target.name == 'gRPC-C++'
+      target.build_configurations.each do |config|
+        current_flags = config.build_settings['OTHER_CFLAGS']
+        next unless current_flags
+
+        invalid_modulemap_flag = '-fmodule-map-file="${PODS_ROOT}/Headers/Private/grpc/gRPC-Core.modulemap"'
+
+        if current_flags.is_a?(Array)
+          config.build_settings['OTHER_CFLAGS'] = current_flags.reject { |flag| flag.include?('Headers/Private/grpc/gRPC-Core.modulemap') }
+        else
+          cleaned_flags = current_flags
+            .gsub("#{invalid_modulemap_flag} ", '')
+            .gsub(" #{invalid_modulemap_flag}", '')
+            .gsub(invalid_modulemap_flag, '')
+          config.build_settings['OTHER_CFLAGS'] = cleaned_flags
+        end
+      end
+    end
+  end
+
+  invalid_modulemap_flag = '-fmodule-map-file="${PODS_ROOT}/Headers/Private/grpc/gRPC-Core.modulemap"'
+  Dir.glob(File.join(__dir__, 'Pods', 'Target Support Files', '**', '*.xcconfig')).each do |xcconfig_path|
+    next unless File.exist?(xcconfig_path)
+
+    content = File.read(xcconfig_path)
+    next unless content.include?(invalid_modulemap_flag)
+
+    cleaned_content = content
+      .gsub("#{invalid_modulemap_flag} ", '')
+      .gsub(" #{invalid_modulemap_flag}", '')
+      .gsub(invalid_modulemap_flag, '')
+      .gsub('-Xcc -Xcc ', '-Xcc ')
+    File.write(xcconfig_path, cleaned_content)
+  end
+
+  grpc_private_headers_dir = File.join(__dir__, 'Pods', 'Headers', 'Private', 'grpc')
+  grpc_modulemap_source = File.join(__dir__, 'Pods', 'Target Support Files', 'gRPC-Core', 'gRPC-Core.modulemap')
+  grpc_modulemap_dest = File.join(grpc_private_headers_dir, 'gRPC-Core.modulemap')
+  FileUtils.mkdir_p(grpc_private_headers_dir)
+  FileUtils.ln_sf(grpc_modulemap_source, grpc_modulemap_dest) if File.exist?(grpc_modulemap_source)
+
+  # Fix: Firebase.h checks for 'FirebaseStorage-umbrella.h' (which exists in static
+  # library mode) but then imports 'FirebaseStorage/FirebaseStorage-Swift.h' which is
+  # only generated when building as a framework. Tighten the guard so it only imports
+  # the Swift header when the Swift header itself is present.
+  firebase_h_link = File.join(__dir__, 'Pods', 'Headers', 'Private', 'Firebase', 'Firebase.h')
+  firebase_h = File.exist?(firebase_h_link) ? File.realpath(firebase_h_link) : nil
+  if firebase_h && File.exist?(firebase_h)
+    content = File.read(firebase_h)
+    patched = content.gsub(
+      '#if __has_include("FirebaseStorage-umbrella.h")',
+      '#if __has_include("FirebaseStorage-umbrella.h") && __has_include(<FirebaseStorage/FirebaseStorage-Swift.h>)'
+    )
+    if patched != content
+      FileUtils.chmod(0644, firebase_h)
+      File.write(firebase_h, patched)
+    end
+  end
+
+  installer.aggregate_targets.each do |aggregate_target|
+    aggregate_target.user_project.native_targets.each do |native_target|
+      native_target.build_configurations.each do |config|
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'i386 x86_64'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+      end
+    end
+    aggregate_target.user_project.save
+  end
+
+end
