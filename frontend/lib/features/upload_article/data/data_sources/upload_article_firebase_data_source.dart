@@ -57,6 +57,40 @@ class UploadArticleFirebaseDataSource {
     );
   }
 
+  Future<List<ArticleEntity>> getMyUploadedArticles() async {
+    final currentUser = _auth.currentUser;
+    if (currentUser == null) {
+      throw Exception('User must be authenticated to read uploaded articles');
+    }
+
+    final snapshot = await _firestore
+        .collection('articles')
+        .where('createdBy', isEqualTo: currentUser.uid)
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => _mapFirestoreToArticleEntity(doc.data()))
+        .toList();
+  }
+
+  ArticleEntity _mapFirestoreToArticleEntity(Map<String, dynamic> data) {
+    final publishedAt = data['publishedAt'];
+    final publishedAtString = publishedAt is Timestamp
+        ? publishedAt.toDate().toIso8601String()
+        : (publishedAt?.toString() ?? DateTime.now().toIso8601String());
+
+    return ArticleEntity(
+      author: data['author']?.toString() ?? '',
+      title: data['title']?.toString() ?? '',
+      description: data['description']?.toString() ?? '',
+      content: data['content']?.toString() ?? '',
+      url: data['url']?.toString() ?? '',
+      urlToImage: data['urlToImage']?.toString() ?? '',
+      publishedAt: publishedAtString,
+    );
+  }
+
   Future<String> _resolveImageUrl({
     required String rawImageValue,
     required String articleId,

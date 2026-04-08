@@ -5,6 +5,7 @@ import '../../features/daily_news/presentation/pages/article_detail/article_deta
 import '../../features/daily_news/presentation/pages/home/daily_news.dart';
 import '../../features/daily_news/presentation/pages/saved_article/saved_article.dart';
 import '../../features/upload_article/presentation/pages/add_article/add_article.dart';
+import '../../features/upload_article/presentation/pages/my_articles/my_articles.dart';
 
 
 class AppRoutes {
@@ -21,6 +22,9 @@ class AppRoutes {
 
       case '/AddArticle':
         return _materialRoute(const AddArticlePage());
+
+      case '/MyArticles':
+        return _materialRoute(const MyArticlesPage());
         
       default:
         return _materialRoute(const DailyNews());

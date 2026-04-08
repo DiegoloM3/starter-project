@@ -25,4 +25,20 @@ class UploadArticleRepositoryImpl implements UploadArticleRepository {
       );
     }
   }
+
+  @override
+  Future<DataState<List<ArticleEntity>>> getMyUploadedArticles() async {
+    try {
+      final uploadedArticles = await _dataSource.getMyUploadedArticles();
+      return DataSuccess<List<ArticleEntity>>(uploadedArticles);
+    } catch (error) {
+      return DataFailed<List<ArticleEntity>>(
+        DioError(
+          requestOptions: RequestOptions(path: '/articles'),
+          error: error,
+          type: DioErrorType.other,
+        ),
+      );
+    }
+  }
 }

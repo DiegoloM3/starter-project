@@ -116,6 +116,27 @@ Registro de cambios realizado durante esta sesión de trabajo.
   - dependencias instaladas y análisis estático ejecutado,
   - sin errores nuevos (solo avisos preexistentes del proyecto).
 
+### 9) Cierre de flujo producto: "My Articles" conectado a Firestore
+- Se extendió contrato de `upload_article` para soportar lectura de artículos propios:
+  - `getMyUploadedArticles()` en repository y use case dedicado.
+- Se implementó lectura real en Firebase data source:
+  - query por `createdBy == currentUser.uid`,
+  - orden por `createdAt` descendente,
+  - mapeo robusto a `ArticleEntity`.
+- Se implementó estado y lógica de presentación:
+  - `MyUploadedArticlesCubit` + estados (`loading/done/error`).
+- Se creó pantalla de producto:
+  - `MyArticlesPage` con lista de artículos propios, estados de loading/error/empty y navegación a detalle.
+- Se integró navegación principal:
+  - nueva ruta `'/MyArticles'`,
+  - nuevo acceso desde `DailyNews` en AppBar.
+- Se actualizó DI:
+  - registro de `GetMyUploadedArticlesUseCase` y `MyUploadedArticlesCubit`.
+- Compatibilidad:
+  - se actualizó mock repository para implementar el nuevo contrato sin romper compilación.
+- Verificación:
+  - análisis estático ejecutado sin errores nuevos del cambio (solo avisos históricos).
+
 ---
 
 ## Estado actual recomendado
@@ -124,4 +145,5 @@ Registro de cambios realizado durante esta sesión de trabajo.
 - Build Android en Flutter moderno: funcional y estable.
 - `upload_article` ya opera con backend Firebase real (Firestore + Storage).
 - sesión autenticada y usuario `journalist` inicializado al arranque para respetar reglas de escritura.
-- Siguiente objetivo funcional: añadir visualización de artículos subidos en una sección/lista propia y tests de `upload_article` (usecase + cubit + repository).
+- visualización de artículos propios añadida e integrada en navegación.
+- Siguiente objetivo funcional: tests de `upload_article` (`usecase` + `cubit` + `repository`) y polish UX del formulario (selector real de imagen, validación de URL/archivo más guiada).

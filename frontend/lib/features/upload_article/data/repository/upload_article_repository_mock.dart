@@ -31,4 +31,9 @@ class UploadArticleRepositoryMock implements UploadArticleRepository {
       );
     }
   }
+
+  @override
+  Future<DataState<List<ArticleEntity>>> getMyUploadedArticles() async {
+    return const DataSuccess<List<ArticleEntity>>(<ArticleEntity>[]);
+  }
 }

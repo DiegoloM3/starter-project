@@ -11,7 +11,9 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 import 'package:news_app_clean_architecture/features/upload_article/data/data_sources/upload_article_firebase_data_source.dart';
 import 'package:news_app_clean_architecture/features/upload_article/data/repository/upload_article_repository_impl.dart';
 import 'package:news_app_clean_architecture/features/upload_article/domain/repository/upload_article_repository.dart';
+import 'package:news_app_clean_architecture/features/upload_article/domain/usecases/get_my_uploaded_articles.dart';
 import 'package:news_app_clean_architecture/features/upload_article/domain/usecases/upload_article.dart';
+import 'package:news_app_clean_architecture/features/upload_article/presentation/bloc/my_uploaded_articles_cubit.dart';
 import 'package:news_app_clean_architecture/features/upload_article/presentation/bloc/upload_article_cubit.dart';
 import 'features/daily_news/data/data_sources/local/app_database.dart';
 import 'features/daily_news/domain/usecases/get_saved_article.dart';
@@ -67,6 +69,10 @@ Future<void> initializeDependencies() async {
     UploadArticleUseCase(sl()),
   );
 
+  sl.registerSingleton<GetMyUploadedArticlesUseCase>(
+    GetMyUploadedArticlesUseCase(sl()),
+  );
+
 
   //Blocs
   sl.registerFactory<RemoteArticlesBloc>(
@@ -79,6 +85,10 @@ Future<void> initializeDependencies() async {
 
   sl.registerFactory<UploadArticleCubit>(
     () => UploadArticleCubit(sl()),
+  );
+
+  sl.registerFactory<MyUploadedArticlesCubit>(
+    () => MyUploadedArticlesCubit(sl()),
   );
 
 

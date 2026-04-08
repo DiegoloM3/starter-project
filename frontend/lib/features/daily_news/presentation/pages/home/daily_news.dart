@@ -23,6 +23,13 @@ class DailyNews extends StatelessWidget {
       ),
       actions: [
         GestureDetector(
+          onTap: () => _onShowMyArticlesViewTapped(context),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 14),
+            child: Icon(Icons.article_outlined, color: Colors.black),
+          ),
+        ),
+        GestureDetector(
           onTap: () => _onShowSavedArticlesViewTapped(context),
           child: const Padding(
             padding: EdgeInsets.symmetric(horizontal: 14),
@@ -84,5 +91,9 @@ class DailyNews extends StatelessWidget {
 
   void _onShowSavedArticlesViewTapped(BuildContext context) {
     Navigator.pushNamed(context, '/SavedArticles');
+  }
+
+  void _onShowMyArticlesViewTapped(BuildContext context) {
+    Navigator.pushNamed(context, '/MyArticles');
   }
 }

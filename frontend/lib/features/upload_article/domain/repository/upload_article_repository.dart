@@ -4,4 +4,5 @@ import 'package:news_app_clean_architecture/features/upload_article/domain/entit
 
 abstract class UploadArticleRepository {
   Future<DataState<ArticleEntity>> uploadArticle(UploadArticleEntity article);
+  Future<DataState<List<ArticleEntity>>> getMyUploadedArticles();
 }
