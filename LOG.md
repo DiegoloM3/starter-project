@@ -137,6 +137,44 @@ Registro de cambios realizado durante esta sesión de trabajo.
 - Verificación:
   - análisis estático ejecutado sin errores nuevos del cambio (solo avisos históricos).
 
+### 10) Cobertura de tests ampliada para toda la lógica actual de la app
+- Se creó estructura de tests por capas en `frontend/test`, cubriendo:
+  - **Domain use cases (`daily_news`)**:
+    - `get_article_usecase_test.dart`
+    - `get_saved_article_usecase_test.dart`
+    - `save_article_usecase_test.dart`
+    - `remove_article_usecase_test.dart`
+  - **Domain use cases (`upload_article`)**:
+    - `upload_article_usecase_test.dart`
+    - `get_my_uploaded_articles_usecase_test.dart`
+  - **Presentation state management**:
+    - `remote_article_bloc_test.dart`
+    - `local_article_bloc_test.dart`
+    - `upload_article_cubit_test.dart`
+    - `my_uploaded_articles_cubit_test.dart`
+  - **Data repositories**:
+    - `article_repository_impl_test.dart`
+    - `upload_article_repository_impl_test.dart`
+- Ajustes de testing:
+  - se añadió `mocktail` como dependencia de desarrollo en `frontend/pubspec.yaml`.
+  - se evitó acoplamiento con `bloc_test` por conflicto de versiones del proyecto (retrofit_generator legacy), manteniendo tests robustos con `flutter_test` + streams/estado final.
+- Resultado:
+  - ejecución completa de `flutter test` en `frontend` con **todos los tests en verde**.
+
+### 11) CI para Pull Requests con calidad mínima obligatoria
+- Se añadió workflow de GitHub Actions en:
+  - `.github/workflows/pr-quality.yml`
+- Alcance del workflow:
+  - se ejecuta **solo en eventos de Pull Request** (`opened`, `synchronize`, `reopened`, `ready_for_review`),
+  - no corre en PRs draft (`if: github.event.pull_request.draft == false`).
+- Pipeline implementado para `frontend`:
+  - `flutter pub get`
+  - `dart format --set-exit-if-changed lib test`
+  - `flutter analyze`
+  - `flutter test`
+- Resultado esperado:
+  - cada PR queda bloqueada automáticamente si falla formato, análisis o tests.
+
 ---
 
 ## Estado actual recomendado
@@ -146,4 +184,6 @@ Registro de cambios realizado durante esta sesión de trabajo.
 - `upload_article` ya opera con backend Firebase real (Firestore + Storage).
 - sesión autenticada y usuario `journalist` inicializado al arranque para respetar reglas de escritura.
 - visualización de artículos propios añadida e integrada en navegación.
-- Siguiente objetivo funcional: tests de `upload_article` (`usecase` + `cubit` + `repository`) y polish UX del formulario (selector real de imagen, validación de URL/archivo más guiada).
+- suite de tests de lógica de aplicación implementada y ejecutada con éxito.
+- CI de PR instalada para enforcing de formato + análisis + tests.
+- Siguiente objetivo funcional: tests de widget para flujos clave (`AddArticlePage`, `MyArticlesPage`) y polish UX del formulario (selector real de imagen, validación de URL/archivo más guiada).
