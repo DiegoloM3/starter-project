@@ -100,3 +100,17 @@ violations at the same time.
 ## Open Questions
 
 None. All pre-implementation decisions are resolved.
+
+## Test Coverage
+
+| Acceptance criterion | Test file |
+|---------------------|-----------|
+| Scenario 1 (`toEntity`, `fromRawData`) | `test/features/daily_news/data/models/article_test.dart` |
+| Scenario 2 (repo returns `List<ArticleEntity>`) | `test/features/daily_news/data/repository/article_repository_impl_test.dart` |
+| Scenario 3 (repo delegates to local data source) | `test/features/daily_news/data/repository/article_repository_impl_test.dart` |
+| Scenario 4 (entity has no `equatable`, native `==`/`hashCode`) | `test/features/daily_news/domain/entities/article_test.dart` |
+| Scenario 5 (no behaviour regression) | Manual smoke test on Android + iOS simulator |
+
+`getNewsArticles` repository path is not covered by an automated test because
+the retrofit-generated `HttpResponse` type requires a real `Dio` to fake
+ergonomically. It is exercised by the manual end-to-end run.

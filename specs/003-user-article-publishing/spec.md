@@ -236,3 +236,30 @@ but is worth noting because product copy on `Required` errors uses the phrase
 email, or other identity attached. This is consistent with the spec
 (`Out of Scope (V1)` lists "User profiles, display names, avatars") but means
 all authors render as anonymous in the feed. The card shows no author at all.
+
+## Test Coverage
+
+| Acceptance criterion | Test file / how |
+|---------------------|-----------------|
+| Scenario 1 (publish with image — happy path) | `test/features/community_articles/presentation/bloc/community_feed_cubit_test.dart` (cubit-level: upload + publish forwarding); manual end-to-end run for the actual Storage + Firestore round trip |
+| Scenario 2 (publish without image) | Cubit test (publish without prior upload); manual run |
+| Scenario 3 (validation — missing field) | Implemented in `_validateLength` (publish_article_page.dart). Not covered by an automated widget test — see "Tests not yet written" |
+| Scenario 4 (network failure on publish) | `community_feed_cubit_test.dart` "publish rethrows when the repository fails" |
+| Scenario 5 (image upload failure) | `community_feed_cubit_test.dart` "uploadImage rethrows when the repository fails" |
+| Scenario 6 (community feed loads) | `community_feed_cubit_test.dart` "start() emits Loaded with whatever the repository emits" |
+| Scenario 7 (empty feed state) | Implemented in `CommunityFeedPage`. Not covered by a widget test |
+| Scenario 8 (real-time update) | Cubit stream test proves the listener mechanism; the actual Firestore `snapshots()` propagation is exercised by manual run |
+
+### Tests not yet written (debt)
+
+Logged in `improvements.md`:
+
+- Widget tests for `PublishArticlePage` (validation snackbars, submit states,
+  image-picker integration).
+- Widget tests for `CommunityFeedPage` (empty / loading / loaded / error states,
+  card rendering).
+- An integration test of `CommunityArticleFirestoreDataSource` against the
+  Firebase emulator (mapping `Timestamp` → ISO 8601, Storage path composition).
+
+These were deferred so the spec could ship with cubit + repository unit tests,
+which cover the orchestration logic where bugs are most likely to land.

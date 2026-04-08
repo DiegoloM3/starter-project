@@ -252,3 +252,32 @@ enabled — it accepts all sign-in methods by default. The implementation
 checklist item "Anonymous auth is enabled in the Firebase Console before
 implementation starts" is therefore N/A for the emulator setup. It would still
 need to be done if the project is ever pointed at a real Firebase project.
+
+## Test Coverage
+
+This spec is infrastructure (initialization, security rules, emulator wiring),
+not application logic. The "tests" for it are:
+
+| Acceptance criterion | How verified |
+|---------------------|--------------|
+| Scenario 1 (Firebase initializes on app start) | Manual smoke test on iOS simulator |
+| Scenario 2 (anonymous sign-in on first launch) | Manual + Auth Emulator UI showed UID `DHp5QlOSculH6gLMtJHJEwidMB8b` after launch |
+| Scenario 3 (Firestore read is public) | Manual feed loads + cubit unit test for `watchArticles` |
+| Scenario 4 (Firestore write requires auth) | `curl -X POST` against the emulator with no auth → `403 PERMISSION_DENIED` (verified during implementation) |
+| Scenario 5 (Firestore write enforces ownership) | Implicit: rule `request.resource.data.uid == request.auth.uid` is enforced by the emulator and verified by the successful publish flow using the real auth UID |
+| Scenario 6 (Storage upload requires auth) | Storage rule `allow write: if request.auth != null` deployed; manual upload during the publish flow succeeded |
+
+### Tests not yet written (debt)
+
+Logged in `improvements.md`:
+
+- Automated rules tests using `@firebase/rules-unit-testing` to assert that
+  unauth writes get rejected and that writing with a mismatched `uid` is
+  rejected. These would run against the Firestore emulator without needing the
+  Flutter app at all.
+- An integration test for `FirebaseEmulatorBootstrap` that asserts the host is
+  picked correctly per platform (Android `10.0.2.2` vs iOS `localhost`).
+
+Manual verification of the security rules during implementation is on the
+record above; the absence of automated rules tests is the main test debt for
+this spec.

@@ -99,13 +99,13 @@ No additional violations found beyond these 5.
 
 ---
 
-## Open Questions
+## Open Questions (resolved)
 
-- [ ] Does the app require Firebase Auth for article publishing, or is any user implicitly "authenticated"?
-- [ ] Are published articles visible to all users or only to the author?
-- [ ] Should user-published articles mix with the `daily_news` feed, or stay in a separate feed?
-- [ ] Is there a Figma design reference for the Add Article screen?
-- [ ] Should we upgrade Gradle/AGP/Kotlin to future-safe versions now, or log as tech debt?
+- [x] **Firebase Auth for publishing?** → Yes, anonymous sign-in (see spec 002).
+- [x] **Article visibility?** → Public to all users (see spec 002 + 003).
+- [x] **Mix user articles with `daily_news` feed?** → No, separate "Community" tab (see spec 003).
+- [ ] Figma design reference for the Add Article screen? *(still open — built with default Material widgets)*
+- [ ] Upgrade Gradle/AGP/Kotlin to future-safe versions now? *(logged in `improvements.md` IMP-008)*
 
 ---
 
