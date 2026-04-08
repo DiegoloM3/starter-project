@@ -1,7 +1,7 @@
 ---
 id: 003-user-article-publishing
 title: "User Article Publishing"
-status: accepted
+status: implemented
 version: 1.0.0
 ---
 
@@ -174,3 +174,65 @@ The FAB lives on both tabs and always opens the publish screen.
 ## Open Questions
 
 None. All decisions resolved before spec was written.
+
+## Deviations
+
+Things that diverged from this spec during implementation. They do not change
+the user-visible behaviour but a future engineer should know they exist.
+
+### 1. State management uses `Cubit`, not full `Bloc`
+
+The existing `daily_news` feature uses BLoCs with explicit event classes
+(`flutter_bloc`'s `Bloc<Event, State>`). The new community feed uses a `Cubit`
+(`Cubit<State>`) instead — `start()`, `uploadImage()`, and `publish()` are
+called directly as methods on the cubit.
+
+**Why:** the community feed has no event-driven flow worth modelling. The only
+inputs are "page mounted" (start the snapshots stream) and "user tapped publish"
+(write to Firestore). A Cubit removes ~3 boilerplate event files without losing
+any capability.
+
+**Tradeoff:** mixing Cubit and Bloc in the same codebase is a minor
+inconsistency. If the team prefers strict consistency, the cubit can be promoted
+to a Bloc later without changing public API.
+
+### 2. `daily_news` did not become a tab inside an existing screen — a new
+`RootScreen` was introduced
+
+The spec says "the home screen gains a bottom navigation bar". In practice, the
+existing `DailyNews` screen was kept untouched (its FAB was removed) and a new
+`RootScreen` was created that hosts both tabs and the FAB. This was needed
+because `DailyNews` returns its own `Scaffold` and embedding bottom navigation
+inside it would have conflicted with the existing app bar.
+
+**Net effect for the user is the same** as the spec describes — two tabs and a
+FAB on the home screen — but the navigation structure has one extra widget in
+the tree.
+
+### 3. Storage upload happens before Firestore write — no rollback
+
+Scenarios 4 and 5 of the spec are honoured (image-upload failure shows a
+snackbar and aborts the publish; network failure on write shows a snackbar and
+preserves form input). What is **not** done: if the image upload succeeds but
+the Firestore write fails, the orphan image stays in Storage. There is no
+cleanup pass.
+
+**Why deferred:** the spec does not require it, and orphan files in the
+emulator are zero cost. For a production deployment with billing, a Cloud
+Function trigger that deletes orphans (or a Storage lifecycle rule) would be
+the right fix.
+
+### 4. Validation does not enforce a minimum length above 1
+
+The spec's "Form Fields" table says `1-120` for title, etc. The implementation
+treats `length >= 1 after trim()` as the minimum. There is no separate "title
+must be at least N characters" beyond non-empty. This matches the spec literally
+but is worth noting because product copy on `Required` errors uses the phrase
+"is too short" — that branch never triggers in practice.
+
+### 5. Anonymous auth UID is the only `uid` written
+
+`uid` is `FirebaseAuth.instance.currentUser!.uid`. There is no display name,
+email, or other identity attached. This is consistent with the spec
+(`Out of Scope (V1)` lists "User profiles, display names, avatars") but means
+all authors render as anonymous in the feed. The card shows no author at all.

@@ -1,7 +1,7 @@
 ---
 id: 002-firebase-backend
 title: "Firebase Backend — Auth, Firestore & Storage"
-status: accepted
+status: implemented
 version: 1.0.0
 ---
 
@@ -201,3 +201,54 @@ service firebase.storage {
 ## Open Questions
 
 - None. All decisions resolved before spec was written.
+
+## Deviations
+
+Things that diverged from this spec during implementation. They do not change
+the user-visible behaviour but a future engineer should know they exist.
+
+### 1. Firestore document schema does not store `firestoreId`
+
+The spec lists `articles/{articleId}` as the document path and includes a `uid`
+field. It does not explicitly say the document **does not** carry a `firestoreId`
+field — it is the Firestore document ID itself. The Dart-side `ArticleEntity`
+exposes `firestoreId` as a nullable property that is populated from `doc.id`
+when reading, never written into the document body.
+
+### 2. `firebase_auth 4.16.0` Pigeon decoding bug
+
+The native iOS plugin returns a payload that the Dart-side Pigeon codec cannot
+decode (`type 'List<Object?>' is not a subtype of type 'PigeonUserDetails?' in
+type cast`). The sign-in itself completes successfully — only the result decoding
+fails.
+
+**Workaround applied** (in `lib/core/firebase/emulator_config.dart`): wrap
+`signInAnonymously()` in a `try / on TypeError`, then verify the user is signed in
+via `FirebaseAuth.instance.currentUser` and, if needed, wait for
+`authStateChanges().firstWhere((u) => u != null)`.
+
+Reference: https://github.com/firebase/flutterfire/issues/12274
+
+**Resolution path:** upgrade to `firebase_auth >= 4.17.4` when the rest of the
+Firebase BoM allows it. The workaround should be removed at that time.
+
+### 3. Podfile fixes for Xcode 26 Explicit Module Builds
+
+`firebase_auth`, `firebase_storage`, and `cloud_firestore` Flutter plugin pods
+all import `<Firebase/Firebase.h>` (a non-modular header) inside their public
+headers. With `use_frameworks!` + Xcode 26 Explicit Module Builds, the
+precompiled-module step rejects this as a hard error.
+
+**Workaround applied** (in `frontend/ios/Podfile` post_install hook):
+`DEFINES_MODULE = NO` for those three pods. They still link as frameworks; only
+the Clang module precompilation is skipped.
+
+Already documented in `docs/DISCOVERY.md` under "iOS Podfile — Key Decisions".
+
+### 4. Anonymous auth was not enabled in Firebase Console
+
+The Firebase Auth Emulator does not require Anonymous Auth to be explicitly
+enabled — it accepts all sign-in methods by default. The implementation
+checklist item "Anonymous auth is enabled in the Firebase Console before
+implementation starts" is therefore N/A for the emulator setup. It would still
+need to be done if the project is ever pointed at a real Firebase project.
