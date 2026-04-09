@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/format_published_at.dart';
 import '../../../daily_news/domain/entities/article.dart';
 
 class CommunityArticleCard extends StatelessWidget {
@@ -18,7 +19,7 @@ class CommunityArticleCard extends StatelessWidget {
     final title = article.title ?? '(untitled)';
     final description = article.description ?? '';
     final imageUrl = article.urlToImage;
-    final publishedAt = article.publishedAt?.substring(0, 10) ?? '';
+    final publishedAt = formatPublishedAt(article.publishedAt);
     return Card(
       clipBehavior: Clip.antiAlias,
       elevation: 1,

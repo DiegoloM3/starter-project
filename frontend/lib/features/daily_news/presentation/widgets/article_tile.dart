@@ -41,7 +41,7 @@ class ArticleWidget extends StatelessWidget {
         height: MediaQuery.of(context).size.width / 2.2,
         child: Row(
           children: [
-            ArticleTileImage(imageUrl: article!.urlToImage!),
+            ArticleTileImage(imageUrl: article!.urlToImage),
             ArticleTileTitleAndDescription(
               title: article!.title ?? '',
               description: article!.description ?? '',

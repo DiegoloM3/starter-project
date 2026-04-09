@@ -1,6 +1,5 @@
 import 'package:floor/floor.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
-import '../../../../core/constants/constants.dart';
 
 @Entity(tableName: 'article',primaryKeys: ['id'])
 class ArticleModel extends ArticleEntity {
@@ -36,12 +35,15 @@ class ArticleModel extends ArticleEntity {
       );
 
   factory ArticleModel.fromRawData(Map < String, dynamic > map) {
+    final rawUrlToImage = map['urlToImage'];
     return ArticleModel(
       author: map['author'] ?? "",
       title: map['title'] ?? "",
       description: map['description'] ?? "",
       url: map['url'] ?? "",
-      urlToImage: map['urlToImage'] != null && map['urlToImage'] != "" ? map['urlToImage'] : kDefaultImage,
+      urlToImage: (rawUrlToImage is String && rawUrlToImage.isNotEmpty)
+          ? rawUrlToImage
+          : null,
       publishedAt: map['publishedAt'] ?? "",
       content: map['content'] ?? "",
     );

@@ -5,14 +5,26 @@ import 'package:flutter/material.dart';
 import 'article_tile_image_frame.dart';
 
 class ArticleTileImage extends StatelessWidget {
-  final String imageUrl;
+  final String? imageUrl;
 
   const ArticleTileImage({Key? key, required this.imageUrl}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final url = imageUrl;
+    if (url == null || url.isEmpty) {
+      return const ArticleTileImageFrame(
+        child: Center(
+          child: Icon(
+            Icons.broken_image_outlined,
+            size: 32,
+            color: Color(0xFF9E9E9E),
+          ),
+        ),
+      );
+    }
     return CachedNetworkImage(
-      imageUrl: imageUrl,
+      imageUrl: url,
       imageBuilder: (context, imageProvider) => ArticleTileImageFrame(
         child: DecoratedBox(
           decoration: BoxDecoration(
@@ -26,7 +38,13 @@ class ArticleTileImage extends StatelessWidget {
         child: Center(child: CupertinoActivityIndicator()),
       ),
       errorWidget: (context, url, error) => const ArticleTileImageFrame(
-        child: Center(child: Icon(Icons.error)),
+        child: Center(
+          child: Icon(
+            Icons.broken_image_outlined,
+            size: 32,
+            color: Color(0xFF9E9E9E),
+          ),
+        ),
       ),
     );
   }

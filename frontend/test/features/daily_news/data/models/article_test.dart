@@ -37,13 +37,30 @@ void main() {
       expect(model.content, '');
     });
 
-    test('substitutes the default image when urlToImage is missing or empty',
-        () {
-      final missing = ArticleModel.fromRawData({});
-      final empty = ArticleModel.fromRawData({'urlToImage': ''});
-      expect(missing.urlToImage, isNot('')); // default fallback
-      expect(empty.urlToImage, isNot(''));
-      expect(missing.urlToImage, equals(empty.urlToImage));
+    // Pins spec 009 v1.1.0: we no longer substitute a fake default image
+    // when urlToImage is missing or empty. The field stays null so the
+    // presentation layer can render a real placeholder instead of asking
+    // the network layer to download a non-image URL.
+    test('preserves null urlToImage when NewsAPI returns null', () {
+      final model = ArticleModel.fromRawData({'urlToImage': null});
+      expect(model.urlToImage, isNull);
+    });
+
+    test('preserves null urlToImage when the field is missing entirely', () {
+      final model = ArticleModel.fromRawData({});
+      expect(model.urlToImage, isNull);
+    });
+
+    test('preserves null urlToImage when NewsAPI returns an empty string', () {
+      final model = ArticleModel.fromRawData({'urlToImage': ''});
+      expect(model.urlToImage, isNull);
+    });
+
+    test('keeps a real urlToImage when one is provided', () {
+      final model = ArticleModel.fromRawData({
+        'urlToImage': 'https://example.com/real.png',
+      });
+      expect(model.urlToImage, 'https://example.com/real.png');
     });
   });
 

@@ -19,7 +19,7 @@ class ArticleDetailBody extends StatelessWidget {
             title: article.title!,
             publishedAt: article.publishedAt!,
           ),
-          ArticleImage(imageUrl: article.urlToImage!),
+          ArticleImage(imageUrl: article.urlToImage),
           ArticleDescription(
             description: article.description ?? '',
             content: article.content ?? '',

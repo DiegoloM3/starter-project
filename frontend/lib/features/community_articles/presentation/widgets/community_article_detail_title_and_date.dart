@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/format_published_at.dart';
+
 class CommunityArticleDetailTitleAndDate extends StatelessWidget {
   final String title;
   final String? publishedAt;
@@ -23,9 +25,9 @@ class CommunityArticleDetailTitleAndDate extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        if (publishedAt != null)
+        if (publishedAt != null && publishedAt!.isNotEmpty)
           Text(
-            publishedAt!.substring(0, 10),
+            formatPublishedAt(publishedAt),
             style: const TextStyle(
               fontSize: 12,
               color: Color(0xFF999999),

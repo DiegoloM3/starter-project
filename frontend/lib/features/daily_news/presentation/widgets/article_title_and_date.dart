@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 
+import '../../../../core/utils/format_published_at.dart';
+
 class ArticleTitleAndDate extends StatelessWidget {
   final String title;
   final String publishedAt;
@@ -32,7 +34,7 @@ class ArticleTitleAndDate extends StatelessWidget {
               const Icon(Ionicons.time_outline, size: 16),
               const SizedBox(width: 4),
               Text(
-                publishedAt,
+                formatPublishedAt(publishedAt),
                 style: const TextStyle(fontSize: 12),
               ),
             ],
