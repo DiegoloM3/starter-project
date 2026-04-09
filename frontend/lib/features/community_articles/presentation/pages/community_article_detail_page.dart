@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/community_articles/presentation/bloc/community_feed_cubit.dart';
@@ -11,8 +10,17 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/entities/
 class CommunityArticleDetailPage extends StatefulWidget {
   final ArticleEntity article;
 
-  const CommunityArticleDetailPage({Key? key, required this.article})
-      : super(key: key);
+  /// Current user uid, used to gate owner-only actions (edit + delete).
+  /// Injected as a parameter so the page is testable without stubbing
+  /// the FirebaseAuth platform channel. Production call sites pass
+  /// `FirebaseAuth.instance.currentUser?.uid` explicitly.
+  final String? currentUid;
+
+  const CommunityArticleDetailPage({
+    Key? key,
+    required this.article,
+    this.currentUid,
+  }) : super(key: key);
 
   @override
   State<CommunityArticleDetailPage> createState() =>
@@ -31,7 +39,7 @@ class _CommunityArticleDetailPageState
   }
 
   bool get _isOwner {
-    final currentUid = FirebaseAuth.instance.currentUser?.uid;
+    final currentUid = widget.currentUid;
     return currentUid != null && currentUid == _article.uid;
   }
 

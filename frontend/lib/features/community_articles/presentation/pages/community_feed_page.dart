@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/community_articles/presentation/bloc/community_feed_cubit.dart';
@@ -61,11 +62,15 @@ class CommunityFeedPage extends StatelessWidget {
 
   void _openDetail(BuildContext context, ArticleEntity article) {
     final cubit = context.read<CommunityFeedCubit>();
+    final currentUid = FirebaseAuth.instance.currentUser?.uid;
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
           value: cubit,
-          child: CommunityArticleDetailPage(article: article),
+          child: CommunityArticleDetailPage(
+            article: article,
+            currentUid: currentUid,
+          ),
         ),
       ),
     );
