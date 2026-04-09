@@ -44,7 +44,7 @@ Open two terminals:
 
 **Terminal A — Firebase emulators:**
 ```bash
-cd /path/to/starter-project
+cd /path/to/starter-project/backend
 firebase emulators:start --project demo-news-app
 ```
 Emulator UI: http://localhost:4000
@@ -94,6 +94,7 @@ flutter run -d emulator-5554
 | 007 — Extract widgets to their own files under `widgets/` | `implemented` | Same exception as 006 — pure file move, 41/41 tests pass without modification |
 | 009 — Robust image and content rendering on the Daily News article detail | `implemented` | v1.0.0 CachedNetworkImage + errorWidget. v1.1.0 deleted `kDefaultImage` + `sanitizeArticleContent`. v1.1.2 hotfixed 3 regressions (truncated-JSON sanitizer, null-safe tile image, null-check crash on scroll). Full suite at 63/63 |
 | 010 — User-friendly `publishedAt` formatting across daily_news and community feeds | `implemented` | v1.0.0 relative-then-absolute. v1.1.0 always appends local `· HH:mm`. 18 tests. Full suite at 81/81 |
+| 011 — Widget tests for the Daily News article detail page | `implemented` | 8 tests covering body composition, back-button pop, and FAB → repository save path. Full suite at 89/89 |
 
 Each spec has a `## Test Coverage` section listing what is covered and what is
 not. Items not covered are tracked in `docs/improvements.md`.
@@ -105,7 +106,7 @@ cd frontend
 flutter test --no-pub
 ```
 
-Expected: **81 tests pass** in ~2 seconds.
+Expected: **89 tests pass** in ~2 seconds.
 
 ## Shortcuts taken — read this before judging code quality
 
