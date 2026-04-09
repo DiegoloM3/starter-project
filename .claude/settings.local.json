@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter doctor:*)",
+      "Bash(xcrun simctl:*)",
+      "Bash(flutter run:*)",
+      "Bash(pod install:*)",
+      "Bash(flutter clean:*)",
+      "Bash(flutter pub:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(firebase --version)",
+      "Bash(firebase:*)",
+      "Bash(curl -s http://localhost:4000/api/projects/demo-news-app/firestore/databases/\\\\\\(default\\\\\\)/collections)",
+      "Bash(curl -s \"http://localhost:8080/v1/projects/demo-news-app/databases/\\(default\\)/documents/articles\")",
+      "Bash(printf \"r\\\\n\")",
+      "Bash(nc -w 1 127.0.0.1 49830)",
+      "Bash(PUB_HOSTED_URL=https://pub.flutter-io.cn flutter pub get 2>&1)",
+      "Bash(pod update:*)",
+      "Bash(curl -s \"http://localhost:9099/identitytoolkit.googleapis.com/v1/projects/demo-news-app/accounts:query\" -X POST -H \"Authorization: Bearer owner\" -H \"Content-Type: application/json\" -d '{}')",
+      "Bash(flutter test:*)",
+      "Bash(PUB_HOSTED_URL=https://pub.flutter-io.cn flutter run -d C7A114D1-545E-46ED-BCAB-7390CFE849DD 2>&1)",
+      "Bash(grep -n \"_build\" /Users/jags/Desktop/starter-project/frontend/lib/features/community_articles/presentation/pages/*.dart)",
+      "Bash(wc:*)",
+      "Bash(fvm flutter:*)",
+      "Bash(curl -s \"https://newsapi.org/v2/top-headlines?apiKey=ff957763c54c44d8b00e5e082bc76cb0&country=us&category=general\")",
+      "Bash(python3 -m json.tool)",
+      "Bash(mv:*)",
+      "Bash(python3:*)",
+      "Bash(ls -la *.md docs/)",
+      "Bash(flutter devices:*)",
+      "Bash(kill %1)",
+      "Bash(pkill -f \"flutter run -d emulator-5554\")",
+      "Bash(lsof -iTCP:8080 -iTCP:9099 -iTCP:9199 -sTCP:LISTEN)"
+    ]
+  }
+}
