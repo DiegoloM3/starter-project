@@ -45,7 +45,7 @@ class ArticleWidget extends StatelessWidget {
             ArticleTileTitleAndDescription(
               title: article!.title ?? '',
               description: article!.description ?? '',
-              publishedAt: article!.publishedAt!,
+              publishedAt: article!.publishedAt,
             ),
             ArticleTileRemovableArea(
               isRemovable: isRemovable ?? false,

@@ -35,8 +35,24 @@ class CommunityArticleFirestoreDataSource
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final filename = imageFile.path.split('/').last;
     final ref = _storage.ref('articles/$uid/${timestamp}_$filename');
-    final task = await ref.putFile(imageFile);
+    // Use putData instead of putFile: the Android firebase_storage plugin
+    // hangs on putFile when pointed at the Storage emulator (the upload
+    // future never completes and no error is thrown). Reading the bytes and
+    // calling putData avoids that code path and works on every platform.
+    final bytes = await imageFile.readAsBytes();
+    final task = await ref.putData(
+      bytes,
+      SettableMetadata(contentType: _guessContentType(filename)),
+    );
     return task.ref.getDownloadURL();
+  }
+
+  String _guessContentType(String filename) {
+    final lower = filename.toLowerCase();
+    if (lower.endsWith('.png')) return 'image/png';
+    if (lower.endsWith('.webp')) return 'image/webp';
+    if (lower.endsWith('.gif')) return 'image/gif';
+    return 'image/jpeg';
   }
 
   @override

@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/emulator_image_url.dart';
+
 class CommunityArticleDetailHeroImage extends StatelessWidget {
   final String imageUrl;
 
@@ -10,7 +12,7 @@ class CommunityArticleDetailHeroImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-      imageUrl: imageUrl,
+      imageUrl: rewriteEmulatorImageUrl(imageUrl),
       fit: BoxFit.cover,
       placeholder: (_, __) => Container(
         height: 240,

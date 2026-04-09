@@ -5,13 +5,13 @@ import '../../../../core/utils/format_published_at.dart';
 class ArticleTileTitleAndDescription extends StatelessWidget {
   final String title;
   final String description;
-  final String publishedAt;
+  final String? publishedAt;
 
   const ArticleTileTitleAndDescription({
     Key? key,
     required this.title,
     required this.description,
-    required this.publishedAt,
+    this.publishedAt,
   }) : super(key: key);
 
   @override

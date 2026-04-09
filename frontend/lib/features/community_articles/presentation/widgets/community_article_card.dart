@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/emulator_image_url.dart';
 import '../../../../core/utils/format_published_at.dart';
 import '../../../daily_news/domain/entities/article.dart';
 
@@ -33,7 +34,7 @@ class CommunityArticleCard extends StatelessWidget {
           children: [
             if (imageUrl != null && imageUrl.isNotEmpty)
               CachedNetworkImage(
-                imageUrl: imageUrl,
+                imageUrl: rewriteEmulatorImageUrl(imageUrl),
                 height: 180,
                 fit: BoxFit.cover,
                 placeholder: (_, __) => Container(
