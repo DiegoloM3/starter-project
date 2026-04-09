@@ -6,7 +6,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.16.1 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -27,40 +27,54 @@ dependencies:
   get_it: ^7.6.0
   
   #dateFormat
-  intl: ^0.18.1
+  intl: any
 
   #Database
-  floor: any
+  froom: ^6.0.0
 
   #make request to api
-  retrofit: ^3.0.1
+  retrofit: ^4.9.2
 
   # Firebase
-  firebase_core: ^2.24.0
-  cloud_firestore: ^4.13.3
-  firebase_storage: ^11.5.5
+  firebase_core: ^4.6.0
+  cloud_firestore: ^6.2.0
+  firebase_storage: ^13.2.0
+  firebase_auth: ^6.3.0
 
-
-  #Hooks
-  flutter_hooks: ^0.18.3
 
   #chached image 
   cached_network_image: ^3.2.0
+
+  # Markdown
+  flutter_markdown_plus: ^1.0.7
+  go_router: ^17.2.0
+  markdown_editor_plus: ^0.2.15
+  permission_handler: ^12.0.1
+  image_picker: ^1.2.1
+  path: ^1.9.1
+  flutter_svg: ^2.2.4
+
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
-  retrofit_generator: 3.0.1+1
-  floor_generator: 1.2.0
-  build_runner: 2.1.2
+  retrofit_generator: ^10.2.3
+  froom_generator: ^6.0.0
+  build_runner: ^2.4.11
+  bloc_test: any
+  mocktail: any
+  network_image_mock: ^2.1.1
+
+dependency_overrides:
+  analyzer: any
   
 
 flutter:
-
   uses-material-design: true
-
- 
+  generate: true
   fonts:
     - family: Muli
       fonts:
@@ -69,3 +83,5 @@ flutter:
           weight: 700
         - asset: assets/fonts/muli/Muli-Light.ttf
           weight: 300
+  assets:
+    - assets/svgs/camera_plus.svg

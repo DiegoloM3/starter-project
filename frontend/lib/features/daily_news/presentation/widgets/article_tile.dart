@@ -1,162 +1,131 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../domain/entities/article.dart';
+import 'package:news_app_clean_architecture/core/constants/dimens.dart';
+import 'package:news_app_clean_architecture/core/extensions/string_extensions.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/base_network_image.dart';
 
 class ArticleWidget extends StatelessWidget {
-  final ArticleEntity? article;
-  final bool? isRemovable;
-  final void Function(ArticleEntity article)? onRemove;
-  final void Function(ArticleEntity article)? onArticlePressed;
+  final ArticleEntity article;
+  final bool isRemovable;
+  final Function(ArticleEntity article) onRemove;
+  final Function(ArticleEntity article) onArticlePressed;
+
+  static const _heightFactor = 2.2;
+  static const _titleMaxLines = 3;
+  static const _descriptionMaxLines = 2;
+  static const _widthFactor = 3;
 
   const ArticleWidget({
     Key? key,
-    this.article,
-    this.onArticlePressed,
-    this.isRemovable = false,
-    this.onRemove,
+    required this.article,
+    required this.onRemove,
+    required this.onArticlePressed,
+    required this.isRemovable,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: _onTap,
+      onTap: () => onArticlePressed(article),
       child: Container(
-        padding: const EdgeInsetsDirectional.only(
-            start: 14, end: 14, bottom: 7, top: 7),
-        height: MediaQuery.of(context).size.width / 2.2,
+        padding: const EdgeInsetsDirectional.symmetric(
+          horizontal: Dimens.m,
+          vertical: Dimens.s,
+        ),
+        height: MediaQuery.sizeOf(context).width / _heightFactor,
         child: Row(
           children: [
-            _buildImage(context),
-            _buildTitleAndDescription(),
-            _buildRemovableArea(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildImage(BuildContext context) {
-    return CachedNetworkImage(
-        imageUrl: article!.urlToImage!,
-        imageBuilder: (context, imageProvider) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
+            Padding(
+              padding: const EdgeInsetsDirectional.only(
+                end: Dimens.m,
+              ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
+                borderRadius: BorderRadius.circular(Dimens.cardRadius),
+                child: BaseNetworkImage(
+                  width: MediaQuery.sizeOf(context).width / _widthFactor,
                   height: double.maxFinite,
-                  decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.08),
-                      image: DecorationImage(
-                          image: imageProvider, fit: BoxFit.cover)),
+                  imageUrl: article.url!,
                 ),
               ),
             ),
-        progressIndicatorBuilder: (context, url, downloadProgress) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  child: CupertinoActivityIndicator(),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
-                  ),
-                ),
-              ),
-            ),
-        errorWidget: (context, url, error) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  child: Icon(Icons.error),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
-                  ),
-                ),
-              ),
-            ));
-  }
-
-  Widget _buildTitleAndDescription() {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 7),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title
-            Text(
-              article!.title ?? '',
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: 'Butler',
-                fontWeight: FontWeight.w900,
-                fontSize: 18,
-                color: Colors.black87,
-              ),
-            ),
-
-            // Description
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  article!.description ?? '',
-                  maxLines: 2,
+                padding: const EdgeInsets.symmetric(vertical: Dimens.s),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            article.title ?? '',
+                            maxLines: _titleMaxLines,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontFamily: 'Butler',
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                        if (isRemovable)
+                          Padding(
+                            padding: const EdgeInsetsDirectional.only(
+                              start: Dimens.xs,
+                            ),
+                            child: GestureDetector(
+                              onTap: () => onRemove(article),
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+
+                    // Description
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: Dimens.xs),
+                        child: Text(
+                          article.description ?? '',
+                          maxLines: _descriptionMaxLines,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+
+                    // Datetime
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.timeline_outlined,
+                          size: Dimens.m,
+                        ),
+                        const SizedBox(width: Dimens.s),
+                        Text(
+                          article.publishedAt!
+                              .toFormattedDate(context: context),
+                          style: const TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-            ),
-
-            // Datetime
-            Row(
-              children: [
-                const Icon(Icons.timeline_outlined, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  article!.publishedAt!,
-                  style: const TextStyle(
-                    fontSize: 12,
-                  ),
-                ),
-              ],
             ),
           ],
         ),
       ),
     );
-  }
-
-  Widget _buildRemovableArea() {
-    if (isRemovable!) {
-      return GestureDetector(
-        onTap: _onRemove,
-        child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Icon(Icons.remove_circle_outline, color: Colors.red),
-        ),
-      );
-    }
-    return Container();
-  }
-
-  void _onTap() {
-    if (onArticlePressed != null) {
-      onArticlePressed!(article!);
-    }
-  }
-
-  void _onRemove() {
-    if (onRemove != null) {
-      onRemove!(article!);
-    }
   }
 }

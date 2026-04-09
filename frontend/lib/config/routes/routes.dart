@@ -1,29 +1,49 @@
 import 'package:flutter/material.dart';
-
-import '../../features/daily_news/domain/entities/article.dart';
-import '../../features/daily_news/presentation/pages/article_detail/article_detail.dart';
-import '../../features/daily_news/presentation/pages/home/daily_news.dart';
-import '../../features/daily_news/presentation/pages/saved_article/saved_article.dart';
-
+import 'package:go_router/go_router.dart';
+import 'package:news_app_clean_architecture/config/routes/paths.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/article_detail/article_detail.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/home/daily_news.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/saved_articles/saved_articles.dart';
+import 'package:news_app_clean_architecture/features/login/presentation/pages/login/login.dart';
+import 'package:news_app_clean_architecture/features/login/presentation/pages/register/register.dart';
 
 class AppRoutes {
-  static Route onGenerateRoutes(RouteSettings settings) {
-    switch (settings.name) {
-      case '/':
-        return _materialRoute(const DailyNews());
+  static List<GoRoute> get list => [
+        GoRoute(
+          path: Paths.initial.path,
+          builder: (context, state) => const Scaffold(),
+        ),
+        GoRoute(
+          name: Paths.login.name,
+          path: Paths.login.path,
+          builder: (context, state) => const LoginView(),
+        ),
+        GoRoute(
+          name: Paths.register.name,
+          path: Paths.register.path,
+          builder: (context, state) => const RegisterView(),
+        ),
+        GoRoute(
+          name: Paths.dailyNews.name,
+          path: Paths.dailyNews.path,
+          builder: (context, state) => const DailyNews(),
+          routes: [
+            GoRoute(
+              name: Paths.savedArticles.name,
+              path: Paths.savedArticles.path,
+              builder: (context, state) => const SavedArticles(),
+            ),
+            GoRoute(
+              name: Paths.articleDetails.name,
+              path: Paths.articleDetails.path,
+              builder: (context, state) {
+                final article = state.extra! as ArticleEntity;
 
-      case '/ArticleDetails':
-        return _materialRoute(ArticleDetailsView(article: settings.arguments as ArticleEntity));
-
-      case '/SavedArticles':
-        return _materialRoute(const SavedArticles());
-        
-      default:
-        return _materialRoute(const DailyNews());
-    }
-  }
-
-  static Route<dynamic> _materialRoute(Widget view) {
-    return MaterialPageRoute(builder: (_) => view);
-  }
+                return ArticleDetailsView(article: article);
+              },
+            ),
+          ],
+        ),
+      ];
 }

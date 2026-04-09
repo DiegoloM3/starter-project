@@ -1,0 +1,21 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "symmetry-test-58a4b",
+                    "appId": "1:267221653313:android:ef3011f6ab1c45ca8373c0",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "symmetry-test-58a4b",
+                    "configurations": {
+                        "android": "1:267221653313:android:ef3011f6ab1c45ca8373c0"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,151 @@
+{
+    "@@locale": "en",
+    "something_was_wrong": "Something was wrong",
+    "@something_was_wrong": {
+        "description": "Shown when an unexpected error occurs during login or other operations"
+    },
+    "no_articles_found": "No articles found",
+    "@no_articles_found": {
+        "description": "Displayed when the articles list is empty"
+    },
+    "tap_to_start_typing": "*Tap on the text to start typing",
+    "@tap_to_start_typing": {
+        "description": "Hint inside a markdown text field prompting user to start typing"
+    },
+    "login": "Login",
+    "@login": {
+        "description": "Login button text"
+    },
+    "register": "Register",
+    "@register": {
+        "description": "Register button text"
+    },
+    "write_your_title_here": "Write your title here...",
+    "@write_your_title_here": {
+        "description": "Hint for the title field when publishing an article"
+    },
+    "add_article_here": "Add article here...",
+    "@add_article_here": {
+        "description": "Hint for the markdown article field when publishing an article"
+    },
+    "email": "Email",
+    "@email": {
+        "description": "Label or hint for email field"
+    },
+    "password": "Password",
+    "@password": {
+        "description": "Label or hint for password field"
+    },
+    "name": "Name",
+    "@name": {
+        "description": "Label or hint for name field"
+    },
+    "daily_news": "Daily news",
+    "@daily_news": {
+        "description": "App bar title for daily news page"
+    },
+    "attach_image": "Attach image",
+    "@attach_image": {
+        "description": "Button text to attach an image"
+    },
+    "publish_article": "Publish article",
+    "@publish_article": {
+        "description": "Button text to publish an article"
+    },
+    "saved_articles": "Saved articles",
+    "@saved_articles": {
+        "description": "Title for saved articles page"
+    },
+    "published_article": "Published article",
+    "@published_article": {
+        "description": "Snackbar shown after successful publish"
+    },
+    "generic_error": "Generic error",
+    "@generic_error": {
+        "description": "Generic error shown in snackbars"
+    },
+    "required_field": "Required field",
+    "@required_field": {
+        "description": "Shown when a required field is empty"
+    },
+    "saved_article": "Saved article",
+    "@saved_article": {
+        "description": "Snackbar text when article is saved locally"
+    },
+    "deleted_article": "Deleted article",
+    "@deleted_article": {
+        "description": "Snackbar text when article is deleted locally"
+    },
+    "no_saved_articles": "No saved articles",
+    "@no_saved_articles": {
+        "description": "Displayed when there are no saved articles"
+    },
+    "error": "Error",
+    "@error": {
+        "description": "Generic error text"
+    },
+    "article_removed_success": "Article removed successfully.",
+    "@article_removed_success": {
+        "description": "Snackbar confirming article removal"
+    },
+    "article_saved_success": "Article saved successfully.",
+    "@article_saved_success": {
+        "description": "Snackbar confirming article save"
+    },
+    "login_field_email_required": "Email is required",
+    "@login_field_email_required": {
+        "description": "Login field error: email required"
+    },
+    "login_field_email_not_valid": "Email is not valid",
+    "@login_field_email_not_valid": {
+        "description": "Login field error: email not valid"
+    },
+    "login_field_email_already_registered": "Email already registered",
+    "@login_field_email_already_registered": {
+        "description": "Login field error: email already registered"
+    },
+    "login_field_password_required": "Password is required",
+    "@login_field_password_required": {
+        "description": "Login field error: password required"
+    },
+    "login_field_password_not_valid": "Password is not valid",
+    "@login_field_password_not_valid": {
+        "description": "Login field error: password not valid"
+    },
+    "login_field_invalid_credentials": "Invalid credentials",
+    "@login_field_invalid_credentials": {
+        "description": "Login field error: invalid credentials"
+    },
+    "login_field_unknown_error": "Unknown error",
+    "@login_field_unknown_error": {
+        "description": "Login field error: unknown error"
+    },
+    "register_field_email_required": "Email is required",
+    "@register_field_email_required": {
+        "description": "Register field error: email required"
+    },
+    "register_field_email_not_valid": "Email is not valid",
+    "@register_field_email_not_valid": {
+        "description": "Register field error: email not valid"
+    },
+    "register_field_email_already_registered": "Email already registered",
+    "@register_field_email_already_registered": {
+        "description": "Register field error: email already registered"
+    },
+    "register_field_name_required": "Name is required",
+    "@register_field_name_required": {
+        "description": "Register field error: name required"
+    },
+    "register_field_password_required": "Password is required",
+    "@register_field_password_required": {
+        "description": "Register field error: password required"
+    },
+    "register_field_password_not_valid": "Password is not valid",
+    "@register_field_password_not_valid": {
+        "description": "Register field error: password not valid"
+    },
+    "register_field_unknown_error": "Unknown error",
+    "@register_field_unknown_error": {
+        "description": "Register field error: unknown error"
+    }
+}

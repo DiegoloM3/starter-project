@@ -2,6 +2,31 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    match /articles/{articleId} {
+      allow read: if true;
+      
+      allow create: if isValidArticle(request.resource.data);
+      allow update: if isValidArticle(request.resource.data);
+      
+      allow delete: if false; 
+    }
+
+    function isValidArticle(data) {
+      return data.author is string
+        && data.title is string
+        && data.description is string
+        && data.content is string
+        && isStorageUrl(data.url)
+        && data.publishedAt is string
+    }
+
+    function isStorageUrl(url) {
+      return url is string && url.matches('https://firebasestorage.googleapis.com/.*');
+    }
   }
 }
