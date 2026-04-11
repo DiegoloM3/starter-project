@@ -20,6 +20,9 @@ class AppDimensions {
   static const double radiusXl = 16;
   static const double radiusFull = 100;
 
+  // ── Tabs ────────────────────────────────────────────────────────────
+  static const double tabsHeight = 48;
+
   // ── Button dimensions ──────────────────────────────────────────────
   static const double buttonHeight = 60;
   static const double fabSize = 64;

@@ -5,5 +5,21 @@
   "savedArticlesTitle": "Artículos guardados",
   "noSavedArticles": "No hay artículos guardados",
   "articleSavedSuccess": "Artículo guardado exitosamente.",
-  "uploadImage": "Subir imagen"
+  "uploadImage": "Subir imagen",
+  "myNewsTab": "Mis Noticias",
+  "worldNewsTab": "Noticias del Mundo",
+  "newsLoadError": "Error al cargar noticias",
+  "retryAction": "Reintentar",
+  "noNewsAvailable": "No hay noticias disponibles",
+  "profileButtonLabel": "Perfil",
+  "addNewsButtonLabel": "Agregar noticia",
+  "searchNewsHint": "Buscar noticias...",
+  "cancelAction": "Cancelar",
+  "searchButtonLabel": "Buscar",
+  "sectionAll": "Todos",
+  "sectionPolitics": "Política",
+  "sectionWeather": "Clima",
+  "sectionSports": "Deportes",
+  "sectionArts": "Artes",
+  "sectionCrime": "Policiaca"
 }

@@ -25,4 +25,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uploadImage => 'Upload image';
+
+  @override
+  String get myNewsTab => 'My News';
+
+  @override
+  String get worldNewsTab => 'World News';
+
+  @override
+  String get newsLoadError => 'Failed to load news';
+
+  @override
+  String get retryAction => 'Retry';
+
+  @override
+  String get noNewsAvailable => 'No news available';
+
+  @override
+  String get profileButtonLabel => 'Profile';
+
+  @override
+  String get addNewsButtonLabel => 'Add news';
+
+  @override
+  String get searchNewsHint => 'Search news...';
+
+  @override
+  String get cancelAction => 'Cancel';
+
+  @override
+  String get searchButtonLabel => 'Search';
+
+  @override
+  String get sectionAll => 'All';
+
+  @override
+  String get sectionPolitics => 'Politics';
+
+  @override
+  String get sectionWeather => 'Weather';
+
+  @override
+  String get sectionSports => 'Sports';
+
+  @override
+  String get sectionArts => 'Arts';
+
+  @override
+  String get sectionCrime => 'Crime';
 }

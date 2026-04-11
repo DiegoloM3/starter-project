@@ -133,6 +133,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upload image'**
   String get uploadImage;
+
+  /// Label for the My News tab on the news list screen
+  ///
+  /// In en, this message translates to:
+  /// **'My News'**
+  String get myNewsTab;
+
+  /// Label for the World News tab on the news list screen
+  ///
+  /// In en, this message translates to:
+  /// **'World News'**
+  String get worldNewsTab;
+
+  /// Error message when news loading fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load news'**
+  String get newsLoadError;
+
+  /// Label for the retry button
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retryAction;
+
+  /// Empty state message when there are no news articles
+  ///
+  /// In en, this message translates to:
+  /// **'No news available'**
+  String get noNewsAvailable;
+
+  /// Accessibility label for the profile avatar button
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileButtonLabel;
+
+  /// Accessibility label for the add news floating action button
+  ///
+  /// In en, this message translates to:
+  /// **'Add news'**
+  String get addNewsButtonLabel;
+
+  /// Placeholder text for the news search field
+  ///
+  /// In en, this message translates to:
+  /// **'Search news...'**
+  String get searchNewsHint;
+
+  /// Label for the cancel button in search mode
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelAction;
+
+  /// Accessibility label for the search button
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchButtonLabel;
+
+  /// Label for the All section chip
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get sectionAll;
+
+  /// Label for the Politics section chip
+  ///
+  /// In en, this message translates to:
+  /// **'Politics'**
+  String get sectionPolitics;
+
+  /// Label for the Weather section chip
+  ///
+  /// In en, this message translates to:
+  /// **'Weather'**
+  String get sectionWeather;
+
+  /// Label for the Sports section chip
+  ///
+  /// In en, this message translates to:
+  /// **'Sports'**
+  String get sectionSports;
+
+  /// Label for the Arts section chip
+  ///
+  /// In en, this message translates to:
+  /// **'Arts'**
+  String get sectionArts;
+
+  /// Label for the Crime section chip
+  ///
+  /// In en, this message translates to:
+  /// **'Crime'**
+  String get sectionCrime;
 }
 
 class _AppLocalizationsDelegate

@@ -14,6 +14,7 @@ class CardNews extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onBookmarkTap;
   final Widget? trailing;
+  final Widget? sectionBadge;
 
   const CardNews({
     super.key,
@@ -25,6 +26,7 @@ class CardNews extends StatelessWidget {
     this.onTap,
     this.onBookmarkTap,
     this.trailing,
+    this.sectionBadge,
   });
 
   @override
@@ -72,6 +74,10 @@ class CardNews extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (sectionBadge != null) ...[
+                    sectionBadge!,
+                    const SizedBox(height: AppDimensions.spacing6),
+                  ],
                   Text(
                     title,
                     maxLines: 2,
