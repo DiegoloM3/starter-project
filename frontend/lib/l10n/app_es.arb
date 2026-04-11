@@ -1,0 +1,9 @@
+{
+  "@@locale": "es",
+  "dailyNewsTitle": "Noticias del día",
+  "articleTitle": "Artículo",
+  "savedArticlesTitle": "Artículos guardados",
+  "noSavedArticles": "No hay artículos guardados",
+  "articleSavedSuccess": "Artículo guardado exitosamente.",
+  "uploadImage": "Subir imagen"
+}

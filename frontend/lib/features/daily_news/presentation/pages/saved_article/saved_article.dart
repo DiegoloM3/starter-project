@@ -1,39 +1,53 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:news_app_clean_architecture/config/theme/app_dimensions.dart';
+import 'package:news_app_clean_architecture/config/theme/app_typography.dart';
+import 'package:news_app_clean_architecture/config/theme/theme_extensions.dart';
+import 'package:news_app_clean_architecture/config/theme/app_colors.dart';
+import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/ui_elements/app_icon_button.dart';
+import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/cards/card_news.dart';
+import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/headers/screen_header.dart';
+
 import '../../../../../injection_container.dart';
 import '../../../domain/entities/article.dart';
 import '../../bloc/article/local/local_article_bloc.dart';
 import '../../bloc/article/local/local_article_event.dart';
 import '../../bloc/article/local/local_article_state.dart';
-import '../../widgets/article_tile.dart';
 
 class SavedArticles extends HookWidget {
-  const SavedArticles({Key ? key}) : super(key: key);
+  const SavedArticles({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocProvider(
       create: (_) => sl<LocalArticleBloc>()..add(const GetSavedArticles()),
       child: Scaffold(
-        appBar: _buildAppBar(),
-        body: _buildBody(),
-      ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      leading: Builder(
-        builder: (context) => GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => _onBackButtonTapped(context),
-          child: const Icon(Ionicons.chevron_back, color: Colors.black),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppDimensions.spacing16,
+                  AppDimensions.spacing16,
+                  AppDimensions.spacing16,
+                  0,
+                ),
+                child: ScreenHeader(
+                  title: l10n.savedArticlesTitle,
+                  onBackPressed: () => Navigator.pop(context),
+                ),
+              ),
+              const SizedBox(height: AppDimensions.spacing16),
+              Expanded(child: _buildBody()),
+            ],
+          ),
         ),
       ),
-      title: const Text('Saved Articles', style: TextStyle(color: Colors.black)),
     );
   }
 
@@ -43,37 +57,49 @@ class SavedArticles extends HookWidget {
         if (state is LocalArticlesLoading) {
           return const Center(child: CupertinoActivityIndicator());
         } else if (state is LocalArticlesDone) {
-          return _buildArticlesList(state.articles!);
+          return _buildArticlesList(context, state.articles!);
         }
-        return Container();
+        return const SizedBox();
       },
     );
   }
 
-  Widget _buildArticlesList(List<ArticleEntity> articles) {
+  Widget _buildArticlesList(
+      BuildContext context, List<ArticleEntity> articles) {
     if (articles.isEmpty) {
-      return const Center(
-          child: Text(
-        'NO SAVED ARTICLES',
-        style: TextStyle(color: Colors.black),
-      ));
+      final l10n = AppLocalizations.of(context)!;
+      return Center(
+        child: Text(
+          l10n.noSavedArticles,
+          style:
+              AppTypography.body.copyWith(color: context.colors.textSecondary),
+        ),
+      );
     }
 
-    return ListView.builder(
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacing16),
       itemCount: articles.length,
+      separatorBuilder: (_, __) =>
+          const SizedBox(height: AppDimensions.spacing16),
       itemBuilder: (context, index) {
-        return ArticleWidget(
-          article: articles[index],
-          isRemovable: true,
-          onRemove: (article) => _onRemoveArticle(context, article),
-          onArticlePressed: (article) => _onArticlePressed(context, article),
+        final article = articles[index];
+        return CardNews(
+          title: article.title ?? '',
+          description: article.description,
+          date: article.publishedAt ?? '',
+          imageUrl: article.urlToImage,
+          onTap: () => _onArticlePressed(context, article),
+          trailing: AppIconButton(
+            icon: Icons.delete_outline,
+            size: AppDimensions.buttonHeight,
+            iconColor: AppColors.destructive,
+            circular: false,
+            onPressed: () => _onRemoveArticle(context, article),
+          ),
         );
       },
     );
-  }
-
-  void _onBackButtonTapped(BuildContext context) {
-    Navigator.pop(context);
   }
 
   void _onRemoveArticle(BuildContext context, ArticleEntity article) {

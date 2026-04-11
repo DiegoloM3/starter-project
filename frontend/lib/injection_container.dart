@@ -14,46 +14,30 @@ import 'features/daily_news/presentation/bloc/article/local/local_article_bloc.d
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
-
-  final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  final database =
+      await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   sl.registerSingleton<AppDatabase>(database);
-  
+
   // Dio
   sl.registerSingleton<Dio>(Dio());
 
   // Dependencies
   sl.registerSingleton<NewsApiService>(NewsApiService(sl()));
 
-  sl.registerSingleton<ArticleRepository>(
-    ArticleRepositoryImpl(sl(),sl())
-  );
-  
+  sl.registerSingleton<ArticleRepository>(ArticleRepositoryImpl(sl(), sl()));
+
   //UseCases
-  sl.registerSingleton<GetArticleUseCase>(
-    GetArticleUseCase(sl())
-  );
+  sl.registerSingleton<GetArticleUseCase>(GetArticleUseCase(sl()));
 
-  sl.registerSingleton<GetSavedArticleUseCase>(
-    GetSavedArticleUseCase(sl())
-  );
+  sl.registerSingleton<GetSavedArticleUseCase>(GetSavedArticleUseCase(sl()));
 
-  sl.registerSingleton<SaveArticleUseCase>(
-    SaveArticleUseCase(sl())
-  );
-  
-  sl.registerSingleton<RemoveArticleUseCase>(
-    RemoveArticleUseCase(sl())
-  );
+  sl.registerSingleton<SaveArticleUseCase>(SaveArticleUseCase(sl()));
 
+  sl.registerSingleton<RemoveArticleUseCase>(RemoveArticleUseCase(sl()));
 
   //Blocs
-  sl.registerFactory<RemoteArticlesBloc>(
-    ()=> RemoteArticlesBloc(sl())
-  );
+  sl.registerFactory<RemoteArticlesBloc>(() => RemoteArticlesBloc(sl()));
 
   sl.registerFactory<LocalArticleBloc>(
-    ()=> LocalArticleBloc(sl(),sl(),sl())
-  );
-
-
+      () => LocalArticleBloc(sl(), sl(), sl()));
 }

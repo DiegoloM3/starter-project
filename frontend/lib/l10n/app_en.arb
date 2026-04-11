@@ -1,0 +1,15 @@
+{
+  "@@locale": "en",
+  "dailyNewsTitle": "Daily News",
+  "@dailyNewsTitle": { "description": "Title for the daily news home page" },
+  "articleTitle": "Article",
+  "@articleTitle": { "description": "Title for the article detail page" },
+  "savedArticlesTitle": "Saved Articles",
+  "@savedArticlesTitle": { "description": "Title for the saved articles page" },
+  "noSavedArticles": "No saved articles",
+  "@noSavedArticles": { "description": "Empty state message when there are no saved articles" },
+  "articleSavedSuccess": "Article saved successfully.",
+  "@articleSavedSuccess": { "description": "Snackbar message after saving an article" },
+  "uploadImage": "Upload image",
+  "@uploadImage": { "description": "Label for the image upload widget" }
+}
