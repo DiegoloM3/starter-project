@@ -37,12 +37,14 @@ class AppIconButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: backgroundColor ?? colors.bgCard,
           shape: circular ? BoxShape.circle : BoxShape.rectangle,
-          borderRadius: circular ? null : BorderRadius.circular(AppDimensions.radiusXl),
+          borderRadius:
+              circular ? null : BorderRadius.circular(AppDimensions.radiusXl),
           border: circular ? null : Border.all(color: colors.borderSubtle),
           boxShadow: boxShadow ?? (circular ? AppShadows.elevated : null),
         ),
         child: Center(
-          child: Icon(icon, size: iconSize, color: iconColor ?? colors.textPrimary),
+          child: Icon(icon,
+              size: iconSize, color: iconColor ?? colors.textPrimary),
         ),
       ),
     );

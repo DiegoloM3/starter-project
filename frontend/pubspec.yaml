@@ -20,51 +20,52 @@ dependencies:
   ionicons: ^0.1.2
 
   #state management
-  flutter_bloc: ^8.1.2
+  flutter_bloc: ^9.1.1
 
   #comparing dart objects
   equatable: ^2.0.5
 
   #service locator
-  get_it: ^7.6.0
+  get_it: 9.2.1
   
   #dateFormat
   intl: ^0.20.2
 
   #Database
-  floor: any
+  froom: 6.0.0
+  sqflite: 2.4.2
 
   #make request to api
-  retrofit: ^3.0.1
+  retrofit: 4.9.2
+  dio: 5.9.2
 
   # Firebase
-  firebase_core: ^2.24.0
-  cloud_firestore: ^4.13.3
-  firebase_storage: ^11.5.5
+  firebase_core: ^4.6.0
+  cloud_firestore: ^6.2.0
+  firebase_storage: ^13.2.0
 
+  #Environment variables
+  flutter_dotenv: ^5.2.1
 
   #Hooks
   flutter_hooks: ^0.18.3
 
   #chached image
-  cached_network_image: ^3.2.0
+  cached_network_image: ^3.4.1
 
   #fonts
-  google_fonts: ^6.1.0
+  google_fonts: ^8.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.0
-  retrofit_generator: 3.0.1+1
-  floor_generator: 1.2.0
-  build_runner: 2.1.2
-  
+  flutter_lints: 6.0.0
+  retrofit_generator: ^10.2.5
+  froom_generator: 6.0.0
+  build_runner: 2.13.1
 
 flutter:
   generate: true
-
   uses-material-design: true
-
- 
-  # Fonts loaded via google_fonts package
+  assets:
+    - .env
