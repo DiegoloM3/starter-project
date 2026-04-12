@@ -1,0 +1,83 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Daily News",
+  "myArticles": "My Articles",
+  "savedArticles": "Saved Articles",
+  "publishArticle": "Publish Article",
+  "editArticle": "Edit Article",
+
+  "signIn": "Sign in",
+  "signOut": "Sign out",
+  "signedInAs": "Signed in as {name}",
+  "@signedInAs": { "placeholders": { "name": { "type": "String" } } },
+  "signInFailed": "Sign-in failed: {error}",
+  "@signInFailed": { "placeholders": { "error": { "type": "String" } } },
+
+  "publish": "Publish",
+  "publishing": "Publishing…",
+  "saveChanges": "Save Changes",
+  "saving": "Saving…",
+
+  "titleLabel": "Title",
+  "descriptionLabel": "Description",
+  "contentLabel": "Content",
+  "authorLabel": "Author",
+  "sourceLabel": "Source (optional)",
+  "fieldRequired": "{field} is required",
+  "@fieldRequired": { "placeholders": { "field": { "type": "String" } } },
+
+  "pickThumbnail": "Tap to pick a thumbnail",
+  "thumbnailSelected": "Thumbnail selected. Tap to change",
+  "tapToChange": "Tap to change",
+  "pleaseSelectThumbnail": "Please select a thumbnail image",
+
+  "articlePublished": "Article published successfully",
+  "articleUpdated": "Article updated successfully",
+  "publishFailed": "Failed: {reason}",
+  "@publishFailed": { "placeholders": { "reason": { "type": "String" } } },
+
+  "noArticlesYet": "No articles yet",
+  "tapPublishHint": "Tap Publish to share your first story.",
+  "noMatchFor": "No articles match \"{query}\"",
+  "@noMatchFor": { "placeholders": { "query": { "type": "String" } } },
+
+  "deleteArticle": "Delete article?",
+  "deleteConfirm": "This action cannot be undone.",
+  "cancel": "Cancel",
+  "delete": "Delete",
+
+  "publishNewArticle": "Publish a new article",
+  "editThisArticle": "Edit this article",
+  "saveArticle": "Save article",
+  "removeFromSaved": "Remove from saved",
+  "clearSearch": "Clear search",
+  "searchHint": "Search title, description, author…",
+  "searchLabel": "Search your articles by title, description, or author",
+  "retry": "Retry",
+
+  "onboardingTitle1": "Welcome, Journalist!",
+  "onboardingBody1": "This app lets you read the latest news from around the world and publish your own articles for everyone to see.",
+  "onboardingTitle2": "Publish Your Stories",
+  "onboardingBody2": "Tap the + button or visit \"My Articles\" to write, edit, and manage your publications with images, rich descriptions, and real-time sync to the cloud.",
+  "onboardingTitle3": "Works Offline",
+  "onboardingBody3": "Your articles are cached locally so you can browse them even without internet. Edits sync automatically when you're back online.",
+  "skip": "Skip",
+  "next": "Next",
+  "getStarted": "Get Started",
+
+  "articleSaved": "Article saved successfully.",
+  "noSavedArticles": "NO SAVED ARTICLES",
+
+  "publishArticleA11y": "Publish article",
+  "publishingA11y": "Publishing article, please wait",
+
+  "loginSubtitle": "Sign in with your Google account to start publishing articles.",
+  "signInWithGoogle": "Sign in with Google",
+  "signingIn": "Signing in…",
+
+  "changeLanguage": "Language",
+  "languageSystem": "System",
+  "languageEnglish": "English",
+  "languageSpanish": "Español"
+}

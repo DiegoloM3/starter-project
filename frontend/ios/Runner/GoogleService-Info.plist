@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>294996303762-noep3v6kmelrpnqu8evc9ql9a26dq1vn.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.294996303762-noep3v6kmelrpnqu8evc9ql9a26dq1vn</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>294996303762-2bh7sjchq40llc0m0qn8qog6hunc5sp8.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDXFW0ZzT_2BP8yHmVEi13eRJPgV25Ttxk</string>
+	<key>GCM_SENDER_ID</key>
+	<string>294996303762</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.newsAppCleanArchitecture</string>
+	<key>PROJECT_ID</key>
+	<string>symmetry-showcase-app-56508</string>
+	<key>STORAGE_BUCKET</key>
+	<string>symmetry-showcase-app-56508.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:294996303762:ios:43b05acbd39703db7fab4b</string>
+</dict>
+</plist>

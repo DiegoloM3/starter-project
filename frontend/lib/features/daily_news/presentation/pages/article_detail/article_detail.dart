@@ -10,7 +10,7 @@ import '../../bloc/article/local/local_article_event.dart';
 class ArticleDetailsView extends HookWidget {
   final ArticleEntity? article;
 
-  const ArticleDetailsView({Key? key, this.article}) : super(key: key);
+  const ArticleDetailsView({super.key, this.article});
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +27,10 @@ class ArticleDetailsView extends HookWidget {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       leading: Builder(
-        builder: (context) => GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => _onBackButtonTapped(context),
-          child: const Icon(Ionicons.chevron_back, color: Colors.black),
+        builder: (context) => IconButton(
+          onPressed: () => _onBackButtonTapped(context),
+          icon: const Icon(Ionicons.chevron_back),
+          tooltip: 'Back',
         ),
       ),
     );
@@ -103,6 +103,7 @@ class ArticleDetailsView extends HookWidget {
     return Builder(
       builder: (context) => FloatingActionButton(
         onPressed: () => _onFloatingActionButtonPressed(context),
+        tooltip: 'Save article',
         child: const Icon(Ionicons.bookmark, color: Colors.white),
       ),
     );

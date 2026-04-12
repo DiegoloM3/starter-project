@@ -2,37 +2,45 @@ import 'package:floor/floor.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import '../../../../core/constants/constants.dart';
 
-@Entity(tableName: 'article',primaryKeys: ['id'])
+@Entity(tableName: 'article', primaryKeys: ['id'])
 class ArticleModel extends ArticleEntity {
   const ArticleModel({
-    int ? id,
-    String ? author,
-    String ? title,
-    String ? description,
-    String ? url,
-    String ? urlToImage,
-    String ? publishedAt,
-    String ? content,
-  }): super(
-    id: id,
-    author: author,
-    title: title,
-    description: description,
-    url: url,
-    urlToImage: urlToImage,
-    publishedAt: publishedAt,
-    content: content,
-  );
+    super.id,
+    super.author,
+    super.title,
+    super.description,
+    super.url,
+    super.urlToImage,
+    super.publishedAt,
+    super.content,
+  });
 
-  factory ArticleModel.fromJson(Map < String, dynamic > map) {
+  factory ArticleModel.fromJson(Map<String, dynamic> map) {
     return ArticleModel(
       author: map['author'] ?? "",
       title: map['title'] ?? "",
       description: map['description'] ?? "",
       url: map['url'] ?? "",
-      urlToImage: map['urlToImage'] != null && map['urlToImage'] != "" ? map['urlToImage'] : kDefaultImage,
+      urlToImage: map['urlToImage'] != null && map['urlToImage'] != ""
+          ? map['urlToImage']
+          : kDefaultImage,
       publishedAt: map['publishedAt'] ?? "",
       content: map['content'] ?? "",
+    );
+  }
+
+  /// Converts this model to a pure domain entity.
+  /// Per ARCHITECTURE_VIOLATIONS.md rule 1.3.2.
+  ArticleEntity toEntity() {
+    return ArticleEntity(
+      id: id,
+      author: author,
+      title: title,
+      description: description,
+      url: url,
+      urlToImage: urlToImage,
+      publishedAt: publishedAt,
+      content: content,
     );
   }
 
@@ -45,7 +53,7 @@ class ArticleModel extends ArticleEntity {
       url: entity.url,
       urlToImage: entity.urlToImage,
       publishedAt: entity.publishedAt,
-      content: entity.content
+      content: entity.content,
     );
   }
 }
