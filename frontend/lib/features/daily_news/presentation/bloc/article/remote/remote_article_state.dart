@@ -5,11 +5,16 @@ import '../../../../domain/entities/article.dart';
 abstract class RemoteArticlesState extends Equatable {
   final List<ArticleEntity>? articles;
   final ErrorType? errorType;
+  final bool hasMore;
 
-  const RemoteArticlesState({this.articles, this.errorType});
+  const RemoteArticlesState({
+    this.articles,
+    this.errorType,
+    this.hasMore = false,
+  });
 
   @override
-  List<Object?> get props => [articles, errorType];
+  List<Object?> get props => [articles, errorType, hasMore];
 }
 
 class RemoteArticlesLoading extends RemoteArticlesState {
@@ -17,8 +22,18 @@ class RemoteArticlesLoading extends RemoteArticlesState {
 }
 
 class RemoteArticlesDone extends RemoteArticlesState {
-  const RemoteArticlesDone(List<ArticleEntity> article)
-      : super(articles: article);
+  const RemoteArticlesDone(List<ArticleEntity> articles, {super.hasMore})
+      : super(articles: articles);
+}
+
+class RemoteArticlesCached extends RemoteArticlesState {
+  const RemoteArticlesCached(List<ArticleEntity> articles)
+      : super(articles: articles);
+}
+
+class RemoteArticlesLoadingMore extends RemoteArticlesState {
+  const RemoteArticlesLoadingMore(List<ArticleEntity> articles)
+      : super(articles: articles, hasMore: true);
 }
 
 class RemoteArticlesError extends RemoteArticlesState {

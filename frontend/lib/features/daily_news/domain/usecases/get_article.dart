@@ -4,13 +4,13 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/entities/
 import 'package:news_app_clean_architecture/features/daily_news/domain/repository/remote_news_repository.dart';
 
 class GetArticleUseCase
-    implements UseCase<DataState<List<ArticleEntity>>, void> {
+    implements UseCase<DataState<List<ArticleEntity>>, int> {
   final RemoteNewsRepository _repository;
 
   GetArticleUseCase(this._repository);
 
   @override
-  Future<DataState<List<ArticleEntity>>> call({void params}) {
-    return _repository.getNewsArticles();
+  Future<DataState<List<ArticleEntity>>> call({int? params}) {
+    return _repository.getNewsArticles(page: params ?? 1);
   }
 }

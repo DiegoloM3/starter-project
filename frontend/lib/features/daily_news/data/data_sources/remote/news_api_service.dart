@@ -13,5 +13,7 @@ abstract class NewsApiService {
     @Query("apiKey") String? apiKey,
     @Query("country") String? country,
     @Query("category") String? category,
+    @Query("page") int? page,
+    @Query("pageSize") int? pageSize,
   });
 }

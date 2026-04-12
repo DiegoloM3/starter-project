@@ -8,7 +8,8 @@ abstract class DataState<T> {
 }
 
 class DataSuccess<T> extends DataState<T> {
-  const DataSuccess(T data) : super(data: data);
+  final bool isCached;
+  const DataSuccess(T data, {this.isCached = false}) : super(data: data);
 }
 
 class DataFailed<T> extends DataState<T> {

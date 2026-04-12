@@ -242,6 +242,18 @@ abstract class AppLocalizations {
   /// **'Favorites'**
   String get favoritesSection;
 
+  /// Section header for article drafts in profile
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts'**
+  String get draftsSection;
+
+  /// Empty state message when there are no drafts
+  ///
+  /// In en, this message translates to:
+  /// **'No drafts saved'**
+  String get noDrafts;
+
   /// Section header for saved articles in profile
   ///
   /// In en, this message translates to:
@@ -439,6 +451,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The article was not found.'**
   String get errorNotFound;
+
+  /// Banner message when displaying cached articles due to no internet
+  ///
+  /// In en, this message translates to:
+  /// **'You are offline. Showing cached news.'**
+  String get offlineBanner;
+
+  /// Accessibility label for the scroll to top button
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll to top'**
+  String get scrollToTopButtonLabel;
+
+  /// Label for the button that opens the article in the native browser
+  ///
+  /// In en, this message translates to:
+  /// **'Explore full content'**
+  String get exploreFullContent;
+
+  /// Title for the dialog shown when article publish fails
+  ///
+  /// In en, this message translates to:
+  /// **'Publish failed'**
+  String get publishErrorTitle;
+
+  /// Label for the button to save article as local draft
+  ///
+  /// In en, this message translates to:
+  /// **'Save as draft'**
+  String get saveAsDraftAction;
 }
 
 class _AppLocalizationsDelegate

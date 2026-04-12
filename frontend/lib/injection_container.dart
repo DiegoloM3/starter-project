@@ -3,7 +3,10 @@ import 'package:dio/dio.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:news_app_clean_architecture/core/constants/constants.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/draft_service.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/news_api_cache_service.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/firestore_article_service.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/news_api_interceptor.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/news_api_service.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/repository/article_repository_impl.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/repository/firestore_article_repository.dart';
@@ -32,10 +35,20 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<AppDatabase>(database);
 
   // Dio
-  sl.registerSingleton<Dio>(Dio(BaseOptions(baseUrl: newsAPIBaseURL)));
+  final dio = Dio(BaseOptions(baseUrl: newsAPIBaseURL))
+    ..interceptors.add(NewsApiInterceptor());
+  sl.registerSingleton<Dio>(dio);
 
   // Data Sources
   sl.registerSingleton<NewsApiService>(NewsApiService(sl()));
+
+  final cacheService = NewsApiCacheService(sl());
+  await cacheService.ensureTableCreated();
+  sl.registerSingleton<NewsApiCacheService>(cacheService);
+
+  final draftService = DraftService(sl());
+  await draftService.ensureTableCreated();
+  sl.registerSingleton<DraftService>(draftService);
 
   sl.registerSingleton<FirestoreArticleService>(
     FirestoreArticleService(
@@ -45,7 +58,7 @@ Future<void> initializeDependencies() async {
   );
 
   // Repository (single impl, registered under each segregated interface)
-  final articleRepository = ArticleRepositoryImpl(sl(), sl(), sl());
+  final articleRepository = ArticleRepositoryImpl(sl(), sl(), sl(), sl());
   sl.registerSingleton<RemoteNewsRepository>(articleRepository);
   sl.registerSingleton<LocalArticleRepository>(articleRepository);
   sl.registerSingleton<FirestoreArticleRepository>(articleRepository);

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/draft_service.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/news_section.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/create_article.dart';
@@ -13,53 +14,76 @@ class NewsFormBloc extends Bloc<NewsFormEvent, NewsFormState> {
   final CreateArticleUseCase _createArticleUseCase;
   final UpdateArticleUseCase _updateArticleUseCase;
   final DeleteArticleUseCase _deleteArticleUseCase;
-  final String _authorName;
+  final DraftService _draftService;
+  String _authorName;
   final String? _existingDescription;
 
   NewsFormBloc({
     required CreateArticleUseCase createArticleUseCase,
     required UpdateArticleUseCase updateArticleUseCase,
     required DeleteArticleUseCase deleteArticleUseCase,
+    required DraftService draftService,
     required String authorName,
     ArticleEntity? existingArticle,
     NewsSection? existingSection,
+    DraftArticle? draft,
   })  : _createArticleUseCase = createArticleUseCase,
         _updateArticleUseCase = updateArticleUseCase,
         _deleteArticleUseCase = deleteArticleUseCase,
+        _draftService = draftService,
         _authorName = authorName,
         _existingDescription = existingArticle?.description,
-        super(_buildInitialState(existingArticle, existingSection)) {
+        super(_buildInitialState(existingArticle, existingSection, draft)) {
     on<NewsFormTitleChanged>(_onTitleChanged);
     on<NewsFormBodyChanged>(_onBodyChanged);
     on<NewsFormSectionChanged>(_onSectionChanged);
     on<NewsFormImageAdded>(_onImageAdded);
     on<NewsFormImageRemoved>(_onImageRemoved);
+    on<NewsFormAuthorChanged>(_onAuthorChanged);
     on<NewsFormSubmitted>(_onSubmitted);
+    on<NewsFormSavedAsDraft>(_onSavedAsDraft);
     on<NewsFormDeleted>(_onDeleted);
   }
 
   static NewsFormState _buildInitialState(
     ArticleEntity? article,
     NewsSection? section,
+    DraftArticle? draft,
   ) {
-    if (article == null) return const NewsFormState();
+    if (article != null) {
+      final images = article.images
+          .map((url) => ImageItem(url: url))
+          .toList();
 
-    final images = article.images
-        .map((url) => ImageItem(url: url))
-        .toList();
+      return NewsFormState(
+        title: article.title ?? '',
+        body: article.content ?? '',
+        selectedSection: section ?? article.section,
+        isEditing: true,
+        articleId: article.documentId,
+        images: images,
+        originalTitle: article.title ?? '',
+        originalBody: article.content ?? '',
+        originalSection: section ?? article.section,
+        originalImages: List.unmodifiable(images),
+      );
+    }
 
-    return NewsFormState(
-      title: article.title ?? '',
-      body: article.content ?? '',
-      selectedSection: section ?? article.section,
-      isEditing: true,
-      articleId: article.documentId,
-      images: images,
-      originalTitle: article.title ?? '',
-      originalBody: article.content ?? '',
-      originalSection: section ?? article.section,
-      originalImages: List.unmodifiable(images),
-    );
+    if (draft != null) {
+      final draftSection = draft.section != null
+          ? NewsSection.values
+              .cast<NewsSection?>()
+              .firstWhere((s) => s?.name == draft.section, orElse: () => null)
+          : null;
+
+      return NewsFormState(
+        title: draft.title,
+        body: draft.body,
+        selectedSection: draftSection,
+      );
+    }
+
+    return const NewsFormState();
   }
 
   void _onTitleChanged(
@@ -103,6 +127,13 @@ class NewsFormBloc extends Bloc<NewsFormEvent, NewsFormState> {
     emit(state.copyWith(images: updatedImages));
   }
 
+  void _onAuthorChanged(
+    NewsFormAuthorChanged event,
+    Emitter<NewsFormState> emit,
+  ) {
+    _authorName = event.author;
+  }
+
   Future<void> _onSubmitted(
     NewsFormSubmitted event,
     Emitter<NewsFormState> emit,
@@ -131,7 +162,36 @@ class NewsFormBloc extends Bloc<NewsFormEvent, NewsFormState> {
       );
     }
 
-    _emitResultStatus(result, emit);
+    if (result is DataSuccess) {
+      try {
+        await _draftService.clearDraft();
+      } on Exception {
+        // Best-effort draft cleanup
+      }
+      emit(state.copyWith(status: FormStatus.success));
+    } else {
+      emit(state.copyWith(
+        status: FormStatus.failure,
+        errorType: result.failure?.type,
+      ));
+    }
+  }
+
+  Future<void> _onSavedAsDraft(
+    NewsFormSavedAsDraft event,
+    Emitter<NewsFormState> emit,
+  ) async {
+    try {
+      await _draftService.saveDraft(DraftArticle(
+        title: state.title.trim(),
+        body: state.body.trim(),
+        section: state.selectedSection?.name,
+        author: _authorName,
+      ));
+      emit(state.copyWith(status: FormStatus.savedAsDraft));
+    } on Exception {
+      // If draft save fails, stay in current state
+    }
   }
 
   ArticleEntity _buildArticleFromState() {
@@ -159,17 +219,6 @@ class NewsFormBloc extends Bloc<NewsFormEvent, NewsFormState> {
         .toList();
   }
 
-  void _emitResultStatus(DataState result, Emitter<NewsFormState> emit) {
-    if (result is DataSuccess) {
-      emit(state.copyWith(status: FormStatus.success));
-    } else {
-      emit(state.copyWith(
-        status: FormStatus.failure,
-        errorType: result.failure?.type,
-      ));
-    }
-  }
-
   Future<void> _onDeleted(
     NewsFormDeleted event,
     Emitter<NewsFormState> emit,
@@ -178,6 +227,13 @@ class NewsFormBloc extends Bloc<NewsFormEvent, NewsFormState> {
     emit(state.copyWith(status: FormStatus.submitting));
 
     final result = await _deleteArticleUseCase(params: state.articleId);
-    _emitResultStatus(result, emit);
+    if (result is DataSuccess) {
+      emit(state.copyWith(status: FormStatus.success));
+    } else {
+      emit(state.copyWith(
+        status: FormStatus.failure,
+        errorType: result.failure?.type,
+      ));
+    }
   }
 }

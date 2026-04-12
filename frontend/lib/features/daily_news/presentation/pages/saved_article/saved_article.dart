@@ -17,6 +17,7 @@ import '../../../domain/entities/article.dart';
 import '../../bloc/article/local/local_article_bloc.dart';
 import '../../bloc/article/local/local_article_event.dart';
 import '../../bloc/article/local/local_article_state.dart';
+import '../../helpers/date_formatter.dart';
 
 class SavedArticles extends HookWidget {
   const SavedArticles({super.key});
@@ -88,7 +89,7 @@ class SavedArticles extends HookWidget {
         return CardNews(
           title: article.title ?? '',
           description: article.description,
-          date: article.publishedAt ?? '',
+          date: formatArticleDate(article.publishedAt),
           imageUrl: article.urlToImage,
           onTap: () => _onArticlePressed(context, article),
           trailing: AppIconButton(

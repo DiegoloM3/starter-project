@@ -81,6 +81,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get favoritesSection => 'Favoritos';
 
   @override
+  String get draftsSection => 'Borradores';
+
+  @override
+  String get noDrafts => 'No hay borradores guardados';
+
+  @override
   String get savedSection => 'Guardados para después';
 
   @override
@@ -183,4 +189,19 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get errorNotFound => 'El artículo no fue encontrado.';
+
+  @override
+  String get offlineBanner => 'Sin conexión. Mostrando noticias en caché.';
+
+  @override
+  String get scrollToTopButtonLabel => 'Ir al inicio';
+
+  @override
+  String get exploreFullContent => 'Explorar contenido completo';
+
+  @override
+  String get publishErrorTitle => 'Error al publicar';
+
+  @override
+  String get saveAsDraftAction => 'Guardar como borrador';
 }

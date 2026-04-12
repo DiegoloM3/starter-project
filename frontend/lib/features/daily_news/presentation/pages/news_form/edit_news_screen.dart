@@ -25,6 +25,7 @@ class EditNewsScreen extends StatelessWidget {
         createArticleUseCase: sl(),
         updateArticleUseCase: sl(),
         deleteArticleUseCase: sl(),
+        draftService: sl(),
         authorName: sl<UserProfileCubit>().state.displayName ??
             kDefaultAuthorName,
         existingArticle: article,

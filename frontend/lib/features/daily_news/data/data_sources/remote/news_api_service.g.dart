@@ -24,12 +24,16 @@ class _NewsApiService implements NewsApiService {
     String? apiKey,
     String? country,
     String? category,
+    int? page,
+    int? pageSize,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'apiKey': apiKey,
       r'country': country,
       r'category': category,
+      r'page': page,
+      r'pageSize': pageSize,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};

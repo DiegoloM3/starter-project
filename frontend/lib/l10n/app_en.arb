@@ -48,6 +48,10 @@
   "@profileTitle": { "description": "Header title for the profile screen" },
   "favoritesSection": "Favorites",
   "@favoritesSection": { "description": "Section header for favorites in profile" },
+  "draftsSection": "Drafts",
+  "@draftsSection": { "description": "Section header for article drafts in profile" },
+  "noDrafts": "No drafts saved",
+  "@noDrafts": { "description": "Empty state message when there are no drafts" },
   "savedSection": "Saved for later",
   "@savedSection": { "description": "Section header for saved articles in profile" },
   "favoriteAction": "Favorite",
@@ -119,5 +123,15 @@
   "errorStorage": "Failed to upload images. Please try again.",
   "@errorStorage": { "description": "Error message for file storage failures" },
   "errorNotFound": "The article was not found.",
-  "@errorNotFound": { "description": "Error message when a resource is not found" }
+  "@errorNotFound": { "description": "Error message when a resource is not found" },
+  "offlineBanner": "You are offline. Showing cached news.",
+  "@offlineBanner": { "description": "Banner message when displaying cached articles due to no internet" },
+  "scrollToTopButtonLabel": "Scroll to top",
+  "@scrollToTopButtonLabel": { "description": "Accessibility label for the scroll to top button" },
+  "exploreFullContent": "Explore full content",
+  "@exploreFullContent": { "description": "Label for the button that opens the article in the native browser" },
+  "publishErrorTitle": "Publish failed",
+  "@publishErrorTitle": { "description": "Title for the dialog shown when article publish fails" },
+  "saveAsDraftAction": "Save as draft",
+  "@saveAsDraftAction": { "description": "Label for the button to save article as local draft" }
 }

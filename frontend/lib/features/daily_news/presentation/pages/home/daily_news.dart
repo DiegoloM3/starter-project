@@ -20,6 +20,7 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/news_filter/news_filter_cubit.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/news_tab/news_tab_cubit.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/helpers/article_section_helper.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/helpers/date_formatter.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/buttons/fab_button.dart';
 import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/buttons/secondary_button.dart';
@@ -30,8 +31,73 @@ import 'package:news_app_clean_architecture/shared/design_system/presentation/wi
 import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/ui_elements/app_avatar.dart';
 import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/ui_elements/section_badge.dart';
 
-class DailyNews extends StatelessWidget {
+class DailyNews extends StatefulWidget {
   const DailyNews({super.key});
+
+  @override
+  State<DailyNews> createState() => _DailyNewsState();
+}
+
+class _DailyNewsState extends State<DailyNews> {
+  final _firestoreScrollController = ScrollController();
+  final _remoteScrollController = ScrollController();
+  bool _showScrollToTop = false;
+
+  static const _scrollToTopThreshold = 400.0;
+  static const _loadMoreThreshold = 200.0;
+  static const _animationDurationMillis = 200;
+  static const _scrollAnimationMillis = 400;
+
+  @override
+  void initState() {
+    super.initState();
+    _firestoreScrollController.addListener(_onScrollChanged);
+    _remoteScrollController.addListener(_onScrollChanged);
+    _remoteScrollController.addListener(_onRemoteScrollNearBottom);
+  }
+
+  @override
+  void dispose() {
+    _firestoreScrollController.dispose();
+    _remoteScrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScrollChanged() {
+    final selectedTab = context.read<NewsTabCubit>().state;
+    final controller =
+        selectedTab == 0 ? _firestoreScrollController : _remoteScrollController;
+    final shouldShow = controller.hasClients &&
+        controller.offset > _scrollToTopThreshold;
+    if (shouldShow != _showScrollToTop) {
+      setState(() => _showScrollToTop = shouldShow);
+    }
+  }
+
+  void _onRemoteScrollNearBottom() {
+    if (!_remoteScrollController.hasClients) return;
+    final maxScroll = _remoteScrollController.position.maxScrollExtent;
+    final currentScroll = _remoteScrollController.offset;
+    if (maxScroll - currentScroll <= _loadMoreThreshold) {
+      final bloc = context.read<RemoteArticlesBloc>();
+      if (bloc.state.hasMore && bloc.state is! RemoteArticlesLoadingMore) {
+        bloc.add(const LoadMoreArticles());
+      }
+    }
+  }
+
+  void _scrollToTop() {
+    final selectedTab = context.read<NewsTabCubit>().state;
+    final controller =
+        selectedTab == 0 ? _firestoreScrollController : _remoteScrollController;
+    if (controller.hasClients) {
+      controller.animateTo(
+        0,
+        duration: const Duration(milliseconds: _scrollAnimationMillis),
+        curve: Curves.easeOutCubic,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +106,6 @@ class DailyNews extends StatelessWidget {
     final selectedTab = context.watch<NewsTabCubit>().state;
     context.watch<NewsFilterCubit>();
     final savedUrls = _savedUrlsFrom(localState);
-    const int animationDurationMillis = 200;
 
     return Scaffold(
       backgroundColor: context.colors.bgPage,
@@ -51,12 +116,14 @@ class DailyNews extends StatelessWidget {
               children: [
                 _buildHeader(context),
                 _buildTabs(context, selectedTab),
-                _buildSectionChips(context),
-                const SizedBox(height: AppDimensions.spacing12),
+                if (selectedTab == 0) ...[
+                  _buildSectionChips(context),
+                  const SizedBox(height: AppDimensions.spacing12),
+                ],
                 Expanded(
                   child: AnimatedSwitcher(
                     duration: const Duration(
-                      milliseconds: animationDurationMillis,
+                      milliseconds: _animationDurationMillis,
                     ),
                     child: KeyedSubtree(
                       key: ValueKey(selectedTab),
@@ -69,7 +136,7 @@ class DailyNews extends StatelessWidget {
                 ),
               ],
             ),
-            _buildFab(context),
+            _buildFabs(context, selectedTab),
           ],
         ),
       ),
@@ -169,7 +236,19 @@ class DailyNews extends StatelessWidget {
           AppLocalizations.of(context)!.noSavedArticles,
         );
       }
-      return _buildArticleList(context, articles, savedUrls);
+      return RefreshIndicator(
+        onRefresh: () async {
+          context
+              .read<FirestoreArticlesBloc>()
+              .add(const GetFirestoreArticles());
+        },
+        child: _buildArticleList(
+          context,
+          articles,
+          savedUrls,
+          _firestoreScrollController,
+        ),
+      );
     }
     return const SizedBox.shrink();
   }
@@ -183,20 +262,41 @@ class DailyNews extends StatelessWidget {
         if (state is RemoteArticlesError) {
           return _buildErrorState(context);
         }
-        if (state is RemoteArticlesDone) {
+        if (state is RemoteArticlesDone ||
+            state is RemoteArticlesCached ||
+            state is RemoteArticlesLoadingMore) {
           final filterState = context.read<NewsFilterCubit>().state;
           final articles = filterArticles(
             articles: state.articles ?? [],
             selectedSection: filterState.selectedSection,
             searchQuery: filterState.searchQuery,
           );
-          if (articles.isEmpty) {
+          if (articles.isEmpty && state is! RemoteArticlesLoadingMore) {
             return _buildEmptyState(
               context,
               AppLocalizations.of(context)!.noNewsAvailable,
             );
           }
-          return _buildArticleList(context, articles, savedUrls);
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<RemoteArticlesBloc>().add(const GetArticles());
+            },
+            child: Column(
+              children: [
+                if (state is RemoteArticlesCached)
+                  _buildOfflineBanner(context),
+                Expanded(
+                  child: _buildArticleList(
+                    context,
+                    articles,
+                    savedUrls,
+                    _remoteScrollController,
+                    showLoadingMore: state is RemoteArticlesLoadingMore,
+                  ),
+                ),
+              ],
+            ),
+          );
         }
         return const SizedBox.shrink();
       },
@@ -207,13 +307,18 @@ class DailyNews extends StatelessWidget {
     BuildContext context,
     List<ArticleEntity> articles,
     Set<String> savedUrls,
-  ) {
+    ScrollController scrollController, {
+    bool showLoadingMore = false,
+  }) {
     final filterState = context.read<NewsFilterCubit>().state;
     final l10n = AppLocalizations.of(context)!;
     final showBadge = filterState.selectedSection == NewsSection.all;
     final colors = context.colors;
+    final itemCount = articles.length + (showLoadingMore ? 1 : 0);
 
     return ListView.separated(
+      controller: scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(
         AppDimensions.spacing24,
         0,
@@ -222,13 +327,20 @@ class DailyNews extends StatelessWidget {
             AppDimensions.spacing24 +
             AppDimensions.spacing14,
       ),
-      itemCount: articles.length,
+      itemCount: itemCount,
       separatorBuilder: (_, __) =>
           const SizedBox(height: AppDimensions.spacing14),
       itemBuilder: (_, index) {
+        if (index >= articles.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: AppDimensions.spacing16),
+            child: Center(child: CupertinoActivityIndicator()),
+          );
+        }
+
         final article = articles[index];
         final isBookmarked = savedUrls.contains(article.url);
-        final section = article.effectiveSection;
+        final section = article.section;
 
         final imageUrl = article.images.isNotEmpty
             ? article.images.first
@@ -237,10 +349,10 @@ class DailyNews extends StatelessWidget {
         return CardNews(
           title: article.title ?? '',
           description: article.description,
-          date: article.publishedAt ?? '',
+          date: formatArticleDate(article.publishedAt),
           imageUrl: imageUrl,
           isBookmarked: isBookmarked,
-          sectionBadge: showBadge
+          sectionBadge: showBadge && section != null
               ? SectionBadge(
                   label: section.label(l10n),
                   backgroundColor: section.backgroundColor(colors),
@@ -251,6 +363,43 @@ class DailyNews extends StatelessWidget {
           onTap: () => _onArticleTap(context, article),
         );
       },
+    );
+  }
+
+  Widget _buildOfflineBanner(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppDimensions.spacing24,
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimensions.spacing12,
+        vertical: AppDimensions.spacing10,
+      ),
+      decoration: BoxDecoration(
+        color: colors.weatherSectionBackground,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.wifi_off,
+            size: AppDimensions.iconSm,
+            color: colors.weatherSectionText,
+          ),
+          const SizedBox(width: AppDimensions.spacing8),
+          Expanded(
+            child: Text(
+              l10n.offlineBanner,
+              style: AppTypography.subtitle.copyWith(
+                color: colors.weatherSectionText,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -303,15 +452,41 @@ class DailyNews extends StatelessWidget {
     );
   }
 
-  Widget _buildFab(BuildContext context) {
+  Widget _buildFabs(BuildContext context, int selectedTab) {
     final l10n = AppLocalizations.of(context)!;
     return Positioned(
       right: AppDimensions.spacing24,
       bottom: AppDimensions.spacing24,
-      child: Semantics(
-        button: true,
-        label: l10n.addNewsButtonLabel,
-        child: FabButton(onPressed: () => _onAddNewsTap(context)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedScale(
+            scale: _showScrollToTop ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: _animationDurationMillis),
+            child: AnimatedOpacity(
+              opacity: _showScrollToTop ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: _animationDurationMillis),
+              child: Padding(
+                padding:
+                    const EdgeInsets.only(bottom: AppDimensions.spacing12),
+                child: Semantics(
+                  button: true,
+                  label: l10n.scrollToTopButtonLabel,
+                  child: FabButton(
+                    icon: Icons.keyboard_arrow_up,
+                    onPressed: _scrollToTop,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          if (selectedTab == 0)
+            Semantics(
+              button: true,
+              label: l10n.addNewsButtonLabel,
+              child: FabButton(onPressed: () => _onAddNewsTap(context)),
+            ),
+        ],
       ),
     );
   }
@@ -329,7 +504,8 @@ class DailyNews extends StatelessWidget {
     }
   }
 
-  Future<void> _onArticleTap(BuildContext context, ArticleEntity article) async {
+  Future<void> _onArticleTap(
+      BuildContext context, ArticleEntity article) async {
     final result = await Navigator.pushNamed(
       context,
       AppRoutes.articleDetails,

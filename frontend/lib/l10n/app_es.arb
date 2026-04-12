@@ -24,6 +24,8 @@
   "sectionCrime": "Policiaca",
   "profileTitle": "Mi Perfil",
   "favoritesSection": "Favoritos",
+  "draftsSection": "Borradores",
+  "noDrafts": "No hay borradores guardados",
   "savedSection": "Guardados para después",
   "favoriteAction": "Favorito",
   "saveAction": "Guardar",
@@ -56,5 +58,10 @@
   "errorNetwork": "Sin conexión a internet. Revisa tu red.",
   "errorServer": "Error del servidor. Intenta más tarde.",
   "errorStorage": "Error al subir imágenes. Intenta de nuevo.",
-  "errorNotFound": "El artículo no fue encontrado."
+  "errorNotFound": "El artículo no fue encontrado.",
+  "offlineBanner": "Sin conexión. Mostrando noticias en caché.",
+  "scrollToTopButtonLabel": "Ir al inicio",
+  "exploreFullContent": "Explorar contenido completo",
+  "publishErrorTitle": "Error al publicar",
+  "saveAsDraftAction": "Guardar como borrador"
 }

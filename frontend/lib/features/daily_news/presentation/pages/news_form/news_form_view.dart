@@ -13,9 +13,12 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/entities/
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/news_form/news_form_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/news_form/news_form_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/news_form/news_form_state.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/user_profile/user_profile_cubit.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/helpers/article_section_helper.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/helpers/error_type_l10n.dart';
+import 'package:news_app_clean_architecture/injection_container.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
+import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/dialogs/edit_profile_dialog.dart';
 import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/form/form_section_selector.dart';
 import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/form/photo_gallery_picker.dart';
 import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/inputs/input_text_area.dart';
@@ -23,7 +26,9 @@ import 'package:news_app_clean_architecture/shared/design_system/presentation/wi
 import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/ui_elements/app_icon_button.dart';
 
 class NewsFormView extends StatefulWidget {
-  const NewsFormView({super.key});
+  final bool hasDraft;
+
+  const NewsFormView({super.key, this.hasDraft = false});
 
   @override
   State<NewsFormView> createState() => _NewsFormViewState();
@@ -39,6 +44,19 @@ class _NewsFormViewState extends State<NewsFormView> {
     final state = context.read<NewsFormBloc>().state;
     _titleController = TextEditingController(text: state.title);
     _bodyController = TextEditingController(text: state.body);
+
+    if (widget.hasDraft) {
+      _syncControllersFromBloc();
+    }
+  }
+
+  void _syncControllersFromBloc() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final state = context.read<NewsFormBloc>().state;
+      _titleController.text = state.title;
+      _bodyController.text = state.body;
+    });
   }
 
   @override
@@ -73,7 +91,10 @@ class _NewsFormViewState extends State<NewsFormView> {
                     bodyController: _bodyController,
                     onPickImage: () => _pickImage(context),
                   ),
-                  _ActionBar(state: state),
+                  _ActionBar(
+                    state: state,
+                    onSubmit: _handleSubmit,
+                  ),
                 ],
               ),
             ),
@@ -87,13 +108,66 @@ class _NewsFormViewState extends State<NewsFormView> {
     if (state.status == FormStatus.success) {
       Navigator.pop(context, true);
     }
-    if (state.status == FormStatus.failure) {
-      final message = state.errorType?.toMessage(context) ??
-          AppLocalizations.of(context)!.genericError;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+    if (state.status == FormStatus.savedAsDraft) {
+      Navigator.pop(context);
     }
+    if (state.status == FormStatus.failure) {
+      _showFailureDialog(context, state);
+    }
+  }
+
+  void _showFailureDialog(BuildContext context, NewsFormState state) {
+    final l10n = AppLocalizations.of(context)!;
+    final errorMessage = state.errorType?.toMessage(context) ?? l10n.genericError;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.publishErrorTitle),
+        content: Text(errorMessage),
+        actions: [
+          if (!state.isEditing)
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                context.read<NewsFormBloc>().add(const NewsFormSavedAsDraft());
+              },
+              child: Text(l10n.saveAsDraftAction),
+            ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.retryAction),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleSubmit() {
+    final cubit = sl<UserProfileCubit>();
+    if (cubit.state.displayName == null) {
+      _showNameRequiredDialog(cubit);
+    } else {
+      context.read<NewsFormBloc>().add(const NewsFormSubmitted());
+    }
+  }
+
+  void _showNameRequiredDialog(UserProfileCubit cubit) {
+    showDialog(
+      context: context,
+      builder: (_) => EditProfileDialog(
+        currentName: cubit.state.name ?? '',
+        currentEmail: cubit.state.email ?? '',
+        onSave: (name, email) {
+          cubit.updateProfile(name: name, email: email);
+          final displayName = cubit.state.displayName;
+          if (displayName != null && mounted) {
+            context.read<NewsFormBloc>().add(NewsFormAuthorChanged(displayName));
+            context.read<NewsFormBloc>().add(const NewsFormSubmitted());
+          }
+        },
+      ),
+    );
   }
 
   void _handleBack() {
@@ -243,7 +317,9 @@ class _FormArea extends StatelessWidget {
                 const SizedBox(height: AppDimensions.spacing20),
                 FormSectionSelector<NewsSection>(
                   label: l10n.formSectionLabel,
-                  items: NewsSectionAssignable.assignable,
+                  items: NewsSection.values
+                      .where((s) => s != NewsSection.all)
+                      .toList(),
                   selectedItem: state.selectedSection,
                   onChanged: (section) {
                     context
@@ -291,8 +367,9 @@ class _FormArea extends StatelessWidget {
 
 class _ActionBar extends StatelessWidget {
   final NewsFormState state;
+  final VoidCallback onSubmit;
 
-  const _ActionBar({required this.state});
+  const _ActionBar({required this.state, required this.onSubmit});
 
   @override
   Widget build(BuildContext context) {
@@ -314,7 +391,7 @@ class _ActionBar extends StatelessWidget {
             const SizedBox(width: AppDimensions.spacing12),
           ],
           Expanded(
-            child: _SubmitButton(state: state),
+            child: _SubmitButton(state: state, onSubmit: onSubmit),
           ),
         ],
       ),
@@ -350,8 +427,9 @@ class _ActionBar extends StatelessWidget {
 
 class _SubmitButton extends StatelessWidget {
   final NewsFormState state;
+  final VoidCallback onSubmit;
 
-  const _SubmitButton({required this.state});
+  const _SubmitButton({required this.state, required this.onSubmit});
 
   @override
   Widget build(BuildContext context) {
@@ -381,8 +459,7 @@ class _SubmitButton extends StatelessWidget {
             ? AppDimensions.opacityEnabled
             : AppDimensions.opacityDisabled,
         child: GestureDetector(
-          onTap: () =>
-              context.read<NewsFormBloc>().add(const NewsFormSubmitted()),
+          onTap: onSubmit,
           child: Container(
             height: AppDimensions.buttonHeight,
             padding: const EdgeInsets.symmetric(

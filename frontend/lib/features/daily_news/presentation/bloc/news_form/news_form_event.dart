@@ -36,8 +36,18 @@ class NewsFormImageRemoved extends NewsFormEvent {
   const NewsFormImageRemoved(this.index);
 }
 
+class NewsFormAuthorChanged extends NewsFormEvent {
+  final String author;
+
+  const NewsFormAuthorChanged(this.author);
+}
+
 class NewsFormSubmitted extends NewsFormEvent {
   const NewsFormSubmitted();
+}
+
+class NewsFormSavedAsDraft extends NewsFormEvent {
+  const NewsFormSavedAsDraft();
 }
 
 class NewsFormDeleted extends NewsFormEvent {

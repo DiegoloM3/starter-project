@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:news_app_clean_architecture/core/constants/constants.dart';
 import 'package:news_app_clean_architecture/core/resources/failure.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/news_api_cache_service.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/mappers/failure_mapper.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/app_database.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/firestore_article_service.dart';
@@ -23,32 +24,66 @@ class ArticleRepositoryImpl
   final NewsApiService _newsApiService;
   final AppDatabase _appDatabase;
   final FirestoreArticleService _firestoreService;
+  final NewsApiCacheService _cacheService;
 
   ArticleRepositoryImpl(
     this._newsApiService,
     this._appDatabase,
     this._firestoreService,
+    this._cacheService,
   );
 
   // --- Remote News API ---
 
   @override
-  Future<DataState<List<ArticleEntity>>> getNewsArticles() async {
+  Future<DataState<List<ArticleEntity>>> getNewsArticles({
+    int page = 1,
+  }) async {
     try {
       final httpResponse = await _newsApiService.getNewsArticles(
         apiKey: newsAPIKey,
         country: countryQuery,
         category: categoryQuery,
+        page: page,
+        pageSize: kNewsApiPageSize,
       );
 
       if (httpResponse.response.statusCode == HttpStatus.ok) {
-        final entities = httpResponse.data.map((m) => m.toEntity()).toList();
+        final models = httpResponse.data;
+        if (page == 1) {
+          try {
+            await _cacheService.cacheArticles(models);
+          } on Exception {
+            // Cache is best-effort; failure should not block fresh data
+          }
+        }
+        final entities = models.map((m) => m.toEntity()).toList();
         return DataSuccess(entities);
       } else {
         return const DataFailed(ServerFailure());
       }
     } on DioException catch (e) {
+      if (page == 1) return _handleNewsApiFailure(mapDioFailure(e));
       return DataFailed(mapDioFailure(e));
+    } on Exception {
+      if (page == 1) return _handleNewsApiFailure(const ServerFailure());
+      return const DataFailed(ServerFailure());
+    }
+  }
+
+  Future<DataState<List<ArticleEntity>>> _handleNewsApiFailure(
+    Failure failure,
+  ) async {
+    if (failure is! NetworkFailure) return DataFailed(failure);
+
+    try {
+      final cached = await _cacheService.getCachedArticles();
+      if (cached.isEmpty) return DataFailed(failure);
+
+      final entities = cached.map((m) => m.toEntity()).toList();
+      return DataSuccess(entities, isCached: true);
+    } on Exception {
+      return DataFailed(failure);
     }
   }
 

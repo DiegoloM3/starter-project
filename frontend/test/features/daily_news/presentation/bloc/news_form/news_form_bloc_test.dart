@@ -14,10 +14,12 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/news_form/news_form_state.dart';
 import 'package:news_app_clean_architecture/core/resources/image_item.dart';
 
+import '../../../fakes/fake_draft_service.dart';
 import '../../../fakes/fake_firestore_article_repository.dart';
 
 NewsFormBloc createBloc({
   FakeFirestoreArticleRepository? repo,
+  FakeDraftService? draftService,
   ArticleEntity? existingArticle,
   NewsSection? existingSection,
 }) {
@@ -26,6 +28,7 @@ NewsFormBloc createBloc({
     createArticleUseCase: CreateArticleUseCase(repository),
     updateArticleUseCase: UpdateArticleUseCase(repository),
     deleteArticleUseCase: DeleteArticleUseCase(repository),
+    draftService: draftService ?? FakeDraftService(),
     authorName: 'Test Author',
     existingArticle: existingArticle,
     existingSection: existingSection,

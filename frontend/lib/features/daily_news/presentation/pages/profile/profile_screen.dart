@@ -9,14 +9,18 @@ import 'package:news_app_clean_architecture/config/theme/app_dimensions.dart';
 import 'package:news_app_clean_architecture/config/theme/app_shadows.dart';
 import 'package:news_app_clean_architecture/config/theme/app_typography.dart';
 import 'package:news_app_clean_architecture/config/theme/theme_extensions.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/draft_service.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/news_section.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/user_profile/user_profile_cubit.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/user_profile/user_profile_state.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/helpers/article_section_helper.dart';
 import 'package:news_app_clean_architecture/injection_container.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
+import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/dialogs/edit_profile_dialog.dart';
 import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/ui_elements/app_icon_button.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -82,8 +86,27 @@ class _Header extends StatelessWidget {
   }
 }
 
-class _ProfileContent extends StatelessWidget {
+class _ProfileContent extends StatefulWidget {
   const _ProfileContent();
+
+  @override
+  State<_ProfileContent> createState() => _ProfileContentState();
+}
+
+class _ProfileContentState extends State<_ProfileContent> {
+  late Future<DraftArticle?> _draftFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _draftFuture = sl<DraftService>().loadDraft();
+  }
+
+  void _refreshDraft() {
+    setState(() {
+      _draftFuture = sl<DraftService>().loadDraft();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,15 +131,10 @@ class _ProfileContent extends StatelessWidget {
             children: [
               const _AvatarSection(),
               const SizedBox(height: AppDimensions.spacing24),
-              _ArticleListSection(
-                icon: LucideIcons.heart,
-                iconColor: AppColors.coral,
-                title: AppLocalizations.of(context)!.favoritesSection,
-                count: articles.length,
-                articles: articles,
-                actionIcon: LucideIcons.heart,
-                actionIconColor: AppColors.coral,
-                onRemoveArticle: (article) => _removeArticle(context, article),
+              _DraftsSection(
+                draftFuture: _draftFuture,
+                onDraftDeleted: _refreshDraft,
+                onDraftTapped: _refreshDraft,
               ),
               const SizedBox(height: AppDimensions.spacing24),
               _ArticleListSection(
@@ -138,6 +156,148 @@ class _ProfileContent extends StatelessWidget {
 
   void _removeArticle(BuildContext context, ArticleEntity article) {
     context.read<LocalArticleBloc>().add(RemoveArticle(article));
+  }
+}
+
+class _DraftsSection extends StatelessWidget {
+  final Future<DraftArticle?> draftFuture;
+  final VoidCallback onDraftDeleted;
+  final VoidCallback onDraftTapped;
+
+  const _DraftsSection({
+    required this.draftFuture,
+    required this.onDraftDeleted,
+    required this.onDraftTapped,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return FutureBuilder<DraftArticle?>(
+      future: draftFuture,
+      builder: (context, snapshot) {
+        final draft = snapshot.data;
+        final count = draft != null ? 1 : 0;
+
+        return Column(
+          children: [
+            _SectionHeader(
+              icon: LucideIcons.fileEdit,
+              iconColor: AppColors.coral,
+              title: l10n.draftsSection,
+              count: count,
+            ),
+            const SizedBox(height: AppDimensions.spacing14),
+            if (draft != null)
+              _DraftCard(
+                draft: draft,
+                onTap: () => _openDraft(context),
+                onDelete: () => _deleteDraft(context),
+              )
+            else
+              _EmptyDrafts(message: l10n.noDrafts),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _openDraft(BuildContext context) async {
+    await Navigator.pushNamed(context, AppRoutes.addNews);
+    onDraftTapped();
+  }
+
+  Future<void> _deleteDraft(BuildContext context) async {
+    await sl<DraftService>().clearDraft();
+    onDraftDeleted();
+  }
+}
+
+class _DraftCard extends StatelessWidget {
+  final DraftArticle draft;
+  final VoidCallback onTap;
+  final VoidCallback onDelete;
+
+  const _DraftCard({
+    required this.draft,
+    required this.onTap,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final l10n = AppLocalizations.of(context)!;
+    final sectionLabel = _resolveSectionLabel(draft.section, l10n);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(AppDimensions.spacing12),
+        decoration: BoxDecoration(
+          color: colors.bgCard,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+          boxShadow: AppShadows.cardSubtle,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: AppDimensions.cardImageCompact,
+              height: AppDimensions.cardImageCompact,
+              decoration: BoxDecoration(
+                color: colors.bgInput,
+                borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+              ),
+              child: Icon(
+                LucideIcons.fileEdit,
+                color: colors.textPlaceholder,
+              ),
+            ),
+            const SizedBox(width: AppDimensions.spacing12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    draft.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.compactTitle
+                        .copyWith(color: colors.textPrimary),
+                  ),
+                  if (sectionLabel != null) ...[
+                    const SizedBox(height: AppDimensions.spacing4),
+                    Text(
+                      sectionLabel,
+                      style: AppTypography.footnote
+                          .copyWith(color: colors.textPlaceholder),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(width: AppDimensions.spacing8),
+            GestureDetector(
+              onTap: onDelete,
+              child: const Icon(
+                LucideIcons.trash2,
+                size: AppDimensions.iconMd,
+                color: AppColors.coral,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String? _resolveSectionLabel(String? sectionName, AppLocalizations l10n) {
+    if (sectionName == null) return null;
+    final match = NewsSection.values.where((s) => s.name == sectionName);
+    if (match.isEmpty) return null;
+    return match.first.label(l10n);
   }
 }
 
@@ -223,7 +383,7 @@ class _AvatarSection extends StatelessWidget {
       BuildContext context, UserProfileState currentProfile) {
     showDialog(
       context: context,
-      builder: (_) => _EditProfileDialog(
+      builder: (_) => EditProfileDialog(
         currentName: currentProfile.name ?? '',
         currentEmail: currentProfile.email ?? '',
         onSave: (name, email) {
@@ -237,104 +397,33 @@ class _AvatarSection extends StatelessWidget {
   }
 }
 
-class _EditProfileDialog extends StatefulWidget {
-  final String currentName;
-  final String currentEmail;
-  final void Function(String name, String email) onSave;
+class _EmptyDrafts extends StatelessWidget {
+  final String message;
 
-  const _EditProfileDialog({
-    required this.currentName,
-    required this.currentEmail,
-    required this.onSave,
-  });
-
-  @override
-  State<_EditProfileDialog> createState() => _EditProfileDialogState();
-}
-
-class _EditProfileDialogState extends State<_EditProfileDialog> {
-  late final TextEditingController _nameController;
-  late final TextEditingController _emailController;
-  String? _errorText;
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController(text: widget.currentName);
-    _emailController = TextEditingController(text: widget.currentEmail);
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    super.dispose();
-  }
-
-  bool get _isValid {
-    final name = _nameController.text.trim();
-    final email = _emailController.text.trim();
-    if (name.isEmpty && email.isEmpty) return false;
-    if (email.isNotEmpty && !email.contains('@')) return false;
-    return true;
-  }
-
-  void _handleSave() {
-    if (!_isValid) {
-      setState(() {
-        _errorText = AppLocalizations.of(context)!.nameOrEmailRequired;
-      });
-      return;
-    }
-    widget.onSave(
-      _nameController.text.trim(),
-      _emailController.text.trim(),
-    );
-    Navigator.pop(context);
-  }
+  const _EmptyDrafts({required this.message});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
 
-    return AlertDialog(
-      title: Text(l10n.editProfileTitle),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppDimensions.spacing16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          TextField(
-            controller: _nameController,
-            decoration: InputDecoration(labelText: l10n.nameLabel),
-            onChanged: (_) => setState(() => _errorText = null),
-            textCapitalization: TextCapitalization.words,
+          Icon(
+            LucideIcons.fileEdit,
+            size: AppDimensions.iconSm,
+            color: colors.textPlaceholder,
           ),
-          const SizedBox(height: AppDimensions.spacing12),
-          TextField(
-            controller: _emailController,
-            decoration: InputDecoration(labelText: l10n.emailLabel),
-            keyboardType: TextInputType.emailAddress,
-            onChanged: (_) => setState(() => _errorText = null),
+          const SizedBox(width: AppDimensions.spacing8),
+          Text(
+            message,
+            style:
+                AppTypography.subtitle.copyWith(color: colors.textPlaceholder),
           ),
-          if (_errorText != null) ...[
-            const SizedBox(height: AppDimensions.spacing8),
-            Text(
-              _errorText!,
-              style: AppTypography.footnote
-                  .copyWith(color: AppColors.destructive),
-            ),
-          ],
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancelAction),
-        ),
-        TextButton(
-          onPressed: _handleSave,
-          child: Text(l10n.saveAction),
-        ),
-      ],
     );
   }
 }

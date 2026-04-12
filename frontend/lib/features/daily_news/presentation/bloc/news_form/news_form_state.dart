@@ -3,7 +3,7 @@ import 'package:news_app_clean_architecture/core/resources/error_type.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/news_section.dart';
 import 'package:news_app_clean_architecture/core/resources/image_item.dart';
 
-enum FormStatus { initial, submitting, success, failure }
+enum FormStatus { initial, submitting, success, failure, savedAsDraft }
 
 class NewsFormState extends Equatable {
   final String title;

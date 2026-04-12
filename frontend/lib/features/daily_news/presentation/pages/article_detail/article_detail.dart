@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:news_app_clean_architecture/config/routes/routes.dart';
 import 'package:news_app_clean_architecture/config/theme/app_colors.dart';
 import 'package:news_app_clean_architecture/config/theme/app_dimensions.dart';
@@ -11,6 +12,7 @@ import 'package:news_app_clean_architecture/config/theme/app_typography.dart';
 import 'package:news_app_clean_architecture/config/theme/theme_extensions.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/helpers/article_section_helper.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/helpers/date_formatter.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_state.dart';
@@ -207,15 +209,17 @@ class _ArticleContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
-    final section = article.effectiveSection;
+    final section = article.section;
 
     return Padding(
       padding: const EdgeInsets.all(AppDimensions.spacing24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppBadge(text: section.label(l10n)),
-          const SizedBox(height: AppDimensions.spacing18),
+          if (section != null) ...[
+            AppBadge(text: section.label(l10n)),
+            const SizedBox(height: AppDimensions.spacing18),
+          ],
           Text(
             article.title ?? '',
             style: AppTypography.sectionTitle.copyWith(
@@ -241,9 +245,63 @@ class _ArticleContent extends StatelessWidget {
               height: AppDimensions.lineHeightLoose,
             ),
           ),
+          if (article.url != null && article.url!.isNotEmpty) ...[
+            const SizedBox(height: AppDimensions.spacing24),
+            _ExploreFullContentButton(url: article.url!),
+          ],
         ],
       ),
     );
+  }
+}
+
+class _ExploreFullContentButton extends StatelessWidget {
+  final String url;
+
+  const _ExploreFullContentButton({required this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
+
+    return GestureDetector(
+      onTap: () => _launchUrl(url),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(
+          vertical: AppDimensions.spacing16,
+          horizontal: AppDimensions.spacing24,
+        ),
+        decoration: BoxDecoration(
+          color: colors.bgCard,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
+          border: Border.all(color: AppColors.accentGreen),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              LucideIcons.externalLink,
+              size: AppDimensions.iconMd,
+              color: AppColors.accentGreen,
+            ),
+            const SizedBox(width: AppDimensions.spacing10),
+            Text(
+              l10n.exploreFullContent,
+              style: AppTypography.buttonLarge.copyWith(
+                color: AppColors.accentGreen,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 }
 
@@ -291,7 +349,7 @@ class _MetaRow extends StatelessWidget {
         ),
         const SizedBox(width: AppDimensions.spacing6),
         Text(
-          article.publishedAt ?? '',
+          formatArticleDate(article.publishedAt),
           style: AppTypography.subtitle.copyWith(color: colors.textSecondary),
         ),
       ],
@@ -316,24 +374,6 @@ class _ActionRow extends StatelessWidget {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _ActionPill(
-              icon: LucideIcons.heart,
-              label: l10n.favoriteAction,
-              isActive: isSaved,
-              activeStyle: ActionPillStyle(
-                iconColor: AppColors.white,
-                textColor: AppColors.white,
-                backgroundColor: AppColors.coral,
-              ),
-              inactiveStyle: ActionPillStyle(
-                iconColor: AppColors.coral,
-                textColor: AppColors.coral,
-                backgroundColor: colors.bgCard,
-                borderColor: colors.borderSubtle,
-              ),
-              onTap: () => _toggleSaved(context, isSaved),
-            ),
-            const SizedBox(width: AppDimensions.spacing12),
             _ActionPill(
               icon: LucideIcons.bookmark,
               label: l10n.saveAction,
