@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app_clean_architecture/core/resources/data_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_saved_article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/remove_article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/save_article.dart';
@@ -13,28 +14,34 @@ class LocalArticleBloc extends Bloc<LocalArticlesEvent, LocalArticlesState> {
   LocalArticleBloc(this._getSavedArticleUseCase, this._saveArticleUseCase,
       this._removeArticleUseCase)
       : super(const LocalArticlesLoading()) {
-    on<GetSavedArticles>(onGetSavedArticles);
-    on<RemoveArticle>(onRemoveArticle);
-    on<SaveArticle>(onSaveArticle);
+    on<GetSavedArticles>(_onGetSavedArticles);
+    on<RemoveArticle>(_onRemoveArticle);
+    on<SaveArticle>(_onSaveArticle);
   }
 
-  void onGetSavedArticles(
+  Future<void> _onGetSavedArticles(
       GetSavedArticles event, Emitter<LocalArticlesState> emit) async {
-    final articles = await _getSavedArticleUseCase();
-    emit(LocalArticlesDone(articles));
+    final dataState = await _getSavedArticleUseCase();
+    if (dataState is DataSuccess) {
+      emit(LocalArticlesDone(dataState.data ?? []));
+    }
   }
 
-  void onRemoveArticle(
+  Future<void> _onRemoveArticle(
       RemoveArticle removeArticle, Emitter<LocalArticlesState> emit) async {
     await _removeArticleUseCase(params: removeArticle.article);
-    final articles = await _getSavedArticleUseCase();
-    emit(LocalArticlesDone(articles));
+    final dataState = await _getSavedArticleUseCase();
+    if (dataState is DataSuccess) {
+      emit(LocalArticlesDone(dataState.data ?? []));
+    }
   }
 
-  void onSaveArticle(
+  Future<void> _onSaveArticle(
       SaveArticle saveArticle, Emitter<LocalArticlesState> emit) async {
     await _saveArticleUseCase(params: saveArticle.article);
-    final articles = await _getSavedArticleUseCase();
-    emit(LocalArticlesDone(articles));
+    final dataState = await _getSavedArticleUseCase();
+    if (dataState is DataSuccess) {
+      emit(LocalArticlesDone(dataState.data ?? []));
+    }
   }
 }

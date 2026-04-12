@@ -171,4 +171,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get genericError => 'An error occurred';
+
+  @override
+  String get errorNetwork =>
+      'No internet connection. Please check your network.';
+
+  @override
+  String get errorServer => 'Server error. Please try again later.';
+
+  @override
+  String get errorStorage => 'Failed to upload images. Please try again.';
+
+  @override
+  String get errorNotFound => 'The article was not found.';
 }

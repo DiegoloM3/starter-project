@@ -52,5 +52,9 @@
   "deleteAction": "Eliminar",
   "imageSourceCamera": "Cámara",
   "imageSourceGallery": "Galería",
-  "genericError": "Ocurrió un error"
+  "genericError": "Ocurrió un error",
+  "errorNetwork": "Sin conexión a internet. Revisa tu red.",
+  "errorServer": "Error del servidor. Intenta más tarde.",
+  "errorStorage": "Error al subir imágenes. Intenta de nuevo.",
+  "errorNotFound": "El artículo no fue encontrado."
 }

@@ -171,4 +171,16 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get genericError => 'Ocurrió un error';
+
+  @override
+  String get errorNetwork => 'Sin conexión a internet. Revisa tu red.';
+
+  @override
+  String get errorServer => 'Error del servidor. Intenta más tarde.';
+
+  @override
+  String get errorStorage => 'Error al subir imágenes. Intenta de nuevo.';
+
+  @override
+  String get errorNotFound => 'El artículo no fue encontrado.';
 }

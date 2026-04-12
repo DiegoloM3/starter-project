@@ -415,6 +415,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'An error occurred'**
   String get genericError;
+
+  /// Error message for network connectivity issues
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Please check your network.'**
+  String get errorNetwork;
+
+  /// Error message for server-side failures
+  ///
+  /// In en, this message translates to:
+  /// **'Server error. Please try again later.'**
+  String get errorServer;
+
+  /// Error message for file storage failures
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload images. Please try again.'**
+  String get errorStorage;
+
+  /// Error message when a resource is not found
+  ///
+  /// In en, this message translates to:
+  /// **'The article was not found.'**
+  String get errorNotFound;
 }
 
 class _AppLocalizationsDelegate

@@ -111,5 +111,13 @@
   "imageSourceGallery": "Gallery",
   "@imageSourceGallery": { "description": "Gallery option in image source picker" },
   "genericError": "An error occurred",
-  "@genericError": { "description": "Generic error message shown when no specific error is available" }
+  "@genericError": { "description": "Generic error message shown when no specific error is available" },
+  "errorNetwork": "No internet connection. Please check your network.",
+  "@errorNetwork": { "description": "Error message for network connectivity issues" },
+  "errorServer": "Server error. Please try again later.",
+  "@errorServer": { "description": "Error message for server-side failures" },
+  "errorStorage": "Failed to upload images. Please try again.",
+  "@errorStorage": { "description": "Error message for file storage failures" },
+  "errorNotFound": "The article was not found.",
+  "@errorNotFound": { "description": "Error message when a resource is not found" }
 }

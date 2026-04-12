@@ -8,6 +8,9 @@ import 'package:news_app_clean_architecture/config/theme/app_typography.dart';
 import 'package:news_app_clean_architecture/config/theme/theme_extensions.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/news_section.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/firestore/firestore_article_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/firestore/firestore_article_event.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/firestore/firestore_article_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_state.dart';
@@ -33,6 +36,7 @@ class DailyNews extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localState = context.watch<LocalArticleBloc>().state;
+    final firestoreState = context.watch<FirestoreArticlesBloc>().state;
     final selectedTab = context.watch<NewsTabCubit>().state;
     context.watch<NewsFilterCubit>();
     final savedUrls = _savedUrlsFrom(localState);
@@ -57,7 +61,8 @@ class DailyNews extends StatelessWidget {
                     child: KeyedSubtree(
                       key: ValueKey(selectedTab),
                       child: selectedTab == 0
-                          ? _buildLocalContent(context, localState, savedUrls)
+                          ? _buildFirestoreContent(
+                              context, firestoreState, savedUrls)
                           : _buildRemoteContent(context, savedUrls),
                     ),
                   ),
@@ -140,15 +145,18 @@ class DailyNews extends StatelessWidget {
     );
   }
 
-  Widget _buildLocalContent(
+  Widget _buildFirestoreContent(
     BuildContext context,
-    LocalArticlesState state,
+    FirestoreArticlesState state,
     Set<String> savedUrls,
   ) {
-    if (state is LocalArticlesLoading) {
+    if (state is FirestoreArticlesLoading) {
       return const Center(child: CupertinoActivityIndicator());
     }
-    if (state is LocalArticlesDone) {
+    if (state is FirestoreArticlesError) {
+      return _buildErrorState(context);
+    }
+    if (state is FirestoreArticlesDone) {
       final filterState = context.read<NewsFilterCubit>().state;
       final articles = filterArticles(
         articles: state.articles ?? [],
@@ -222,11 +230,15 @@ class DailyNews extends StatelessWidget {
         final isBookmarked = savedUrls.contains(article.url);
         final section = article.effectiveSection;
 
+        final imageUrl = article.images.isNotEmpty
+            ? article.images.first
+            : article.urlToImage;
+
         return CardNews(
           title: article.title ?? '',
           description: article.description,
           date: article.publishedAt ?? '',
-          imageUrl: article.urlToImage,
+          imageUrl: imageUrl,
           isBookmarked: isBookmarked,
           sectionBadge: showBadge
               ? SectionBadge(
@@ -308,12 +320,26 @@ class DailyNews extends StatelessWidget {
     Navigator.pushNamed(context, AppRoutes.profile);
   }
 
-  void _onAddNewsTap(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.addNews);
+  Future<void> _onAddNewsTap(BuildContext context) async {
+    final result = await Navigator.pushNamed(context, AppRoutes.addNews);
+    if (result == true && context.mounted) {
+      context
+          .read<FirestoreArticlesBloc>()
+          .add(const GetFirestoreArticles());
+    }
   }
 
-  void _onArticleTap(BuildContext context, ArticleEntity article) {
-    Navigator.pushNamed(context, AppRoutes.articleDetails, arguments: article);
+  Future<void> _onArticleTap(BuildContext context, ArticleEntity article) async {
+    final result = await Navigator.pushNamed(
+      context,
+      AppRoutes.articleDetails,
+      arguments: article,
+    );
+    if (result == true && context.mounted) {
+      context
+          .read<FirestoreArticlesBloc>()
+          .add(const GetFirestoreArticles());
+    }
   }
 
   void _onBookmarkTap(
@@ -337,6 +363,13 @@ class DailyNews extends StatelessWidget {
   }
 
   void _onRetry(BuildContext context) {
-    context.read<RemoteArticlesBloc>().add(const GetArticles());
+    final selectedTab = context.read<NewsTabCubit>().state;
+    if (selectedTab == 0) {
+      context
+          .read<FirestoreArticlesBloc>()
+          .add(const GetFirestoreArticles());
+    } else {
+      context.read<RemoteArticlesBloc>().add(const GetArticles());
+    }
   }
 }

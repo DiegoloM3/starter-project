@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:news_app_clean_architecture/core/resources/error_type.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/news_section.dart';
 import 'package:news_app_clean_architecture/core/resources/image_item.dart';
 
@@ -12,7 +13,7 @@ class NewsFormState extends Equatable {
   final bool isEditing;
   final String? articleId;
   final FormStatus status;
-  final String? errorMessage;
+  final ErrorType? errorType;
   final int maxImages;
   final String originalTitle;
   final String originalBody;
@@ -27,7 +28,7 @@ class NewsFormState extends Equatable {
     this.isEditing = false,
     this.articleId,
     this.status = FormStatus.initial,
-    this.errorMessage,
+    this.errorType,
     this.maxImages = 5,
     this.originalTitle = '',
     this.originalBody = '',
@@ -57,7 +58,7 @@ class NewsFormState extends Equatable {
     bool? isEditing,
     String? articleId,
     FormStatus? status,
-    String? errorMessage,
+    ErrorType? errorType,
     int? maxImages,
     String? originalTitle,
     String? originalBody,
@@ -72,7 +73,7 @@ class NewsFormState extends Equatable {
       isEditing: isEditing ?? this.isEditing,
       articleId: articleId ?? this.articleId,
       status: status ?? this.status,
-      errorMessage: errorMessage,
+      errorType: errorType,
       maxImages: maxImages ?? this.maxImages,
       originalTitle: originalTitle ?? this.originalTitle,
       originalBody: originalBody ?? this.originalBody,
@@ -90,7 +91,7 @@ class NewsFormState extends Equatable {
         isEditing,
         articleId,
         status,
-        errorMessage,
+        errorType,
         maxImages,
         originalTitle,
         originalBody,

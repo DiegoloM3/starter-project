@@ -1,19 +1,43 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:news_app_clean_architecture/core/resources/error_type.dart';
+import 'package:news_app_clean_architecture/core/resources/failure.dart';
+import 'package:news_app_clean_architecture/core/resources/data_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/news_section.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/create_article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/update_article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/delete_article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/news_form/news_form_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/news_form/news_form_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/news_form/news_form_state.dart';
 import 'package:news_app_clean_architecture/core/resources/image_item.dart';
+
+import '../../../fakes/fake_firestore_article_repository.dart';
+
+NewsFormBloc createBloc({
+  FakeFirestoreArticleRepository? repo,
+  ArticleEntity? existingArticle,
+  NewsSection? existingSection,
+}) {
+  final repository = repo ?? FakeFirestoreArticleRepository();
+  return NewsFormBloc(
+    createArticleUseCase: CreateArticleUseCase(repository),
+    updateArticleUseCase: UpdateArticleUseCase(repository),
+    deleteArticleUseCase: DeleteArticleUseCase(repository),
+    authorName: 'Test Author',
+    existingArticle: existingArticle,
+    existingSection: existingSection,
+  );
+}
 
 void main() {
   group('NewsFormBloc', () {
     late NewsFormBloc bloc;
 
     setUp(() {
-      bloc = NewsFormBloc();
+      bloc = createBloc();
     });
 
     tearDown(() {
@@ -31,13 +55,13 @@ void main() {
       });
 
       test('initializes with existing article in edit mode', () {
-        final article = const ArticleEntity(
-          id: 1,
+        const article = ArticleEntity(
+          documentId: 'doc-1',
           title: 'Test Title',
           content: 'Test Content',
-          urlToImage: 'https://example.com/image.jpg',
+          images: ['https://example.com/image.jpg'],
         );
-        final editBloc = NewsFormBloc(
+        final editBloc = createBloc(
           existingArticle: article,
           existingSection: NewsSection.sports,
         );
@@ -46,16 +70,17 @@ void main() {
         expect(editBloc.state.body, 'Test Content');
         expect(editBloc.state.selectedSection, NewsSection.sports);
         expect(editBloc.state.isEditing, true);
-        expect(editBloc.state.articleId, '1');
+        expect(editBloc.state.articleId, 'doc-1');
         expect(editBloc.state.images.length, 1);
-        expect(editBloc.state.images.first.url, 'https://example.com/image.jpg');
+        expect(
+            editBloc.state.images.first.url, 'https://example.com/image.jpg');
 
         editBloc.close();
       });
 
-      test('initializes with null image when article has no urlToImage', () {
-        final article = const ArticleEntity(id: 2, title: 'No Image');
-        final editBloc = NewsFormBloc(existingArticle: article);
+      test('initializes with empty images when article has no images', () {
+        const article = ArticleEntity(documentId: 'doc-2', title: 'No Image');
+        final editBloc = createBloc(existingArticle: article);
 
         expect(editBloc.state.images, isEmpty);
         expect(editBloc.state.isEditing, true);
@@ -151,22 +176,119 @@ void main() {
     });
 
     group('NewsFormSubmitted', () {
-      test('emits failure since not yet implemented', () async {
+      test('emits success when creating article with valid fields', () async {
+        bloc.add(const NewsFormTitleChanged('Title'));
+        bloc.add(const NewsFormBodyChanged('Body content'));
+        bloc.add(const NewsFormSectionChanged(NewsSection.sports));
+        await Future.delayed(Duration.zero);
+
         bloc.add(const NewsFormSubmitted());
         await Future.delayed(Duration.zero);
 
-        expect(bloc.state.status, FormStatus.failure);
-        expect(bloc.state.errorMessage, isNotNull);
+        expect(bloc.state.status, FormStatus.success);
+      });
+
+      test('does not submit when canSubmit is false', () async {
+        bloc.add(const NewsFormSubmitted());
+        await Future.delayed(Duration.zero);
+
+        expect(bloc.state.status, FormStatus.initial);
+      });
+
+      test('emits failure with network ErrorType when create fails',
+          () async {
+        final repo = FakeFirestoreArticleRepository();
+        repo.createResult = const DataFailed(NetworkFailure());
+        final failBloc = createBloc(repo: repo);
+
+        failBloc.add(const NewsFormTitleChanged('Title'));
+        failBloc.add(const NewsFormBodyChanged('Body'));
+        failBloc.add(const NewsFormSectionChanged(NewsSection.sports));
+        await Future.delayed(Duration.zero);
+
+        failBloc.add(const NewsFormSubmitted());
+        await Future.delayed(Duration.zero);
+
+        expect(failBloc.state.status, FormStatus.failure);
+        expect(failBloc.state.errorType, ErrorType.network);
+        failBloc.close();
+      });
+
+      test('emits failure with server ErrorType when update fails', () async {
+        final repo = FakeFirestoreArticleRepository();
+        repo.updateResult = const DataFailed(ServerFailure());
+        const article = ArticleEntity(
+          documentId: 'doc-1',
+          title: 'Original',
+          content: 'Content',
+          section: NewsSection.arts,
+        );
+        final editBloc = createBloc(
+          repo: repo,
+          existingArticle: article,
+          existingSection: NewsSection.arts,
+        );
+
+        editBloc.add(const NewsFormTitleChanged('Updated'));
+        await Future.delayed(Duration.zero);
+
+        editBloc.add(const NewsFormSubmitted());
+        await Future.delayed(Duration.zero);
+
+        expect(editBloc.state.status, FormStatus.failure);
+        expect(editBloc.state.errorType, ErrorType.server);
+        editBloc.close();
       });
     });
 
     group('NewsFormDeleted', () {
-      test('emits failure since not yet implemented', () async {
+      test('emits success when deleting article with documentId', () async {
+        const article = ArticleEntity(
+          documentId: 'doc-delete',
+          title: 'To Delete',
+          content: 'Content',
+          section: NewsSection.arts,
+        );
+        final editBloc = createBloc(
+          existingArticle: article,
+          existingSection: NewsSection.arts,
+        );
+
+        editBloc.add(const NewsFormDeleted());
+        await Future.delayed(Duration.zero);
+
+        expect(editBloc.state.status, FormStatus.success);
+        editBloc.close();
+      });
+
+      test('does nothing when articleId is null', () async {
         bloc.add(const NewsFormDeleted());
         await Future.delayed(Duration.zero);
 
-        expect(bloc.state.status, FormStatus.failure);
-        expect(bloc.state.errorMessage, isNotNull);
+        expect(bloc.state.status, FormStatus.initial);
+      });
+
+      test('emits failure with ErrorType when delete fails', () async {
+        final repo = FakeFirestoreArticleRepository();
+        repo.deleteResult = const DataFailed(StorageFailure());
+        const article = ArticleEntity(
+          documentId: 'doc-fail',
+          title: 'Fail Delete',
+          content: 'Content',
+          section: NewsSection.crime,
+        );
+        final editBloc = createBloc(
+          repo: repo,
+          existingArticle: article,
+          existingSection: NewsSection.crime,
+        );
+
+        editBloc.add(const NewsFormDeleted());
+        await Future.delayed(Duration.zero);
+
+        expect(editBloc.state.status, FormStatus.failure);
+        expect(editBloc.state.errorType, ErrorType.storage);
+        editBloc.close();
       });
     });
   });

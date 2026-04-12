@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:news_app_clean_architecture/config/routes/routes.dart';
 import 'package:news_app_clean_architecture/config/theme/app_colors.dart';
 import 'package:news_app_clean_architecture/config/theme/app_dimensions.dart';
 import 'package:news_app_clean_architecture/config/theme/app_typography.dart';
@@ -34,7 +35,7 @@ class ArticleDetailsView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _HeroSection(imageUrl: article.urlToImage),
+                _HeroSection(article: article),
                 _ArticleContent(article: article),
               ],
             ),
@@ -46,20 +47,24 @@ class ArticleDetailsView extends StatelessWidget {
 }
 
 class _HeroSection extends StatelessWidget {
-  final String? imageUrl;
+  final ArticleEntity article;
 
-  const _HeroSection({this.imageUrl});
+  const _HeroSection({required this.article});
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = article.images.isNotEmpty
+        ? article.images.first
+        : article.urlToImage;
+
     return Stack(
       children: [
         _HeroImage(imageUrl: imageUrl),
-        const Positioned(
+        Positioned(
           top: 0,
           left: 0,
           right: 0,
-          child: _OverlayButtons(),
+          child: _OverlayButtons(article: article),
         ),
       ],
     );
@@ -103,10 +108,14 @@ class _HeroImage extends StatelessWidget {
 }
 
 class _OverlayButtons extends StatelessWidget {
-  const _OverlayButtons();
+  final ArticleEntity article;
+
+  const _OverlayButtons({required this.article});
 
   @override
   Widget build(BuildContext context) {
+    final isFirestoreArticle = article.documentId != null;
+
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimensions.spacing24,
@@ -118,13 +127,35 @@ class _OverlayButtons extends StatelessWidget {
             icon: LucideIcons.chevronLeft,
             onTap: () => Navigator.pop(context),
           ),
-          _FrostedButton(
-            icon: LucideIcons.share2,
-            onTap: () {},
+          Row(
+            children: [
+              if (isFirestoreArticle) ...[
+                _FrostedButton(
+                  icon: LucideIcons.pencil,
+                  onTap: () => _onEditTap(context),
+                ),
+                const SizedBox(width: AppDimensions.spacing8),
+              ],
+              _FrostedButton(
+                icon: LucideIcons.share2,
+                onTap: () {},
+              ),
+            ],
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _onEditTap(BuildContext context) async {
+    final result = await Navigator.pushNamed(
+      context,
+      AppRoutes.editNews,
+      arguments: EditNewsArgs(article: article, section: article.section),
+    );
+    if (result == true && context.mounted) {
+      Navigator.pop(context, true);
+    }
   }
 }
 

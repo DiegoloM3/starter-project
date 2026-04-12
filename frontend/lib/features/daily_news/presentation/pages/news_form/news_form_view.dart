@@ -14,6 +14,7 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/news_form/news_form_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/news_form/news_form_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/helpers/article_section_helper.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/helpers/error_type_l10n.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/form/form_section_selector.dart';
 import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/form/photo_gallery_picker.dart';
@@ -87,10 +88,10 @@ class _NewsFormViewState extends State<NewsFormView> {
       Navigator.pop(context, true);
     }
     if (state.status == FormStatus.failure) {
-      final l10n = AppLocalizations.of(context)!;
+      final message = state.errorType?.toMessage(context) ??
+          AppLocalizations.of(context)!.genericError;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(state.errorMessage ?? l10n.genericError)),
+        SnackBar(content: Text(message)),
       );
     }
   }

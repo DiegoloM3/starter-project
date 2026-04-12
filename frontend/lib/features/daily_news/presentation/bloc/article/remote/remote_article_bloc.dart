@@ -19,10 +19,8 @@ class RemoteArticlesBloc
 
     if (dataState is DataSuccess && dataState.data!.isNotEmpty) {
       emit(RemoteArticlesDone(dataState.data!));
-    }
-
-    if (dataState is DataFailed) {
-      emit(RemoteArticlesError(dataState.error!));
+    } else if (dataState is DataFailed) {
+      emit(RemoteArticlesError(dataState.failure!.type));
     }
   }
 }
