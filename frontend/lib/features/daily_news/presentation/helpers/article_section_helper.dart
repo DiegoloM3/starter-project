@@ -22,34 +22,34 @@ extension ArticleSectionExtension on ArticleEntity {
 extension SectionColors on NewsSection {
   Color backgroundColor(AppColorsExtension colors) {
     switch (this) {
-      case NewsSection.clima:
-        return colors.sectionClimaBackground;
-      case NewsSection.politica:
-        return colors.sectionPoliticaBackground;
-      case NewsSection.artes:
-        return colors.sectionArtesBackground;
-      case NewsSection.deportes:
-        return colors.sectionDeportesBackground;
-      case NewsSection.policiaca:
-        return colors.sectionPoliciacaBackground;
-      case NewsSection.todos:
+      case NewsSection.weather:
+        return colors.weatherSectionBackground;
+      case NewsSection.politics:
+        return colors.politicsSectionBackground;
+      case NewsSection.arts:
+        return colors.artsSectionBackground;
+      case NewsSection.sports:
+        return colors.sportsSectionBackground;
+      case NewsSection.crime:
+        return colors.crimeSectionBackground;
+      case NewsSection.all:
         return colors.accentGreenLight;
     }
   }
 
   Color textColor(AppColorsExtension colors) {
     switch (this) {
-      case NewsSection.clima:
-        return colors.sectionClimaText;
-      case NewsSection.politica:
-        return colors.sectionPoliticaText;
-      case NewsSection.artes:
-        return colors.sectionArtesText;
-      case NewsSection.deportes:
-        return colors.sectionDeportesText;
-      case NewsSection.policiaca:
-        return colors.sectionPoliciacaText;
-      case NewsSection.todos:
+      case NewsSection.weather:
+        return colors.weatherSectionText;
+      case NewsSection.politics:
+        return colors.politicsSectionText;
+      case NewsSection.arts:
+        return colors.artsSectionText;
+      case NewsSection.sports:
+        return colors.sportsSectionText;
+      case NewsSection.crime:
+        return colors.crimeSectionText;
+      case NewsSection.all:
         return AppColors.accentGreen;
     }
   }
@@ -57,23 +57,23 @@ extension SectionColors on NewsSection {
 
 extension NewsSectionAssignable on NewsSection {
   static List<NewsSection> get assignable =>
-      NewsSection.values.where((s) => s != NewsSection.todos).toList();
+      NewsSection.values.where((s) => s != NewsSection.all).toList();
 }
 
 extension NewsSectionLabel on NewsSection {
   String label(AppLocalizations l10n) {
     switch (this) {
-      case NewsSection.todos:
+      case NewsSection.all:
         return l10n.sectionAll;
-      case NewsSection.politica:
+      case NewsSection.politics:
         return l10n.sectionPolitics;
-      case NewsSection.clima:
+      case NewsSection.weather:
         return l10n.sectionWeather;
-      case NewsSection.deportes:
+      case NewsSection.sports:
         return l10n.sectionSports;
-      case NewsSection.artes:
+      case NewsSection.arts:
         return l10n.sectionArts;
-      case NewsSection.policiaca:
+      case NewsSection.crime:
         return l10n.sectionCrime;
     }
   }
@@ -85,7 +85,7 @@ List<ArticleEntity> filterArticles({
   required String searchQuery,
 }) {
   return articles.where((article) {
-    if (selectedSection != NewsSection.todos &&
+    if (selectedSection != NewsSection.all &&
         article.section != selectedSection) {
       return false;
     }

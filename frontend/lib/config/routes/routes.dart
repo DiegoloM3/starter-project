@@ -3,6 +3,7 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/entities/
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/news_section.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/article_detail/article_detail.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/home/daily_news.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/profile/profile_screen.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/news_form/add_news_screen.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/news_form/edit_news_screen.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/saved_article/saved_article.dart';
@@ -18,6 +19,7 @@ class AppRoutes {
   static const String home = '/';
   static const String articleDetails = '/ArticleDetails';
   static const String savedArticles = '/SavedArticles';
+  static const String profile = '/Profile';
   static const String addNews = '/AddNews';
   static const String editNews = '/EditNews';
 
@@ -32,6 +34,9 @@ class AppRoutes {
 
       case savedArticles:
         return _materialRoute(const SavedArticles());
+
+      case profile:
+        return _materialRoute(const ProfileScreen());
 
       case addNews:
         return _materialRoute(const AddNewsScreen());

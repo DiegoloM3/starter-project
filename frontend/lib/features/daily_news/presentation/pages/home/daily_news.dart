@@ -93,7 +93,7 @@ class DailyNews extends StatelessWidget {
         button: true,
         label: l10n.profileButtonLabel,
         child: GestureDetector(
-          onTap: _onProfileTap,
+          onTap: () => _onProfileTap(context),
           child: const AppAvatar(),
         ),
       ),
@@ -202,7 +202,7 @@ class DailyNews extends StatelessWidget {
   ) {
     final filterState = context.read<NewsFilterCubit>().state;
     final l10n = AppLocalizations.of(context)!;
-    final showBadge = filterState.selectedSection == NewsSection.todos;
+    final showBadge = filterState.selectedSection == NewsSection.all;
     final colors = context.colors;
 
     return ListView.separated(
@@ -304,8 +304,8 @@ class DailyNews extends StatelessWidget {
     );
   }
 
-  void _onProfileTap() {
-    // TODO: Navigate to profile screen
+  void _onProfileTap(BuildContext context) {
+    Navigator.pushNamed(context, AppRoutes.profile);
   }
 
   void _onAddNewsTap(BuildContext context) {

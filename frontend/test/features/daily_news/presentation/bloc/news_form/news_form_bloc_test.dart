@@ -39,12 +39,12 @@ void main() {
         );
         final editBloc = NewsFormBloc(
           existingArticle: article,
-          existingSection: NewsSection.deportes,
+          existingSection: NewsSection.sports,
         );
 
         expect(editBloc.state.title, 'Test Title');
         expect(editBloc.state.body, 'Test Content');
-        expect(editBloc.state.selectedSection, NewsSection.deportes);
+        expect(editBloc.state.selectedSection, NewsSection.sports);
         expect(editBloc.state.isEditing, true);
         expect(editBloc.state.articleId, '1');
         expect(editBloc.state.images.length, 1);
@@ -84,10 +84,10 @@ void main() {
 
     group('NewsFormSectionChanged', () {
       test('updates selected section', () async {
-        bloc.add(const NewsFormSectionChanged(NewsSection.clima));
+        bloc.add(const NewsFormSectionChanged(NewsSection.weather));
         await Future.delayed(Duration.zero);
 
-        expect(bloc.state.selectedSection, NewsSection.clima);
+        expect(bloc.state.selectedSection, NewsSection.weather);
       });
     });
 
@@ -176,7 +176,7 @@ void main() {
       const state = NewsFormState(
         title: 'Title',
         body: 'Body content',
-        selectedSection: NewsSection.clima,
+        selectedSection: NewsSection.weather,
       );
 
       expect(state.canSubmit, true);
@@ -186,7 +186,7 @@ void main() {
       const state = NewsFormState(
         title: '',
         body: 'Body content',
-        selectedSection: NewsSection.clima,
+        selectedSection: NewsSection.weather,
       );
 
       expect(state.canSubmit, false);
@@ -196,7 +196,7 @@ void main() {
       const state = NewsFormState(
         title: '   ',
         body: 'Body content',
-        selectedSection: NewsSection.clima,
+        selectedSection: NewsSection.weather,
       );
 
       expect(state.canSubmit, false);
@@ -206,7 +206,7 @@ void main() {
       const state = NewsFormState(
         title: 'Title',
         body: '',
-        selectedSection: NewsSection.clima,
+        selectedSection: NewsSection.weather,
       );
 
       expect(state.canSubmit, false);
@@ -225,7 +225,7 @@ void main() {
       const state = NewsFormState(
         title: 'Title',
         body: 'Body content',
-        selectedSection: NewsSection.clima,
+        selectedSection: NewsSection.weather,
         status: FormStatus.submitting,
       );
 
@@ -272,8 +272,8 @@ void main() {
 
     test('hasUnsavedChanges detects section change', () {
       const state = NewsFormState(
-        selectedSection: NewsSection.artes,
-        originalSection: NewsSection.clima,
+        selectedSection: NewsSection.arts,
+        originalSection: NewsSection.weather,
       );
 
       expect(state.hasUnsavedChanges, true);
@@ -283,10 +283,10 @@ void main() {
       const state = NewsFormState(
         title: 'Same',
         body: 'Same',
-        selectedSection: NewsSection.clima,
+        selectedSection: NewsSection.weather,
         originalTitle: 'Same',
         originalBody: 'Same',
-        originalSection: NewsSection.clima,
+        originalSection: NewsSection.weather,
       );
 
       expect(state.hasUnsavedChanges, false);
@@ -296,7 +296,7 @@ void main() {
       const original = NewsFormState(
         title: 'Title',
         body: 'Body',
-        selectedSection: NewsSection.artes,
+        selectedSection: NewsSection.arts,
         isEditing: true,
       );
 
@@ -304,7 +304,7 @@ void main() {
 
       expect(copied.title, 'New Title');
       expect(copied.body, 'Body');
-      expect(copied.selectedSection, NewsSection.artes);
+      expect(copied.selectedSection, NewsSection.arts);
       expect(copied.isEditing, true);
     });
   });

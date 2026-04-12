@@ -1,8 +1,8 @@
 enum NewsSection {
-  todos,
-  politica,
-  clima,
-  deportes,
-  artes,
-  policiaca,
+  all,
+  politics,
+  weather,
+  sports,
+  arts,
+  crime,
 }

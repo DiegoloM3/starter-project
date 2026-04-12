@@ -12,6 +12,7 @@ import 'features/daily_news/domain/usecases/get_saved_article.dart';
 import 'features/daily_news/domain/usecases/remove_article.dart';
 import 'features/daily_news/domain/usecases/save_article.dart';
 import 'features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
+import 'features/daily_news/presentation/bloc/user_profile/user_profile_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -42,4 +43,6 @@ Future<void> initializeDependencies() async {
 
   sl.registerFactory<LocalArticleBloc>(
       () => LocalArticleBloc(sl(), sl(), sl()));
+
+  sl.registerLazySingleton<UserProfileCubit>(() => UserProfileCubit());
 }

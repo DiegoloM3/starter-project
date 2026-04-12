@@ -22,6 +22,18 @@
   "sectionSports": "Deportes",
   "sectionArts": "Artes",
   "sectionCrime": "Policiaca",
+  "profileTitle": "Mi Perfil",
+  "favoritesSection": "Favoritos",
+  "savedSection": "Guardados para después",
+  "favoriteAction": "Favorito",
+  "saveAction": "Guardar",
+  "editProfileTitle": "Editar Perfil",
+  "nameLabel": "Nombre",
+  "emailLabel": "Correo electrónico",
+  "nameOrEmailRequired": "Se requiere nombre o correo",
+  "guestName": "Invitado"
+  "saveAction": "Guardar"
+  "sectionCrime": "Policiaca",
   "newNewsTitle": "Nueva Noticia",
   "editNewsTitle": "Editar Noticia",
   "formTitleLabel": "Título",

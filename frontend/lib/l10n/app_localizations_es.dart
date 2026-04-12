@@ -75,6 +75,36 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sectionCrime => 'Policiaca';
 
   @override
+  String get profileTitle => 'Mi Perfil';
+
+  @override
+  String get favoritesSection => 'Favoritos';
+
+  @override
+  String get savedSection => 'Guardados para después';
+
+  @override
+  String get favoriteAction => 'Favorito';
+
+  @override
+  String get saveAction => 'Guardar';
+
+  @override
+  String get editProfileTitle => 'Editar Perfil';
+
+  @override
+  String get nameLabel => 'Nombre';
+
+  @override
+  String get emailLabel => 'Correo electrónico';
+
+  @override
+  String get nameOrEmailRequired => 'Se requiere nombre o correo';
+
+  @override
+  String get guestName => 'Invitado';
+
+  @override
   String get newNewsTitle => 'Nueva Noticia';
 
   @override

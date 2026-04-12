@@ -230,6 +230,66 @@ abstract class AppLocalizations {
   /// **'Crime'**
   String get sectionCrime;
 
+  /// Header title for the profile screen
+  ///
+  /// In en, this message translates to:
+  /// **'My Profile'**
+  String get profileTitle;
+
+  /// Section header for favorites in profile
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favoritesSection;
+
+  /// Section header for saved articles in profile
+  ///
+  /// In en, this message translates to:
+  /// **'Saved for later'**
+  String get savedSection;
+
+  /// Label for the favorite action button
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite'**
+  String get favoriteAction;
+
+  /// Label for the save action button
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveAction;
+
+  /// Title for the edit profile dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfileTitle;
+
+  /// Label for the name field
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get nameLabel;
+
+  /// Label for the email field
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// Validation message when neither name nor email is provided
+  ///
+  /// In en, this message translates to:
+  /// **'Name or email is required'**
+  String get nameOrEmailRequired;
+
+  /// Default display name when no user profile is set
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get guestName;
+
   /// Header title for the add news screen
   ///
   /// In en, this message translates to:

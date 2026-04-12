@@ -51,6 +51,7 @@ class AppDimensions {
   static const double avatarIconRatio = 0.48;
 
   // ── Line heights ───────────────────────────────────────────────────
+  static const double lineHeightTitle = 1.3;
   static const double lineHeightRelaxed = 1.5;
   static const double lineHeightLoose = 1.6;
 
@@ -63,6 +64,22 @@ class AppDimensions {
   static const double letterSpacingTight = -0.3;
   static const double letterSpacingWide = 0.3;
 
+  // ── Hero image ─────────────────────────────────────────────────────
+  static const double heroImageHeight = 260;
+
+  // ── Profile ────────────────────────────────────────────────────────
+  static const double profileAvatarSize = 60;
+  static const double profileAvatarIconSize = 28;
+
+  // ── Photo indicator ────────────────────────────────────────────────
+  static const double indicatorDotSize = 6;
+  static const double indicatorActiveWidth = 20;
+  static const double indicatorActiveRadius = 3;
+
+  // ── Author avatar ──────────────────────────────────────────────────
+  static const double authorAvatarSize = 32;
+  static const double metaDotSize = 4;
+
   // ── Shadow offsets & blur ──────────────────────────────────────────
   static const double shadowOffsetY1 = 1;
   static const double shadowOffsetY2 = 2;
@@ -72,6 +89,12 @@ class AppDimensions {
   static const double shadowBlurMd = 12;
   static const double shadowBlurLg = 16;
   static const double shadowBlurXl = 20;
+
+  // ── Blur ────────────────────────────────────────────────────────────
+  static const double blurSigmaFrosted = 12;
+
+  // ── Divider ─────────────────────────────────────────────────────────
+  static const double dividerHeight = 1;
 
   // ── Opacity ────────────────────────────────────────────────────────
   static const double opacityEnabled = 1.0;

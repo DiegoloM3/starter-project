@@ -75,6 +75,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionCrime => 'Crime';
 
   @override
+  String get profileTitle => 'My Profile';
+
+  @override
+  String get favoritesSection => 'Favorites';
+
+  @override
+  String get savedSection => 'Saved for later';
+
+  @override
+  String get favoriteAction => 'Favorite';
+
+  @override
+  String get saveAction => 'Save';
+
+  @override
+  String get editProfileTitle => 'Edit Profile';
+
+  @override
+  String get nameLabel => 'Name';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get nameOrEmailRequired => 'Name or email is required';
+
+  @override
+  String get guestName => 'Guest';
+
+  @override
   String get newNewsTitle => 'New Article';
 
   @override
