@@ -56,6 +56,12 @@ dependencies:
   #fonts
   google_fonts: ^8.0.2
 
+  #icons
+  lucide_icons: ^0.257.0
+
+  #image picker
+  image_picker: ^1.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

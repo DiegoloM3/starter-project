@@ -73,4 +73,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sectionCrime => 'Crime';
+
+  @override
+  String get newNewsTitle => 'New Article';
+
+  @override
+  String get editNewsTitle => 'Edit Article';
+
+  @override
+  String get formTitleLabel => 'Title';
+
+  @override
+  String get formSectionLabel => 'Section';
+
+  @override
+  String get formImagesLabel => 'Images';
+
+  @override
+  String get formBodyLabel => 'Content';
+
+  @override
+  String get formTitleHint => 'Write the article title...';
+
+  @override
+  String get formBodyHint => 'Write the article content here...';
+
+  @override
+  String formImageHintCreate(int max) {
+    return 'Add up to $max photos';
+  }
+
+  @override
+  String formImageHintEdit(int count, int max) {
+    return '$count of $max photos';
+  }
+
+  @override
+  String get publishButton => 'Publish Article';
+
+  @override
+  String get saveChangesButton => 'Save Changes';
+
+  @override
+  String get discardChangesTitle => 'Discard changes?';
+
+  @override
+  String get discardChangesBody =>
+      'You have unsaved changes. Do you want to discard them?';
+
+  @override
+  String get discardAction => 'Discard';
+
+  @override
+  String get deleteNewsTitle => 'Delete article?';
+
+  @override
+  String get deleteNewsBody => 'This action cannot be undone.';
+
+  @override
+  String get deleteAction => 'Delete';
+
+  @override
+  String get imageSourceCamera => 'Camera';
+
+  @override
+  String get imageSourceGallery => 'Gallery';
+
+  @override
+  String get genericError => 'An error occurred';
 }

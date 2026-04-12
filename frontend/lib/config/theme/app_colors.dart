@@ -7,6 +7,7 @@ class AppColors {
   static const Color coral = Color(0xFFD89575);
   static const Color destructive = Color(0xFFD08068);
   static const Color white = Color(0xFFFFFFFF);
+  static const Color deleteOverlay = Color(0xDDE53E3E);
 
   // ── Shadow colors ────────────────────────────────────────────────
   static const Color shadowGreenLight = Color(0x403D8A5A);

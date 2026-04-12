@@ -229,6 +229,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Crime'**
   String get sectionCrime;
+
+  /// Header title for the add news screen
+  ///
+  /// In en, this message translates to:
+  /// **'New Article'**
+  String get newNewsTitle;
+
+  /// Header title for the edit news screen
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Article'**
+  String get editNewsTitle;
+
+  /// Label for the title field in the news form
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get formTitleLabel;
+
+  /// Label for the section selector in the news form
+  ///
+  /// In en, this message translates to:
+  /// **'Section'**
+  String get formSectionLabel;
+
+  /// Label for the image gallery in the news form
+  ///
+  /// In en, this message translates to:
+  /// **'Images'**
+  String get formImagesLabel;
+
+  /// Label for the body field in the news form
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get formBodyLabel;
+
+  /// Placeholder for the title field
+  ///
+  /// In en, this message translates to:
+  /// **'Write the article title...'**
+  String get formTitleHint;
+
+  /// Placeholder for the body field
+  ///
+  /// In en, this message translates to:
+  /// **'Write the article content here...'**
+  String get formBodyHint;
+
+  /// Hint text for image gallery in create mode
+  ///
+  /// In en, this message translates to:
+  /// **'Add up to {max} photos'**
+  String formImageHintCreate(int max);
+
+  /// Hint text showing photo count in edit mode
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {max} photos'**
+  String formImageHintEdit(int count, int max);
+
+  /// Label for the publish button
+  ///
+  /// In en, this message translates to:
+  /// **'Publish Article'**
+  String get publishButton;
+
+  /// Label for the save changes button
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChangesButton;
+
+  /// Title for the discard changes dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get discardChangesTitle;
+
+  /// Body text for the discard changes dialog
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes. Do you want to discard them?'**
+  String get discardChangesBody;
+
+  /// Label for the discard action button
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discardAction;
+
+  /// Title for the delete article dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Delete article?'**
+  String get deleteNewsTitle;
+
+  /// Body text for the delete article dialog
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone.'**
+  String get deleteNewsBody;
+
+  /// Label for the delete action button
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteAction;
+
+  /// Camera option in image source picker
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get imageSourceCamera;
+
+  /// Gallery option in image source picker
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get imageSourceGallery;
+
+  /// Generic error message shown when no specific error is available
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred'**
+  String get genericError;
 }
 
 class _AppLocalizationsDelegate

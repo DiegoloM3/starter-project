@@ -12,6 +12,7 @@ class AppDimensions {
   static const double spacing18 = 18;
   static const double spacing20 = 20;
   static const double spacing24 = 24;
+  static const double spacing32 = 32;
 
   // ── Border radius ──────────────────────────────────────────────────
   static const double radiusSm = 10;
@@ -60,6 +61,7 @@ class AppDimensions {
 
   // ── Letter spacing ─────────────────────────────────────────────────
   static const double letterSpacingTight = -0.3;
+  static const double letterSpacingWide = 0.3;
 
   // ── Shadow offsets & blur ──────────────────────────────────────────
   static const double shadowOffsetY1 = 1;
@@ -70,4 +72,8 @@ class AppDimensions {
   static const double shadowBlurMd = 12;
   static const double shadowBlurLg = 16;
   static const double shadowBlurXl = 20;
+
+  // ── Opacity ────────────────────────────────────────────────────────
+  static const double opacityEnabled = 1.0;
+  static const double opacityDisabled = 0.5;
 }

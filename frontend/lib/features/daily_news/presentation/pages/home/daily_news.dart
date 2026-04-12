@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app_clean_architecture/config/routes/routes.dart';
 import 'package:news_app_clean_architecture/config/theme/app_colors.dart';
 import 'package:news_app_clean_architecture/config/theme/app_dimensions.dart';
 import 'package:news_app_clean_architecture/config/theme/app_typography.dart';
@@ -135,7 +136,7 @@ class DailyNews extends StatelessWidget {
       onItemChanged: (section) {
         context.read<NewsFilterCubit>().selectSection(section);
       },
-      labelBuilder: (section) => _sectionLabel(section, l10n),
+      labelBuilder: (section) => section.label(l10n),
     );
   }
 
@@ -229,7 +230,7 @@ class DailyNews extends StatelessWidget {
           isBookmarked: isBookmarked,
           sectionBadge: showBadge
               ? SectionBadge(
-                  label: _sectionLabel(section, l10n),
+                  label: section.label(l10n),
                   backgroundColor: section.backgroundColor(colors),
                   textColor: section.textColor(colors),
                 )
@@ -298,38 +299,21 @@ class DailyNews extends StatelessWidget {
       child: Semantics(
         button: true,
         label: l10n.addNewsButtonLabel,
-        child: FabButton(onPressed: _onAddNewsTap),
+        child: FabButton(onPressed: () => _onAddNewsTap(context)),
       ),
     );
-  }
-
-  String _sectionLabel(NewsSection section, AppLocalizations l10n) {
-    switch (section) {
-      case NewsSection.todos:
-        return l10n.sectionAll;
-      case NewsSection.politica:
-        return l10n.sectionPolitics;
-      case NewsSection.clima:
-        return l10n.sectionWeather;
-      case NewsSection.deportes:
-        return l10n.sectionSports;
-      case NewsSection.artes:
-        return l10n.sectionArts;
-      case NewsSection.policiaca:
-        return l10n.sectionCrime;
-    }
   }
 
   void _onProfileTap() {
     // TODO: Navigate to profile screen
   }
 
-  void _onAddNewsTap() {
-    // TODO: Navigate to add news screen
+  void _onAddNewsTap(BuildContext context) {
+    Navigator.pushNamed(context, AppRoutes.addNews);
   }
 
   void _onArticleTap(BuildContext context, ArticleEntity article) {
-    Navigator.pushNamed(context, '/ArticleDetails', arguments: article);
+    Navigator.pushNamed(context, AppRoutes.articleDetails, arguments: article);
   }
 
   void _onBookmarkTap(

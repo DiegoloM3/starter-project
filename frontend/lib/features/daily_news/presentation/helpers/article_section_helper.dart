@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:news_app_clean_architecture/config/theme/app_colors.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/news_section.dart';
+import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 extension ArticleSectionExtension on ArticleEntity {
   static const int _hashMultiplier = 31;
@@ -13,8 +14,7 @@ extension ArticleSectionExtension on ArticleEntity {
     for (var i = 0; i < key.length; i++) {
       hash = (hash * _hashMultiplier + key.codeUnitAt(i)) & _hashBitmask;
     }
-    final assignable =
-        NewsSection.values.where((s) => s != NewsSection.todos).toList();
+    final assignable = NewsSectionAssignable.assignable;
     return assignable[hash % assignable.length];
   }
 }
@@ -51,6 +51,30 @@ extension SectionColors on NewsSection {
         return colors.sectionPoliciacaText;
       case NewsSection.todos:
         return AppColors.accentGreen;
+    }
+  }
+}
+
+extension NewsSectionAssignable on NewsSection {
+  static List<NewsSection> get assignable =>
+      NewsSection.values.where((s) => s != NewsSection.todos).toList();
+}
+
+extension NewsSectionLabel on NewsSection {
+  String label(AppLocalizations l10n) {
+    switch (this) {
+      case NewsSection.todos:
+        return l10n.sectionAll;
+      case NewsSection.politica:
+        return l10n.sectionPolitics;
+      case NewsSection.clima:
+        return l10n.sectionWeather;
+      case NewsSection.deportes:
+        return l10n.sectionSports;
+      case NewsSection.artes:
+        return l10n.sectionArts;
+      case NewsSection.policiaca:
+        return l10n.sectionCrime;
     }
   }
 }

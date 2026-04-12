@@ -73,4 +73,72 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sectionCrime => 'Policiaca';
+
+  @override
+  String get newNewsTitle => 'Nueva Noticia';
+
+  @override
+  String get editNewsTitle => 'Editar Noticia';
+
+  @override
+  String get formTitleLabel => 'Título';
+
+  @override
+  String get formSectionLabel => 'Sección';
+
+  @override
+  String get formImagesLabel => 'Imágenes';
+
+  @override
+  String get formBodyLabel => 'Contenido';
+
+  @override
+  String get formTitleHint => 'Escribe el título de la noticia...';
+
+  @override
+  String get formBodyHint => 'Escribe el contenido de la noticia aquí...';
+
+  @override
+  String formImageHintCreate(int max) {
+    return 'Agrega hasta $max fotos';
+  }
+
+  @override
+  String formImageHintEdit(int count, int max) {
+    return '$count de $max fotos';
+  }
+
+  @override
+  String get publishButton => 'Publicar Noticia';
+
+  @override
+  String get saveChangesButton => 'Guardar Cambios';
+
+  @override
+  String get discardChangesTitle => '¿Descartar cambios?';
+
+  @override
+  String get discardChangesBody =>
+      'Tienes cambios sin guardar. ¿Deseas descartarlos?';
+
+  @override
+  String get discardAction => 'Descartar';
+
+  @override
+  String get deleteNewsTitle => '¿Eliminar noticia?';
+
+  @override
+  String get deleteNewsBody => 'Esta acción no se puede deshacer.';
+
+  @override
+  String get deleteAction => 'Eliminar';
+
+  @override
+  String get imageSourceCamera => 'Cámara';
+
+  @override
+  String get imageSourceGallery => 'Galería';
+
+  @override
+  String get genericError => 'Ocurrió un error';
 }
