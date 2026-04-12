@@ -6,7 +6,7 @@ class NewsFilterState extends Equatable {
   final String searchQuery;
 
   const NewsFilterState({
-    this.selectedSection = NewsSection.todos,
+    this.selectedSection = NewsSection.all,
     this.searchQuery = '',
   });
 

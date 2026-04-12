@@ -1,7 +1,41 @@
 rules_version = '2';
 
+// WARNING: update, delete and storage delete rules are open (no auth).
+// For production, add Firebase Authentication, store a `userId` field
+// on each article, and restrict write/delete to request.auth.uid == resource.data.userId.
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    match /articles/{articleId} {
+      allow read: if true;
+      allow create: if isValidArticle(request.resource.data)
+                    && request.resource.data.createdAt == request.time;
+      allow update: if isValidArticle(request.resource.data)
+                    && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if true;
+    }
+
+    function isValidArticle(data) {
+      let validSections = ['politica', 'clima', 'deportes', 'artes', 'policiaca'];
+      let requiredFields = ['title', 'body', 'section', 'author', 'createdAt'];
+      let optionalFields = ['description', 'images', 'userId'];
+      let allAllowedFields = requiredFields.concat(optionalFields);
+
+      return data.keys().hasAll(requiredFields)
+          && data.keys().hasOnly(allAllowedFields)
+          && data.title is string && data.title.size() > 0
+          && data.body is string && data.body.size() > 0
+          && data.section is string && data.section in validSections
+          && data.author is string && data.author.size() > 0
+          && data.createdAt is timestamp
+          && (!('description' in data.keys()) || data.description is string)
+          && (!('images' in data.keys()) || (data.images is list && data.images.size() <= 5))
+          && (!('userId' in data.keys()) || data.userId is string);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }

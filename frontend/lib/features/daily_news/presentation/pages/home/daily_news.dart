@@ -220,7 +220,7 @@ class DailyNews extends StatelessWidget {
       itemBuilder: (_, index) {
         final article = articles[index];
         final isBookmarked = savedUrls.contains(article.url);
-        final section = article.section;
+        final section = article.effectiveSection;
 
         return CardNews(
           title: article.title ?? '',

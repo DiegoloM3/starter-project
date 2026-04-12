@@ -9,10 +9,10 @@ import 'package:news_app_clean_architecture/config/theme/app_dimensions.dart';
 import 'package:news_app_clean_architecture/config/theme/app_typography.dart';
 import 'package:news_app_clean_architecture/config/theme/theme_extensions.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/helpers/article_section_helper.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_state.dart';
-import 'package:news_app_clean_architecture/features/daily_news/presentation/helpers/article_section_helper.dart';
 import 'package:news_app_clean_architecture/injection_container.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 import 'package:news_app_clean_architecture/shared/design_system/presentation/widgets/ui_elements/app_badge.dart';
@@ -176,7 +176,7 @@ class _ArticleContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
-    final section = article.section;
+    final section = article.effectiveSection;
 
     return Padding(
       padding: const EdgeInsets.all(AppDimensions.spacing24),

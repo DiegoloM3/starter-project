@@ -2,6 +2,12 @@ import 'package:froom/froom.dart';
 import 'package:news_app_clean_architecture/core/constants/constants.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
+/// Floor database model for locally saved articles (API-sourced).
+///
+/// Note: Fields [documentId], [section], [images], and [userId] from
+/// [ArticleEntity] are intentionally not persisted in the local Floor database
+/// as they are only relevant for Firestore articles. See [FirestoreArticleModel]
+/// for the Firestore-backed model.
 @Entity(tableName: 'article', primaryKeys: ['id'])
 class ArticleModel extends ArticleEntity {
   const ArticleModel({
@@ -39,5 +45,18 @@ class ArticleModel extends ArticleEntity {
         urlToImage: entity.urlToImage,
         publishedAt: entity.publishedAt,
         content: entity.content);
+  }
+
+  ArticleEntity toEntity() {
+    return ArticleEntity(
+      id: id,
+      author: author,
+      title: title,
+      description: description,
+      url: url,
+      urlToImage: urlToImage,
+      publishedAt: publishedAt,
+      content: content,
+    );
   }
 }

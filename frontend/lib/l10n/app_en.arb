@@ -63,9 +63,7 @@
   "nameOrEmailRequired": "Name or email is required",
   "@nameOrEmailRequired": { "description": "Validation message when neither name nor email is provided" },
   "guestName": "Guest",
-  "@guestName": { "description": "Default display name when no user profile is set" }
-  "@saveAction": { "description": "Label for the save action button" }
-  "@sectionCrime": { "description": "Label for the Crime section chip" },
+  "@guestName": { "description": "Default display name when no user profile is set" },
   "newNewsTitle": "New Article",
   "@newNewsTitle": { "description": "Header title for the add news screen" },
   "editNewsTitle": "Edit Article",

@@ -8,7 +8,12 @@ extension ArticleSectionExtension on ArticleEntity {
   static const int _hashMultiplier = 31;
   static const int _hashBitmask = 0x7FFFFFFF;
 
-  NewsSection get section {
+  /// Returns the article's section if set, otherwise derives one from a hash
+  /// of the URL or title. This ensures API articles (which have no section
+  /// stored) still display with a deterministic section assignment.
+  NewsSection get effectiveSection {
+    if (section != null) return section!;
+
     final key = url ?? title ?? '';
     var hash = 0;
     for (var i = 0; i < key.length; i++) {
@@ -86,7 +91,7 @@ List<ArticleEntity> filterArticles({
 }) {
   return articles.where((article) {
     if (selectedSection != NewsSection.all &&
-        article.section != selectedSection) {
+        article.effectiveSection != selectedSection) {
       return false;
     }
     if (searchQuery.isNotEmpty) {

@@ -31,9 +31,7 @@
   "nameLabel": "Nombre",
   "emailLabel": "Correo electrónico",
   "nameOrEmailRequired": "Se requiere nombre o correo",
-  "guestName": "Invitado"
-  "saveAction": "Guardar"
-  "sectionCrime": "Policiaca",
+  "guestName": "Invitado",
   "newNewsTitle": "Nueva Noticia",
   "editNewsTitle": "Editar Noticia",
   "formTitleLabel": "Título",

@@ -1,7 +1,19 @@
 rules_version = '2';
 
+// WARNING: delete rules are open (no auth). See firestore.rules for details.
+
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+
+    match /media/articles/{articleId}/{fileName} {
+      allow read: if true;
+      allow write: if request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+      allow delete: if true;
     }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
 }
