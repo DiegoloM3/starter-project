@@ -1,0 +1,78 @@
+{
+  "@@locale": "es",
+
+  "appTitle": "Noticias del Día",
+  "myArticles": "Mis Artículos",
+  "savedArticles": "Artículos Guardados",
+  "publishArticle": "Publicar Artículo",
+  "editArticle": "Editar Artículo",
+
+  "signIn": "Iniciar sesión",
+  "signOut": "Cerrar sesión",
+  "signedInAs": "Conectado como {name}",
+  "signInFailed": "Error al iniciar sesión: {error}",
+
+  "publish": "Publicar",
+  "publishing": "Publicando…",
+  "saveChanges": "Guardar Cambios",
+  "saving": "Guardando…",
+
+  "titleLabel": "Título",
+  "descriptionLabel": "Descripción",
+  "contentLabel": "Contenido",
+  "authorLabel": "Autor",
+  "sourceLabel": "Fuente (opcional)",
+  "fieldRequired": "{field} es obligatorio",
+
+  "pickThumbnail": "Toca para elegir una imagen",
+  "thumbnailSelected": "Imagen seleccionada. Toca para cambiar",
+  "tapToChange": "Toca para cambiar",
+  "pleaseSelectThumbnail": "Selecciona una imagen de portada",
+
+  "articlePublished": "Artículo publicado exitosamente",
+  "articleUpdated": "Artículo actualizado exitosamente",
+  "publishFailed": "Error: {reason}",
+
+  "noArticlesYet": "Aún no hay artículos",
+  "tapPublishHint": "Toca Publicar para compartir tu primera historia.",
+  "noMatchFor": "Ningún artículo coincide con \"{query}\"",
+
+  "deleteArticle": "¿Eliminar artículo?",
+  "deleteConfirm": "Esta acción no se puede deshacer.",
+  "cancel": "Cancelar",
+  "delete": "Eliminar",
+
+  "publishNewArticle": "Publicar un nuevo artículo",
+  "editThisArticle": "Editar este artículo",
+  "saveArticle": "Guardar artículo",
+  "removeFromSaved": "Quitar de guardados",
+  "clearSearch": "Limpiar búsqueda",
+  "searchHint": "Buscar título, descripción, autor…",
+  "searchLabel": "Busca tus artículos por título, descripción o autor",
+  "retry": "Reintentar",
+
+  "onboardingTitle1": "¡Bienvenido, Periodista!",
+  "onboardingBody1": "Esta app te permite leer las últimas noticias del mundo y publicar tus propios artículos para que todos los vean.",
+  "onboardingTitle2": "Publica tus Historias",
+  "onboardingBody2": "Toca el botón + o visita \"Mis Artículos\" para escribir, editar y gestionar tus publicaciones con imágenes y sincronización en tiempo real.",
+  "onboardingTitle3": "Funciona Sin Internet",
+  "onboardingBody3": "Tus artículos se guardan localmente para que puedas verlos sin conexión. Las ediciones se sincronizan automáticamente cuando vuelvas a estar en línea.",
+  "skip": "Omitir",
+  "next": "Siguiente",
+  "getStarted": "Comenzar",
+
+  "articleSaved": "Artículo guardado exitosamente.",
+  "noSavedArticles": "NO HAY ARTÍCULOS GUARDADOS",
+
+  "publishArticleA11y": "Publicar artículo",
+  "publishingA11y": "Publicando artículo, por favor espera",
+
+  "loginSubtitle": "Inicia sesión con tu cuenta de Google para empezar a publicar artículos.",
+  "signInWithGoogle": "Iniciar sesión con Google",
+  "signingIn": "Iniciando sesión…",
+
+  "changeLanguage": "Idioma",
+  "languageSystem": "Sistema",
+  "languageEnglish": "English",
+  "languageSpanish": "Español"
+}

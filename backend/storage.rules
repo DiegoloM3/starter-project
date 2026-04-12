@@ -1,7 +1,30 @@
 rules_version = '2';
 
+//
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+    function isSignedIn() {
+      return request.auth != null;
     }
+
+    function isImage() {
+      return request.resource.contentType != null
+          && request.resource.contentType.matches('image/.*');
+    }
+
+    function isWithinSizeLimit() {
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+    match /media/articles/{fileName} {
+      allow read: if true;
+      allow create, update: if isSignedIn()
+                            && isImage()
+                            && isWithinSizeLimit();
+      allow delete: if isSignedIn();
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
 }

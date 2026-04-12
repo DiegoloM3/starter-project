@@ -1,0 +1,6 @@
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/logo.png"
+  adaptive_icon_background: "#3D3D3D"
+  adaptive_icon_foreground: "assets/images/logo.png"

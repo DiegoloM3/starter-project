@@ -11,7 +11,7 @@ import '../../bloc/article/local/local_article_state.dart';
 import '../../widgets/article_tile.dart';
 
 class SavedArticles extends HookWidget {
-  const SavedArticles({Key ? key}) : super(key: key);
+  const SavedArticles({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +27,13 @@ class SavedArticles extends HookWidget {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       leading: Builder(
-        builder: (context) => GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => _onBackButtonTapped(context),
-          child: const Icon(Ionicons.chevron_back, color: Colors.black),
+        builder: (context) => IconButton(
+          onPressed: () => _onBackButtonTapped(context),
+          icon: const Icon(Ionicons.chevron_back),
+          tooltip: 'Back',
         ),
       ),
-      title: const Text('Saved Articles', style: TextStyle(color: Colors.black)),
+      title: const Text('Saved Articles'),
     );
   }
 
@@ -52,11 +52,7 @@ class SavedArticles extends HookWidget {
 
   Widget _buildArticlesList(List<ArticleEntity> articles) {
     if (articles.isEmpty) {
-      return const Center(
-          child: Text(
-        'NO SAVED ARTICLES',
-        style: TextStyle(color: Colors.black),
-      ));
+      return const Center(child: Text('NO SAVED ARTICLES'));
     }
 
     return ListView.builder(

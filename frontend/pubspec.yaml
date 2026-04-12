@@ -6,7 +6,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.16.1 <3.0.0"
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -26,39 +26,84 @@ dependencies:
   #service locator
   get_it: ^7.6.0
   
-  #dateFormat
-  intl: ^0.18.1
+  #dateFormat + i18n
+  intl: ^0.20.2
+  flutter_localizations:
+    sdk: flutter
 
   #Database
-  floor: any
+  floor: ^1.4.2
+  sqflite: ^2.4.1
 
   #make request to api
-  retrofit: ^3.0.1
+  retrofit: ^4.1.0
+  dio: ^5.4.0
 
   # Firebase
-  firebase_core: ^2.24.0
-  cloud_firestore: ^4.13.3
-  firebase_storage: ^11.5.5
+  firebase_core: ^3.8.0
+  firebase_auth: ^5.3.3
+  cloud_firestore: ^5.5.0
+  firebase_storage: ^12.3.0
+
+  # unique ids
+  uuid: ^4.5.1
 
 
   #Hooks
   flutter_hooks: ^0.18.3
 
-  #chached image 
+  #chached image
   cached_network_image: ^3.2.0
+
+  #image picker
+  image_picker: ^1.1.2
+
+  #google sign in
+  google_sign_in: ^6.2.1
+
+  #shimmer placeholder
+  shimmer: ^3.0.0
+
+  #onboarding persistence + locale
+  shared_preferences: ^2.3.3
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.0
-  retrofit_generator: 3.0.1+1
-  floor_generator: 1.2.0
-  build_runner: 2.1.2
-  
+  flutter_lints: ^4.0.0
+  retrofit_generator: 8.1.0
+  floor_generator: ^1.4.2
+  build_runner: ^2.4.9
+
+  # Testing
+  mocktail: ^1.0.4
+  bloc_test: ^9.1.7
+
+  # Branding tools
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.4
+
+dependency_overrides:
+  # Transitive dependencies pinned by floor 1.4.2 are too old
+  # and still reference removed Flutter v1 embedding APIs or Dart <3.9 APIs.
+  # We force newer versions that work on Dart 3.9 / Flutter 3.35.
+  # Firebase deps no longer need overrides since we bumped to 3.x/5.x/12.x majors.
+  win32: ^5.5.4
+  path_provider: ^2.1.5
+  path_provider_android: ^2.2.15
+  sqflite: ^2.4.1
+  sqflite_common: ^2.5.4
+
+
 
 flutter:
+  generate: true
 
   uses-material-design: true
+
+  assets:
+    - assets/images/
 
  
   fonts:

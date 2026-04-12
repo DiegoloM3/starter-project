@@ -1,7 +1,94 @@
 rules_version = '2';
 
+//
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incomingData() {
+      return request.resource.data;
+    }
+
+    function existingData() {
+      return resource.data;
+    }
+
+    function isOwner() {
+      return isSignedIn() && existingData().authorUid == request.auth.uid;
+    }
+
+    function isValidArticlePayload(data) {
+      return
+        data.keys().hasOnly([
+          'id', 'title', 'description', 'content',
+          'author', 'authorUid', 'thumbnailURL', 'sourceName',
+          'publishedAt', 'createdAt', 'updatedAt', 'deletedAt'
+        ])
+        && data.keys().hasAll([
+          'id', 'title', 'description', 'content',
+          'author', 'authorUid', 'thumbnailURL',
+          'publishedAt', 'createdAt', 'updatedAt'
+        ])
+        && data.id is string
+        && data.title is string
+        && data.title.size() >= 1 && data.title.size() <= 120
+        && data.description is string
+        && data.description.size() >= 1 && data.description.size() <= 300
+        && data.content is string
+        && data.content.size() >= 1 && data.content.size() <= 20000
+        && data.author is string
+        && data.author.size() >= 1 && data.author.size() <= 80
+        && data.authorUid is string
+        && data.thumbnailURL is string
+        && data.thumbnailURL.size() > 0
+        && data.publishedAt is timestamp
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp
+        && (!('sourceName' in data.keys()) ||
+            (data.sourceName is string && data.sourceName.size() <= 60))
+        && (!('deletedAt' in data.keys()) ||
+            data.deletedAt == null ||
+            data.deletedAt is timestamp);
+    }
+
+    function isClaimingOwnership(data) {
+      return data.authorUid == request.auth.uid;
+    }
+
+    function hasServerTimestamps(data) {
+      return data.createdAt == request.time
+          && data.updatedAt == request.time;
+    }
+
+    function publishedAtIsPastOrNow(data) {
+      return data.publishedAt <= request.time;
+    }
+    match /articles/{articleId} {
+
+      allow read: if true;
+
+      allow create: if isSignedIn()
+                    && isValidArticlePayload(incomingData())
+                    && isClaimingOwnership(incomingData())
+                    && hasServerTimestamps(incomingData())
+                    && publishedAtIsPastOrNow(incomingData())
+                    && incomingData().id == articleId;
+
+      allow update: if isOwner()
+                    && isValidArticlePayload(incomingData())
+                    && incomingData().id == existingData().id
+                    && incomingData().authorUid == existingData().authorUid
+                    && incomingData().createdAt == existingData().createdAt
+                    && incomingData().updatedAt == request.time
+                    && publishedAtIsPastOrNow(incomingData());
+
+      allow delete: if isOwner();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }

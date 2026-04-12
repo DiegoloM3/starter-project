@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": // TODO: ADD PROJECT ID
+    "default": "symmetry-showcase-app-56508"
   },
   "targets": {},
   "etags": {}
