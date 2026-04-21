@@ -2,6 +2,96 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+    function articleDoc(articleId) {
+      return get(/databases/$(database)/documents/articles/$(articleId));
+    }
+
+    function isValidArticle(data) {
+      return data.keys().hasAll(['authorId', 'title', 'description', 'content', 'thumbnailUrl', 'thumbnailPath', 'publishedAt'])
+        && data.authorId is string
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 120
+        && data.description is string && data.description.size() >= 1 && data.description.size() <= 500
+        && data.content is string && data.content.size() >= 1 && data.content.size() <= 20000
+        && data.thumbnailUrl is string && data.thumbnailUrl.matches('https://.*')
+        && data.thumbnailPath is string && data.thumbnailPath.matches('media/articles/.*')
+        && data.publishedAt is timestamp
+        && (!('authorEmail' in data.keys()) || (data.authorEmail is string && data.authorEmail.size() <= 320))
+        && (!('authorName' in data.keys()) || (data.authorName is string && data.authorName.size() <= 80))
+        && (!('authorPhotoUrl' in data.keys()) || (data.authorPhotoUrl is string && data.authorPhotoUrl.matches('https://.*')));
+    }
+
+    function isValidComment(data) {
+      return data.keys().hasAll(['authorId', 'text', 'createdAt', 'isDeleted'])
+        && data.authorId is string
+        && data.text is string && data.text.size() >= 1 && data.text.size() <= 2000
+        && data.createdAt is timestamp
+        && data.isDeleted is bool
+        && data.isDeleted == false
+        && (!('authorName' in data.keys()) || (data.authorName is string && data.authorName.size() <= 80))
+        && (!('authorPhotoUrl' in data.keys()) || (data.authorPhotoUrl is string && data.authorPhotoUrl.matches('https://.*')))
+        && (!('replyTo' in data.keys()) || data.replyTo is string);
+    }
+
+    function isValidReplyTarget(articleId, replyTo) {
+      return exists(/databases/$(database)/documents/articles/$(articleId)/comments/$(replyTo))
+        && get(/databases/$(database)/documents/articles/$(articleId)/comments/$(replyTo)).data.get('replyTo', null) == null
+        && get(/databases/$(database)/documents/articles/$(articleId)/comments/$(replyTo)).data.isDeleted == false;
+    }
+
+    function isSoftDelete(requestData, resourceData) {
+      return requestData.authorId == resourceData.authorId
+        && requestData.createdAt == resourceData.createdAt
+        && requestData.isDeleted == true
+        && resourceData.isDeleted == false
+        && requestData.text == ''
+        && (!('replyTo' in resourceData.keys()) || requestData.replyTo == resourceData.replyTo)
+        && (!('replyTo' in requestData.keys()) || requestData.replyTo is string)
+        && (!('authorName' in resourceData.keys()) || requestData.authorName == resourceData.authorName)
+        && (!('authorPhotoUrl' in resourceData.keys()) || requestData.authorPhotoUrl == resourceData.authorPhotoUrl);
+    }
+
+    match /articles/{articleId} {
+      allow read: if request.auth != null;
+
+      allow create: if request.auth != null
+        && request.resource.data.authorId == request.auth.uid
+        && isValidArticle(request.resource.data)
+        && request.resource.data.publishedAt == request.time;
+
+      allow update: if request.auth != null
+        && resource.data.authorId == request.auth.uid
+        && request.resource.data.authorId == resource.data.authorId
+        && request.resource.data.publishedAt == resource.data.publishedAt
+        && request.resource.data.thumbnailPath == resource.data.thumbnailPath
+        && isValidArticle(request.resource.data);
+
+      allow delete: if request.auth != null
+        && resource.data.authorId == request.auth.uid;
+
+      match /comments/{commentId} {
+        allow read: if request.auth != null;
+
+        allow create: if request.auth != null
+          && request.resource.data.authorId == request.auth.uid
+          && isValidComment(request.resource.data)
+          && request.resource.data.createdAt == request.time
+          && (
+            !('replyTo' in request.resource.data.keys())
+              ? request.auth.uid != articleDoc(articleId).data.authorId
+              : request.auth.uid == articleDoc(articleId).data.authorId
+                && isValidReplyTarget(articleId, request.resource.data.replyTo)
+          );
+
+        allow update: if request.auth != null
+          && resource.data.authorId == request.auth.uid
+          && isSoftDelete(request.resource.data, resource.data);
+
+        allow delete: if false;
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }

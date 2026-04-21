@@ -6,36 +6,44 @@ import '../../../../domain/usecases/get_saved_article.dart';
 import '../../../../domain/usecases/remove_article.dart';
 import '../../../../domain/usecases/save_article.dart';
 
-class LocalArticleBloc extends Bloc<LocalArticlesEvent,LocalArticlesState> {
-  final GetSavedArticleUseCase _getSavedArticleUseCase;
-  final SaveArticleUseCase _saveArticleUseCase;
-  final RemoveArticleUseCase _removeArticleUseCase;
+class LocalArticleDeps {
+  final GetSavedArticleUseCase getSaved;
+  final SaveArticleUseCase save;
+  final RemoveArticleUseCase remove;
 
-  LocalArticleBloc(
-    this._getSavedArticleUseCase,
-    this._saveArticleUseCase,
-    this._removeArticleUseCase
-  ) : super(const LocalArticlesLoading()){
-    on <GetSavedArticles> (onGetSavedArticles);
-    on <RemoveArticle> (onRemoveArticle);
-    on <SaveArticle> (onSaveArticle);
+  const LocalArticleDeps({
+    required this.getSaved,
+    required this.save,
+    required this.remove,
+  });
+}
+
+class LocalArticleBloc extends Bloc<LocalArticlesEvent, LocalArticlesState> {
+  final LocalArticleDeps _deps;
+
+  LocalArticleBloc(this._deps) : super(const LocalArticlesLoading()) {
+    on<GetSavedArticles>(_onGetSavedArticles);
+    on<RemoveArticle>(_onRemoveArticle);
+    on<SaveArticle>(_onSaveArticle);
   }
 
-
-  void onGetSavedArticles(GetSavedArticles event,Emitter<LocalArticlesState> emit) async {
-    final articles = await _getSavedArticleUseCase();
+  Future<void> _onGetSavedArticles(
+      GetSavedArticles event, Emitter<LocalArticlesState> emit) async {
+    final articles = await _deps.getSaved();
     emit(LocalArticlesDone(articles));
   }
-  
-  void onRemoveArticle(RemoveArticle removeArticle,Emitter<LocalArticlesState> emit) async {
-    await _removeArticleUseCase(params: removeArticle.article);
-    final articles = await _getSavedArticleUseCase();
+
+  Future<void> _onRemoveArticle(
+      RemoveArticle event, Emitter<LocalArticlesState> emit) async {
+    await _deps.remove(params: event.article);
+    final articles = await _deps.getSaved();
     emit(LocalArticlesDone(articles));
   }
 
-  void onSaveArticle(SaveArticle saveArticle,Emitter<LocalArticlesState> emit) async {
-    await _saveArticleUseCase(params: saveArticle.article);
-    final articles = await _getSavedArticleUseCase();
+  Future<void> _onSaveArticle(
+      SaveArticle event, Emitter<LocalArticlesState> emit) async {
+    await _deps.save(params: event.article);
+    final articles = await _deps.getSaved();
     emit(LocalArticlesDone(articles));
   }
 }

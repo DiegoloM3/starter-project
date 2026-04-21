@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../../../../shared/auth/presentation/widgets/user_avatar.dart';
 import '../../domain/entities/article.dart';
 
 class ArticleWidget extends StatelessWidget {
@@ -48,7 +50,7 @@ class ArticleWidget extends StatelessWidget {
                   width: MediaQuery.of(context).size.width / 3,
                   height: double.maxFinite,
                   decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.08),
+                      color: Colors.black.withValues(alpha: 0.08),
                       image: DecorationImage(
                           image: imageProvider, fit: BoxFit.cover)),
                 ),
@@ -61,9 +63,9 @@ class ArticleWidget extends StatelessWidget {
                 child: Container(
                   width: MediaQuery.of(context).size.width / 3,
                   height: double.maxFinite,
-                  child: CupertinoActivityIndicator(),
+                  child: const CupertinoActivityIndicator(),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                   ),
                 ),
               ),
@@ -75,9 +77,23 @@ class ArticleWidget extends StatelessWidget {
                 child: Container(
                   width: MediaQuery.of(context).size.width / 3,
                   height: double.maxFinite,
-                  child: Icon(Icons.error),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.image_not_supported_outlined,
+                          color: Colors.grey.shade600, size: 28),
+                      const SizedBox(height: 6),
+                      Text(
+                        'No image',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -116,15 +132,16 @@ class ArticleWidget extends StatelessWidget {
               ),
             ),
 
-            // Datetime
             Row(
               children: [
-                const Icon(Icons.timeline_outlined, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  article!.publishedAt!,
-                  style: const TextStyle(
-                    fontSize: 12,
+                UserAvatar(name: article!.author, radius: 10),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    _formatByline(article!.author, article!.publishedAt),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 12),
                   ),
                 ),
               ],
@@ -158,5 +175,12 @@ class ArticleWidget extends StatelessWidget {
     if (onRemove != null) {
       onRemove!(article!);
     }
+  }
+
+  String _formatByline(String? author, String? publishedAt) {
+    final name = (author == null || author.isEmpty) ? 'Unknown' : author;
+    final date = DateTime.tryParse(publishedAt ?? '');
+    final formatted = date == null ? '' : DateFormat.yMMMd().format(date);
+    return formatted.isEmpty ? name : '$name · $formatted';
   }
 }

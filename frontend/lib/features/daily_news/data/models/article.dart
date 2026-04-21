@@ -2,39 +2,36 @@ import 'package:floor/floor.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import '../../../../core/constants/constants.dart';
 
-@Entity(tableName: 'article',primaryKeys: ['id'])
+@Entity(tableName: 'article', primaryKeys: ['id'])
 class ArticleModel extends ArticleEntity {
   const ArticleModel({
-    int ? id,
-    String ? author,
-    String ? title,
-    String ? description,
-    String ? url,
-    String ? urlToImage,
-    String ? publishedAt,
-    String ? content,
-  }): super(
-    id: id,
-    author: author,
-    title: title,
-    description: description,
-    url: url,
-    urlToImage: urlToImage,
-    publishedAt: publishedAt,
-    content: content,
-  );
+    super.id,
+    super.author,
+    super.title,
+    super.description,
+    super.url,
+    super.urlToImage,
+    super.publishedAt,
+    super.content,
+  });
 
-  factory ArticleModel.fromJson(Map < String, dynamic > map) {
+  factory ArticleModel.fromRawData(Map<String, dynamic> raw) {
     return ArticleModel(
-      author: map['author'] ?? "",
-      title: map['title'] ?? "",
-      description: map['description'] ?? "",
-      url: map['url'] ?? "",
-      urlToImage: map['urlToImage'] != null && map['urlToImage'] != "" ? map['urlToImage'] : kDefaultImage,
-      publishedAt: map['publishedAt'] ?? "",
-      content: map['content'] ?? "",
+      author: raw['author'] ?? '',
+      title: raw['title'] ?? '',
+      description: raw['description'] ?? '',
+      url: raw['url'] ?? '',
+      urlToImage: raw['urlToImage'] != null && raw['urlToImage'] != ''
+          ? raw['urlToImage']
+          : kDefaultImage,
+      publishedAt: raw['publishedAt'] ?? '',
+      content: raw['content'] ?? '',
     );
   }
+
+  // Retrofit/Floor generated code calls `fromJson`; keep it as an alias.
+  factory ArticleModel.fromJson(Map<String, dynamic> map) =>
+      ArticleModel.fromRawData(map);
 
   factory ArticleModel.fromEntity(ArticleEntity entity) {
     return ArticleModel(
@@ -45,7 +42,18 @@ class ArticleModel extends ArticleEntity {
       url: entity.url,
       urlToImage: entity.urlToImage,
       publishedAt: entity.publishedAt,
-      content: entity.content
+      content: entity.content,
     );
   }
+
+  ArticleEntity toEntity() => ArticleEntity(
+        id: id,
+        author: author,
+        title: title,
+        description: description,
+        url: url,
+        urlToImage: urlToImage,
+        publishedAt: publishedAt,
+        content: content,
+      );
 }
