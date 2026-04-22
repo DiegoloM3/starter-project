@@ -2,6 +2,17 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+    match /articles/{articleId} {
+      allow read: if true;
+      allow create, update: if request.auth != null && validateArticle(request.resource.data);
+      allow delete: if request.auth != null;
+    }
+
+    function validateArticle(data) {
+      return data.title is string && data.title.size() > 0
+          && data.author is string
+          && data.content is string
+          && data.urlToImage is string;
+    }
   }
 }
