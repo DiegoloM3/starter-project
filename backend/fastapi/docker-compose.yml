@@ -1,0 +1,43 @@
+services:
+  mongodb:
+    image: mongo:7
+    # Removed direct host port exposure for security: "just api" access requested.
+    volumes:
+      - symmetry_mongo_data:/data/db
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: symmetry_ollama
+    volumes:
+      - symmetry_ollama_data:/root/.ollama
+    # No ports exposed to host. Access via API proxy.
+
+  api:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      MONGODB_URL: mongodb://mongodb:27017
+      MONGODB_DB_NAME: symmetry
+      OLLAMA_HOST: http://ollama:11434
+    depends_on:
+      - mongodb
+      - ollama
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+
+volumes:
+  symmetry_mongo_data:
+  symmetry_ollama_data:
+  caddy_data:
+  caddy_config:

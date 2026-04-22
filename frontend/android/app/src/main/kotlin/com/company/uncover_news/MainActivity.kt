@@ -1,4 +1,4 @@
-package com.example.news_app_clean_architecture
+package com.company.uncover_news
 
 import io.flutter.embedding.android.FlutterActivity
 

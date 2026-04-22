@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "574300077165",
+    "project_id": "uncover-news-9e08a",
+    "storage_bucket": "uncover-news-9e08a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:574300077165:android:7d1056cee8c2f2c0ef5364",
+        "android_client_info": {
+          "package_name": "com.company.uncover_news"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqurn-r_gWecN1cp_8ldlLLN69jv39aBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

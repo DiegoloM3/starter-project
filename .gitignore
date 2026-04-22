@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+**/node_modules/
+bower_components/
+venv/
+.venv/
+env/
+.env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.python-version
+
+# Hardhat / Blockchain
+blockchain/artifacts/
+blockchain/cache/
+blockchain/typechain-types/
+blockchain/coverage/
+blockchain/coverage.json
+blockchain/.env
+blockchain/deployments/
+blockchain/flatten/
+
+# Secrets and Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+*.env.local
+.secret
+mnemonic.txt
+
+# IDEs
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+blockchain/*.log
+
+# Build and Testing
+dist/
+build/
+out/
+.pytest_cache/
+.coverage
+htmlcov/
