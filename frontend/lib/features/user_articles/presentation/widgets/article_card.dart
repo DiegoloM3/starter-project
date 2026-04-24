@@ -54,10 +54,10 @@ class ArticleCard extends StatelessWidget {
                         ? CachedNetworkImage(
                             imageUrl: article.thumbnailURL,
                             fit: BoxFit.cover,
-                            placeholder: (_, __) => Container(
+                            placeholder: (_, __) => ColoredBox(
                               color: theme.surfaceMuted,
                             ),
-                            errorWidget: (_, __, ___) => Container(
+                            errorWidget: (_, __, ___) => ColoredBox(
                               color: theme.surfaceMuted,
                               child: Icon(
                                 Icons.image_not_supported,
@@ -65,7 +65,7 @@ class ArticleCard extends StatelessWidget {
                               ),
                             ),
                           )
-                        : Container(
+                        : ColoredBox(
                             color: theme.surfaceMuted,
                             child: Icon(
                               Icons.article,

@@ -17,8 +17,7 @@ class UserArticlesStorageDataSource {
     required List<int> bytes,
     required String contentType,
   }) async {
-    final ref =
-        _storage.ref('media/articles/$authorId/$articleId/$fileName');
+    final ref = _storage.ref('media/articles/$authorId/$articleId/$fileName');
     final task = ref.putData(
       Uint8List.fromList(bytes),
       SettableMetadata(contentType: contentType),

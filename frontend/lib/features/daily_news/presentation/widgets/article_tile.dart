@@ -51,7 +51,7 @@ class ArticleWidget extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 3,
             height: double.maxFinite,
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               image: DecorationImage(
                 image: imageProvider,
                 fit: BoxFit.cover,
@@ -68,7 +68,7 @@ class ArticleWidget extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 3,
             height: double.maxFinite,
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
             ),
             child: const CupertinoActivityIndicator(),
           ),
@@ -82,7 +82,7 @@ class ArticleWidget extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 3,
             height: double.maxFinite,
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
             ),
             child: const Icon(Icons.error),
           ),
@@ -156,14 +156,10 @@ class ArticleWidget extends StatelessWidget {
   }
 
   void _onTap() {
-    if (onArticlePressed != null) {
-      onArticlePressed!(article!);
-    }
+    onArticlePressed?.call(article!);
   }
 
   void _onRemove() {
-    if (onRemove != null) {
-      onRemove!(article!);
-    }
+    onRemove?.call(article!);
   }
 }

@@ -87,11 +87,12 @@ class _ArticleEditorPageState extends State<ArticleEditorPage> {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: Text(widget.editing == null ? 'New Article' : 'Edit Article'),
+            title:
+                Text(widget.editing == null ? 'New Article' : 'Edit Article'),
             elevation: 0,
           ),
           body: BlocBuilder<ArticleEditorBloc, ArticleEditorState>(
-            builder: (context, state) => _buildForm(context, state),
+            builder: _buildForm,
           ),
         ),
       ),
@@ -107,7 +108,7 @@ class _ArticleEditorPageState extends State<ArticleEditorPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ThumbnailPickerTile(
-            onPick: () => _pickThumbnail(context),
+            onPick: _pickThumbnail,
             remoteURL: state.thumbnailURL,
             pendingBytes: state.pendingBytes,
           ),
@@ -116,8 +117,7 @@ class _ArticleEditorPageState extends State<ArticleEditorPage> {
             controller: _titleController,
             label: 'Title',
             hint: 'A short, catchy title (min 5 chars)',
-            onChanged: (v) =>
-                _bloc.add(ArticleEditorEvent.titleChanged(v)),
+            onChanged: (v) => _bloc.add(ArticleEditorEvent.titleChanged(v)),
           ),
           SizedBox(height: theme.spacing.md),
           _Field(
@@ -134,8 +134,7 @@ class _ArticleEditorPageState extends State<ArticleEditorPage> {
             label: 'Content',
             hint: 'Write your article (min 50 chars)',
             maxLines: 10,
-            onChanged: (v) =>
-                _bloc.add(ArticleEditorEvent.contentChanged(v)),
+            onChanged: (v) => _bloc.add(ArticleEditorEvent.contentChanged(v)),
           ),
           SizedBox(height: theme.spacing.md),
           _Field(
@@ -167,7 +166,7 @@ class _ArticleEditorPageState extends State<ArticleEditorPage> {
     );
   }
 
-  Future<void> _pickThumbnail(BuildContext context) async {
+  Future<void> _pickThumbnail() async {
     final picked = await _picker.pickImage();
     if (picked == null) return;
     _bloc.add(

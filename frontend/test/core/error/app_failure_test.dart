@@ -17,12 +17,12 @@ void main() {
 
     test('exhaustive when() on every variant', () {
       String classify(AppFailure f) => f.when(
-        network: (_, __) => 'network',
-        cache: (_) => 'cache',
-        validation: (_, __) => 'validation',
-        auth: (_) => 'auth',
-        unknown: (_, __) => 'unknown',
-      );
+            network: (_, __) => 'network',
+            cache: (_) => 'cache',
+            validation: (_, __) => 'validation',
+            auth: (_) => 'auth',
+            unknown: (_, __) => 'unknown',
+          );
 
       expect(classify(const AppFailure.network()), equals('network'));
       expect(classify(const AppFailure.cache()), equals('cache'));

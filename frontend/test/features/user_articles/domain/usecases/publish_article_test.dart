@@ -9,8 +9,7 @@ import 'package:news_app_clean_architecture/features/user_articles/domain/usecas
 
 class _MockRepository extends Mock implements UserArticleRepository {}
 
-const _validContent =
-    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+const _validContent = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 
 PublishArticleParams _params({
   String id = 'a1',

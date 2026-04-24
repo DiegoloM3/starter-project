@@ -103,8 +103,7 @@ void main() {
     'submitted publishes and emits success when form is valid',
     setUp: () {
       when(() => upload(any())).thenAnswer(
-        (_) async =>
-            const Right<AppFailure, String>('https://cdn.test/x.jpg'),
+        (_) async => const Right<AppFailure, String>('https://cdn.test/x.jpg'),
       );
       when(() => publish(any())).thenAnswer(
         (_) async => Right<AppFailure, UserArticleEntity>(_savedArticle()),
@@ -144,8 +143,7 @@ void main() {
     'submit emits failure when publish use case returns Left',
     setUp: () {
       when(() => upload(any())).thenAnswer(
-        (_) async =>
-            const Right<AppFailure, String>('https://cdn.test/x.jpg'),
+        (_) async => const Right<AppFailure, String>('https://cdn.test/x.jpg'),
       );
       when(() => publish(any())).thenAnswer(
         (_) async => const Left<AppFailure, UserArticleEntity>(

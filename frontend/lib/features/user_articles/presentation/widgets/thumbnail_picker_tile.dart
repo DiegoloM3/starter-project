@@ -41,7 +41,11 @@ class ThumbnailPickerTile extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: theme.radii.mdRadius,
-            child: _buildContent(theme, hasPending: hasPending, hasRemote: hasRemote),
+            child: _buildContent(
+              theme,
+              hasPending: hasPending,
+              hasRemote: hasRemote,
+            ),
           ),
         ),
       ),

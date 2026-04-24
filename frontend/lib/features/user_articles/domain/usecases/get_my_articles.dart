@@ -4,8 +4,7 @@ import 'package:news_app_clean_architecture/core/usecase/usecase.dart';
 import 'package:news_app_clean_architecture/features/user_articles/domain/entities/user_article_entity.dart';
 import 'package:news_app_clean_architecture/features/user_articles/domain/repository/user_article_repository.dart';
 
-class GetMyArticlesUseCase
-    extends UseCase<List<UserArticleEntity>, String> {
+class GetMyArticlesUseCase extends UseCase<List<UserArticleEntity>, String> {
   GetMyArticlesUseCase(this._repository);
 
   final UserArticleRepository _repository;

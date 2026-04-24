@@ -39,8 +39,7 @@ class UserArticleRepositoryImpl implements UserArticleRepository {
     PublishArticleParams params,
   ) {
     return _guard(() async {
-      final id =
-          params.id.isNotEmpty ? params.id : _firestore.reserveId();
+      final id = params.id.isNotEmpty ? params.id : _firestore.reserveId();
       final payload = UserArticleModel.createPayload(
         id: id,
         authorId: params.authorId,
@@ -123,7 +122,7 @@ class UserArticleRepositoryImpl implements UserArticleRepository {
       case 'aborted':
         return AppFailure.network(message: e.message ?? e.code);
       case 'not-found':
-        return AppFailure.validation(field: 'id', reason: 'not found');
+        return const AppFailure.validation(field: 'id', reason: 'not found');
       default:
         return AppFailure.unknown(cause: e);
     }

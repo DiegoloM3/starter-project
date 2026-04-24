@@ -5,7 +5,8 @@ import 'package:news_app_clean_architecture/core/usecase/usecase.dart';
 
 class _SuccessUseCase extends UseCase<int, NoParams> {
   @override
-  Future<Either<AppFailure, int>> call(NoParams params) async => const Right(42);
+  Future<Either<AppFailure, int>> call(NoParams params) async =>
+      const Right(42);
 }
 
 class _FailingUseCase extends UseCase<int, String> {

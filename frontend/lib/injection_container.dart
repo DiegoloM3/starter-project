@@ -30,31 +30,23 @@ import 'package:news_app_clean_architecture/features/user_articles/presentation/
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
-  final database =
-      await $FloorAppDatabase.databaseBuilder('app_database.db').build();
-  sl.registerSingleton<AppDatabase>(database);
+  final database = await $FloorAppDatabase
+      .databaseBuilder('app_database.db')
+      .build();
 
-  // Dio
-  sl.registerSingleton<Dio>(Dio());
-
-  // Dependencies
-  sl.registerSingleton<NewsApiService>(NewsApiService(sl()));
-
-  sl.registerSingleton<ArticleRepository>(
-    ArticleRepositoryImpl(sl(), sl()),
-  );
-
-  //UseCases
-  sl.registerSingleton<GetArticleUseCase>(GetArticleUseCase(sl()));
-  sl.registerSingleton<GetSavedArticleUseCase>(GetSavedArticleUseCase(sl()));
-  sl.registerSingleton<SaveArticleUseCase>(SaveArticleUseCase(sl()));
-  sl.registerSingleton<RemoveArticleUseCase>(RemoveArticleUseCase(sl()));
-
-  //Blocs
-  sl.registerFactory<RemoteArticlesBloc>(() => RemoteArticlesBloc(sl()));
-  sl.registerFactory<LocalArticleBloc>(
-    () => LocalArticleBloc(sl(), sl(), sl()),
-  );
+  sl
+    ..registerSingleton<AppDatabase>(database)
+    ..registerSingleton<Dio>(Dio())
+    ..registerSingleton<NewsApiService>(NewsApiService(sl()))
+    ..registerSingleton<ArticleRepository>(ArticleRepositoryImpl(sl(), sl()))
+    ..registerSingleton<GetArticleUseCase>(GetArticleUseCase(sl()))
+    ..registerSingleton<GetSavedArticleUseCase>(GetSavedArticleUseCase(sl()))
+    ..registerSingleton<SaveArticleUseCase>(SaveArticleUseCase(sl()))
+    ..registerSingleton<RemoveArticleUseCase>(RemoveArticleUseCase(sl()))
+    ..registerFactory<RemoteArticlesBloc>(() => RemoteArticlesBloc(sl()))
+    ..registerFactory<LocalArticleBloc>(
+      () => LocalArticleBloc(sl(), sl(), sl()),
+    );
 
   _registerUserArticles();
 }
@@ -68,33 +60,33 @@ void _registerUserArticles() {
   sl.registerSingleton<AuthSession>(const DevAuthSession());
 
   if (Firebase.apps.isNotEmpty) {
-    sl.registerSingleton<UserArticlesFirestoreDataSource>(
-      UserArticlesFirestoreDataSource(FirebaseFirestore.instance),
-    );
-    sl.registerSingleton<UserArticlesStorageDataSource>(
-      UserArticlesStorageDataSource(FirebaseStorage.instance),
-    );
-    sl.registerSingleton<UserArticleRepository>(
-      UserArticleRepositoryImpl(sl(), sl()),
-    );
+    sl
+      ..registerSingleton<UserArticlesFirestoreDataSource>(
+        UserArticlesFirestoreDataSource(FirebaseFirestore.instance),
+      )
+      ..registerSingleton<UserArticlesStorageDataSource>(
+        UserArticlesStorageDataSource(FirebaseStorage.instance),
+      )
+      ..registerSingleton<UserArticleRepository>(
+        UserArticleRepositoryImpl(sl(), sl()),
+      );
   } else {
     sl.registerSingleton<UserArticleRepository>(FakeUserArticleRepository());
   }
 
-  sl.registerSingleton<ThumbnailPickerService>(
-    const StubThumbnailPickerService(),
-  );
-
-  sl.registerSingleton<GetMyArticlesUseCase>(GetMyArticlesUseCase(sl()));
-  sl.registerSingleton<PublishArticleUseCase>(PublishArticleUseCase(sl()));
-  sl.registerSingleton<UpdateArticleUseCase>(UpdateArticleUseCase(sl()));
-  sl.registerSingleton<DeleteArticleUseCase>(DeleteArticleUseCase(sl()));
-  sl.registerSingleton<UploadThumbnailUseCase>(UploadThumbnailUseCase(sl()));
-
-  sl.registerFactory<MyArticlesCubit>(
-    () => MyArticlesCubit(
-      getMyArticles: sl(),
-      deleteArticle: sl(),
-    ),
-  );
+  sl
+    ..registerSingleton<ThumbnailPickerService>(
+      const StubThumbnailPickerService(),
+    )
+    ..registerSingleton<GetMyArticlesUseCase>(GetMyArticlesUseCase(sl()))
+    ..registerSingleton<PublishArticleUseCase>(PublishArticleUseCase(sl()))
+    ..registerSingleton<UpdateArticleUseCase>(UpdateArticleUseCase(sl()))
+    ..registerSingleton<DeleteArticleUseCase>(DeleteArticleUseCase(sl()))
+    ..registerSingleton<UploadThumbnailUseCase>(UploadThumbnailUseCase(sl()))
+    ..registerFactory<MyArticlesCubit>(
+      () => MyArticlesCubit(
+        getMyArticles: sl(),
+        deleteArticle: sl(),
+      ),
+    );
 }

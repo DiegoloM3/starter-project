@@ -18,8 +18,7 @@ import 'package:news_app_clean_architecture/features/user_articles/presentation/
 /// `editingId`. Thumbnails are uploaded inline right before submit — the
 /// raw bytes live in the bloc state until then so the editor never needs
 /// to talk to Storage directly.
-class ArticleEditorBloc
-    extends Bloc<ArticleEditorEvent, ArticleEditorState> {
+class ArticleEditorBloc extends Bloc<ArticleEditorEvent, ArticleEditorState> {
   ArticleEditorBloc({
     required PublishArticleUseCase publishArticle,
     required UpdateArticleUseCase updateArticle,

@@ -59,8 +59,7 @@ void main() {
     act: (cubit) => cubit.load('u1'),
     expect: () => [
       const MyArticlesState.loading(),
-      isA<MyArticlesSuccess>()
-          .having((s) => s.articles.length, 'length', 2),
+      isA<MyArticlesSuccess>().having((s) => s.articles.length, 'length', 2),
     ],
   );
 
@@ -100,8 +99,7 @@ void main() {
     },
     skip: 2,
     expect: () => [
-      isA<MyArticlesSuccess>()
-          .having((s) => s.articles.single.id, 'id', 'b'),
+      isA<MyArticlesSuccess>().having((s) => s.articles.single.id, 'id', 'b'),
     ],
   );
 }

@@ -70,8 +70,9 @@ class ArticleModel {
         title: title,
         description: description,
         url: url,
-        urlToImage:
-            (urlToImage == null || urlToImage!.isEmpty) ? kDefaultImage : urlToImage,
+        urlToImage: (urlToImage == null || urlToImage!.isEmpty)
+            ? kDefaultImage
+            : urlToImage,
         publishedAt: publishedAt,
         content: content,
       );

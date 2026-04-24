@@ -21,18 +21,6 @@ class UserArticleModel {
     this.tags = const <String>[],
   });
 
-  final String id;
-  final String authorId;
-  final String authorName;
-  final String title;
-  final String description;
-  final String content;
-  final String thumbnailURL;
-  final String status;
-  final DateTime publishedAt;
-  final DateTime updatedAt;
-  final List<String> tags;
-
   factory UserArticleModel.fromFirestore(Map<String, dynamic> data) {
     return UserArticleModel(
       id: data['id'] as String,
@@ -45,10 +33,22 @@ class UserArticleModel {
       status: data['status'] as String? ?? 'draft',
       publishedAt: _asDate(data['publishedAt']),
       updatedAt: _asDate(data['updatedAt']),
-      tags: (data['tags'] as List<dynamic>?)?.cast<String>() ??
-          const <String>[],
+      tags:
+          (data['tags'] as List<dynamic>?)?.cast<String>() ?? const <String>[],
     );
   }
+
+  final String id;
+  final String authorId;
+  final String authorName;
+  final String title;
+  final String description;
+  final String content;
+  final String thumbnailURL;
+  final String status;
+  final DateTime publishedAt;
+  final DateTime updatedAt;
+  final List<String> tags;
 
   /// Builds the payload used for *create* writes. `publishedAt`/`updatedAt`
   /// are not here — the data source stamps them with `serverTimestamp()`

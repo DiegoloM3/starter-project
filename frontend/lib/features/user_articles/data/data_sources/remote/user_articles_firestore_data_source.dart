@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Thin adapter over the `articles` collection.
 ///
-/// Talks Firestore primitives only — no [AppFailure] mapping, no domain
+/// Talks Firestore primitives only — no domain failure mapping, no
 /// entities. Throws `FirebaseException` on failure so the repository can
 /// translate it into the domain failure hierarchy.
 class UserArticlesFirestoreDataSource {

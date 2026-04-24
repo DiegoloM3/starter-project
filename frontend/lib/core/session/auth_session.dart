@@ -19,8 +19,7 @@ abstract class AuthSession {
 /// unit test or widget test.
 class DevAuthSession implements AuthSession {
   const DevAuthSession({AuthUser? user})
-      : _user = user ??
-            const AuthUser(id: 'dev-user', name: 'Dev User');
+      : _user = user ?? const AuthUser(id: 'dev-user', name: 'Dev User');
 
   final AuthUser _user;
 
