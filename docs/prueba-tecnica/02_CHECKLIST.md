@@ -23,46 +23,45 @@ Convención:
 
 ## B. Backend — Schema
 
-- [ ] 🔴 Archivo `backend/docs/DB_SCHEMA.md` creado.
-- [ ] 🔴 Define la colección `articles` con todos sus campos y tipos.
-- [ ] 🔴 Define cómo se representa el autor (campo `authorId` / subdocumento / referencia).
-- [ ] 🔴 Campo `thumbnailURL` referencia explícitamente `media/articles/...` en Cloud Storage.
-- [ ] 🔴 Documenta timestamps (`createdAt`, `updatedAt`) y si usan `serverTimestamp`.
-- [ ] 🟡 Describe subcolecciones futuras (comentarios, likes) aunque no se implementen.
-- [ ] 🟡 Incluye un **ejemplo de documento JSON** real.
-- [ ] 🟢 Diagrama UML/mermaid del schema.
+- [x] 🔴 Archivo [backend/docs/DB_SCHEMA.md](../../backend/docs/DB_SCHEMA.md) creado.
+- [x] 🔴 Define la colección `articles` con todos sus campos y tipos.
+- [x] 🔴 Define cómo se representa el autor (campo `authorId` propagado en el documento + `authorName` denormalizado para el feed).
+- [x] 🔴 Campo `thumbnailURL` referencia explícitamente `media/articles/{authorId}/{articleId}/...` en Cloud Storage.
+- [x] 🔴 Documenta timestamps (`publishedAt`, `updatedAt`) y que usan `serverTimestamp` (inmutable el primero, se bumpea el segundo).
+- [x] 🟡 Describe subcolecciones futuras (`comments`, `likes`) aunque no se implementen.
+- [x] 🟡 Incluye un **ejemplo de documento JSON** real.
+- [x] 🟢 Diagrama mermaid del schema.
 
 ---
 
 ## C. Backend — Reglas (Firestore + Storage)
 
-- [ ] 🔴 `firestore.rules` deniega por defecto (`allow read, write: if false;` en la raíz).
-- [ ] 🔴 Permite lectura pública (o autenticada) de `articles` según lo decidido.
-- [ ] 🔴 Solo el autor puede crear/editar/borrar sus propios artículos (`request.auth.uid == resource.data.authorId`).
-- [ ] 🔴 Valida tipos y longitudes (`request.resource.data.title is string && request.resource.data.title.size() > 5`).
-- [ ] 🔴 `storage.rules` restringe writes al path `media/articles/{userId}/...` al autor autenticado.
-- [ ] 🔴 Storage valida `contentType` (sólo imágenes) y tamaño (`request.resource.size < 5 * 1024 * 1024`).
-- [ ] 🔴 Reglas desplegadas: `firebase deploy --only firestore:rules,storage:rules`.
-- [ ] 🟡 Probadas con el simulador web de Firebase (al menos caso permitido + caso denegado).
+- [x] 🔴 `firestore.rules` deniega por defecto (`match /{document=**} { allow read, write: if false; }`).
+- [x] 🔴 Permite lectura pública de `articles` (`allow read: if true;`).
+- [x] 🔴 Solo el autor puede crear/editar/borrar sus propios artículos (`request.auth.uid == resource.data.authorId` + `authorId` inmutable en update).
+- [x] 🔴 `isValidArticle()` valida tipos, longitudes (title 5–120, description ≤280, content 50–20000, thumbnailURL https) y enum `status`.
+- [x] 🔴 `storage.rules` restringe writes al path `media/articles/{authorId}/{articleId}/{file}` al autor autenticado.
+- [x] 🔴 Storage valida `contentType` (`image/*`) y tamaño (`< 5 * 1024 * 1024`).
+- [ ] 🔴 Reglas desplegadas: `firebase deploy --only firestore:rules,storage:rules`. *(Pendiente F0: requiere `firebase login --reauth`.)*
+- [ ] 🟡 Probadas con el simulador web de Firebase (al menos caso permitido + caso denegado). *(Pendiente F9.)*
 - [ ] 🟢 Tests automatizados con `@firebase/rules-unit-testing`.
 
 ---
 
 ## D. Frontend — Domain layer
 
-- [ ] 🔴 Existe `frontend/lib/features/user_articles/domain/`.
-- [ ] 🔴 Entidad `UserArticleEntity` con `Equatable`.
-- [ ] 🔴 Interface `UserArticleRepository` declarada (no implementada aquí).
-- [ ] 🔴 Use cases con método `call(params)`:
-  - [ ] `GetMyArticlesUseCase`
-  - [ ] `PublishArticleUseCase`
-  - [ ] `UpdateArticleUseCase`
-  - [ ] `DeleteArticleUseCase`
-  - [ ] `UploadThumbnailUseCase`
-- [ ] 🔴 `domain/` **no importa** `flutter`, `firebase_*`, `dio`, `floor` ni nada ajeno a Dart puro.
-  - Validación rápida: `grep -R "import 'package:flutter" frontend/lib/features/*/domain/` → vacío.
-- [ ] 🔴 Cada use case tiene una **sola** responsabilidad.
-- [ ] 🟡 Cada entidad tiene al menos una regla de negocio (validación) testeada.
+- [x] 🔴 Existe [frontend/lib/features/user_articles/domain/](../../frontend/lib/features/user_articles/domain/).
+- [x] 🔴 Entidad `UserArticleEntity` modelada con `@freezed` (reemplaza `Equatable` con `==`/`hashCode` autogenerados).
+- [x] 🔴 Interface `UserArticleRepository` declarada en `domain/repository/user_article_repository.dart`.
+- [x] 🔴 Use cases con método `call(params)`:
+  - [x] `GetMyArticlesUseCase`
+  - [x] `PublishArticleUseCase`
+  - [x] `UpdateArticleUseCase`
+  - [x] `DeleteArticleUseCase`
+  - [x] `UploadThumbnailUseCase`
+- [x] 🔴 `domain/` **no importa** `flutter`, `firebase_*`, `dio`, `floor` — verificado vía grep (0 matches).
+- [x] 🔴 Cada use case tiene una **sola** responsabilidad (validación + delegación).
+- [x] 🟡 `canPublish`/`isPublished` testeados + validaciones de cada use case con mocktail (12 tests de dominio + 5 del fake).
 
 ---
 
@@ -135,6 +134,26 @@ Convención:
 - [x] 🔴 `AppLogger` + handlers globales (`FlutterError.onError`, `PlatformDispatcher.onError`, `runZonedGuarded`).
 - [x] 🔴 Tests cubren `AppFailure` (4) y `UseCase` base (3) → suite 8/8 verde.
 - [ ] 🟡 `Firebase.initializeApp` cableado en `bootstrap.dart` *(bloqueado por F0: requiere `flutterfire configure`).*
+
+### G.3b Refactor `daily_news` al nuevo estándar (F4)
+
+- [x] 🟡 `ArticleEntity` reescrita con `@freezed` y regla de negocio `isValidForDisplay`.
+- [x] 🟡 `ArticleModel` ya no extiende la entidad — expone `toEntity()`/`fromEntity()` y adopta `@JsonSerializable()` + `@JsonKey(defaultValue: '')` (elimina los `?? ''` manuales).
+- [x] 🟡 Repositorio devuelve `Either<AppFailure, List<ArticleEntity>>` mapeando `List<ArticleModel>` → entidades; try/catch centralizado en `_guardNetwork`/`_guardCache`.
+- [x] 🟡 Estados `RemoteArticlesState` y `LocalArticlesState` migrados a uniones `@freezed` (`loading`/`done`/`error`).
+- [x] 🟡 `MultiBlocProvider` global extraído a `lib/config/app_providers.dart` (listo para registrar los blocs de F7).
+- [x] 🧪 Tests añadidos: `GetArticleUseCase`, `ArticleRepositoryImpl` (4 casos), `RemoteArticlesBloc` (2 casos).
+- [x] 🔴 `flutter analyze`: 18 issues (todos preexistentes del presupuesto de [ADR-0001](../adr/0001-lint-migration-and-info-debt-budget.md); los 7 errors de `data/models/article.dart` de F3 están cerrados con `json_serializable`).
+
+### G.4 Domain `user_articles` (F6)
+
+- [x] 🔴 `UserArticleEntity` freezed con enum `UserArticleStatus` + reglas `canPublish`/`isPublished` alineadas con `firestore.rules#isValidArticle`.
+- [x] 🔴 Params freezed (`PublishArticleParams`, `UpdateArticleParams`, `DeleteArticleParams`, `UploadThumbnailParams`).
+- [x] 🔴 Interface `UserArticleRepository` retorna `Either<AppFailure, T>` en todas las operaciones.
+- [x] 🔴 Use cases `GetMyArticles`, `PublishArticle`, `UpdateArticle`, `DeleteArticle`, `UploadThumbnail` con validación previa + delegación.
+- [x] 🟢 `FakeUserArticleRepository` in-memory en `data/fake/` para destrabar F7 antes del Firestore real de F8.
+- [x] 🧪 Suite **42/42 verde** (entidad + 5 use cases + fake roundtrip).
+- [x] 🔴 `grep` de imports prohibidos en `features/user_articles/domain/` → vacío.
 
 ### G.3 Design system + Router declarativo (F3)
 
