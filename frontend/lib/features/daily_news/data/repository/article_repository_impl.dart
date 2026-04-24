@@ -15,8 +15,8 @@ class ArticleRepositoryImpl implements ArticleRepository {
   final AppDatabase _appDatabase;
 
   @override
-  Future<Either<AppFailure, List<ArticleEntity>>> getNewsArticles() async {
-    try {
+  Future<Either<AppFailure, List<ArticleEntity>>> getNewsArticles() {
+    return _guardNetwork(() async {
       final httpResponse = await _newsApiService.getNewsArticles(
         apiKey: newsAPIKey,
         country: countryQuery,
@@ -24,7 +24,8 @@ class ArticleRepositoryImpl implements ArticleRepository {
       );
 
       if (httpResponse.response.statusCode == HttpStatus.ok) {
-        return Right(httpResponse.data);
+        final articles = httpResponse.data.map((m) => m.toEntity()).toList();
+        return Right(articles);
       }
       return Left(
         AppFailure.network(
@@ -32,6 +33,45 @@ class ArticleRepositoryImpl implements ArticleRepository {
           statusCode: httpResponse.response.statusCode,
         ),
       );
+    });
+  }
+
+  @override
+  Future<Either<AppFailure, List<ArticleEntity>>> getSavedArticles() {
+    return _guardCache(() async {
+      final models = await _appDatabase.articleDAO.getArticles();
+      return Right(models.map((m) => m.toEntity()).toList());
+    });
+  }
+
+  @override
+  Future<Either<AppFailure, Unit>> removeArticle(ArticleEntity article) {
+    return _guardCache(() async {
+      await _appDatabase.articleDAO.deleteArticle(
+        ArticleModel.fromEntity(article),
+      );
+      return const Right(unit);
+    });
+  }
+
+  @override
+  Future<Either<AppFailure, Unit>> saveArticle(ArticleEntity article) {
+    return _guardCache(() async {
+      await _appDatabase.articleDAO.insertArticle(
+        ArticleModel.fromEntity(article),
+      );
+      return const Right(unit);
+    });
+  }
+
+  /// Runs [action] translating network/IO failures into [AppFailure.network]
+  /// and anything else into [AppFailure.unknown]. Keeps each method free of
+  /// boilerplate try/catch blocks.
+  Future<Either<AppFailure, T>> _guardNetwork<T>(
+    Future<Either<AppFailure, T>> Function() action,
+  ) async {
+    try {
+      return await action();
     } on Exception catch (e) {
       return Left(AppFailure.network(message: e.toString()));
     } catch (e, s) {
@@ -39,35 +79,11 @@ class ArticleRepositoryImpl implements ArticleRepository {
     }
   }
 
-  @override
-  Future<Either<AppFailure, List<ArticleEntity>>> getSavedArticles() async {
+  Future<Either<AppFailure, T>> _guardCache<T>(
+    Future<Either<AppFailure, T>> Function() action,
+  ) async {
     try {
-      final articles = await _appDatabase.articleDAO.getArticles();
-      return Right(articles);
-    } catch (e) {
-      return Left(AppFailure.cache(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<AppFailure, Unit>> removeArticle(ArticleEntity article) async {
-    try {
-      await _appDatabase.articleDAO.deleteArticle(
-        ArticleModel.fromEntity(article),
-      );
-      return const Right(unit);
-    } catch (e) {
-      return Left(AppFailure.cache(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<AppFailure, Unit>> saveArticle(ArticleEntity article) async {
-    try {
-      await _appDatabase.articleDAO.insertArticle(
-        ArticleModel.fromEntity(article),
-      );
-      return const Right(unit);
+      return await action();
     } catch (e) {
       return Left(AppFailure.cache(message: e.toString()));
     }
