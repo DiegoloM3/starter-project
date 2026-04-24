@@ -41,12 +41,15 @@ class UserArticleDetailPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  article.title,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: theme.onSurface,
+                Semantics(
+                  header: true,
+                  child: Text(
+                    article.title,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: theme.onSurface,
+                    ),
                   ),
                 ),
                 SizedBox(height: theme.spacing.sm),

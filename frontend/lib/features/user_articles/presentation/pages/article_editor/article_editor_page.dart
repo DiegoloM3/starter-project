@@ -235,21 +235,25 @@ class _Field extends StatelessWidget {
           ),
         ),
         SizedBox(height: theme.spacing.xs),
-        TextField(
-          controller: controller,
-          onChanged: onChanged,
-          maxLines: maxLines,
-          decoration: InputDecoration(
-            hintText: hint,
-            filled: true,
-            fillColor: theme.surfaceMuted,
-            border: OutlineInputBorder(
-              borderRadius: theme.radii.smRadius,
-              borderSide: BorderSide(color: theme.divider),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: theme.radii.smRadius,
-              borderSide: BorderSide(color: theme.divider),
+        Semantics(
+          label: label,
+          textField: true,
+          child: TextField(
+            controller: controller,
+            onChanged: onChanged,
+            maxLines: maxLines,
+            decoration: InputDecoration(
+              hintText: hint,
+              filled: true,
+              fillColor: theme.surfaceMuted,
+              border: OutlineInputBorder(
+                borderRadius: theme.radii.smRadius,
+                borderSide: BorderSide(color: theme.divider),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: theme.radii.smRadius,
+                borderSide: BorderSide(color: theme.divider),
+              ),
             ),
           ),
         ),

@@ -186,12 +186,15 @@ class _EmptyView extends StatelessWidget {
             color: theme.onSurfaceMuted,
           ),
           SizedBox(height: theme.spacing.md),
-          Text(
-            'No articles yet',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: theme.onSurface,
+          Semantics(
+            header: true,
+            child: Text(
+              'No articles yet',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: theme.onSurface,
+              ),
             ),
           ),
           SizedBox(height: theme.spacing.sm),
