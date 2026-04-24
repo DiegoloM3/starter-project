@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 
 import '../../../../domain/entities/article.dart';
@@ -21,4 +23,9 @@ class RemoveArticle extends LocalArticlesEvent {
 
 class SaveArticle extends LocalArticlesEvent {
   const SaveArticle(ArticleEntity article) : super(article: article);
+}
+
+class ImagePickedEvent extends LocalArticlesEvent {
+  final File image;
+  const ImagePickedEvent(this.image);
 }
