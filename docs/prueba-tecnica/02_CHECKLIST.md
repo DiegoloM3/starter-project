@@ -136,6 +136,20 @@ Convención:
 - [x] 🔴 Tests cubren `AppFailure` (4) y `UseCase` base (3) → suite 8/8 verde.
 - [ ] 🟡 `Firebase.initializeApp` cableado en `bootstrap.dart` *(bloqueado por F0: requiere `flutterfire configure`).*
 
+### G.3 Design system + Router declarativo (F3)
+
+- [x] 🟢 Tokens de diseño en `lib/config/theme/tokens/`: `app_colors.dart`, `app_spacing.dart` (escala 4-pt), `app_radii.dart`, `app_typography.dart`.
+- [x] 🟢 `AppTheme extends ThemeExtension<AppTheme>` con presets `light()`/`dark()` y wrappers `AppSpacingTokens`/`AppRadiiTokens`.
+- [x] 🟢 Helper `context.appTheme` en `app_theme_extension.dart` para consumir tokens semánticos desde widgets.
+- [x] 🟢 `app_themes.dart` reescrito: `lightTheme()` y `darkTheme()` derivados de tokens vía `ColorScheme.fromSeed` + `AppTypography.buildTextTheme`.
+- [x] 🟢 `go_router ^14.2.7` cableado en `lib/config/routes/app_router.dart` con rutas `home`, `articleDetail` (`/article/:id`) y `saved`.
+- [x] 🟢 Helpers tipados `AppRoutes.home()`, `AppRoutes.saved()`, `AppRoutes.articleDetail(id)` y `AppRoutes.articleDetailFor(article)` en `app_routes.dart`.
+- [x] 🟢 `app.dart` migrado a `MaterialApp.router(routerConfig: appRouter, theme: lightTheme(), darkTheme: darkTheme())`.
+- [x] 🟢 `daily_news` (home, saved, detail) navega por `context.push` / `context.pop` — `Navigator.pushNamed` eliminado.
+- [x] 🟢 `lib/config/routes/routes.dart` legacy borrado; `MaterialApp.onGenerateRoute` ya no existe.
+- [x] 🔴 `flutter analyze`: 0 issues nuevos (los 25 restantes son preexistentes presupuestados — 7 errors en `data/models/article.dart` se cierran en F4 con `freezed`/`json_serializable`).
+- [x] 🔴 Suite 8/8 verde tras la migración del router.
+
 ---
 
 ## H. Cumplimiento arquitectónico (contra `ARCHITECTURE_VIOLATIONS.md`)
