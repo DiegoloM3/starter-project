@@ -22,10 +22,11 @@ class MyApp extends StatelessWidget {
     return BlocProvider<RemoteArticlesBloc>(
       create: (context) => sl()..add(const GetArticles()),
       child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: theme(),
-          onGenerateRoute: AppRoutes.onGenerateRoutes,
-          home: const DailyNews(),),
+        debugShowCheckedModeBanner: false,
+        theme: theme(),
+        onGenerateRoute: AppRoutes.onGenerateRoutes,
+        home: const DailyNews(),
+      ),
     );
   }
 }

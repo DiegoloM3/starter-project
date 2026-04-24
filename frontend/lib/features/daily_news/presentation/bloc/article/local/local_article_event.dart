@@ -3,9 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
 abstract class LocalArticlesEvent extends Equatable {
-
   const LocalArticlesEvent({this.article});
-  final ArticleEntity ? article;
+  final ArticleEntity? article;
 
   @override
   List<Object> get props => [article!];

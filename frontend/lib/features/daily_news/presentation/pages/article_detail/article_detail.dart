@@ -8,7 +8,6 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 import 'package:news_app_clean_architecture/injection_container.dart';
 
 class ArticleDetailsView extends HookWidget {
-
   const ArticleDetailsView({super.key, this.article});
   final ArticleEntity? article;
 
@@ -58,9 +57,10 @@ class ArticleDetailsView extends HookWidget {
           Text(
             article!.title!,
             style: const TextStyle(
-                fontFamily: 'Butler',
-                fontSize: 20,
-                fontWeight: FontWeight.w900,),
+              fontFamily: 'Butler',
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+            ),
           ),
 
           const SizedBox(height: 14),

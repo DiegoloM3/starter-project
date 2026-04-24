@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
 class ArticleWidget extends StatelessWidget {
-
   const ArticleWidget({
     super.key,
     this.article,
@@ -24,7 +23,11 @@ class ArticleWidget extends StatelessWidget {
       onTap: _onTap,
       child: Container(
         padding: const EdgeInsetsDirectional.only(
-            start: 14, end: 14, bottom: 7, top: 7,),
+          start: 14,
+          end: 14,
+          bottom: 7,
+          top: 7,
+        ),
         height: MediaQuery.of(context).size.width / 2.2,
         child: Row(
           children: [
@@ -39,49 +42,53 @@ class ArticleWidget extends StatelessWidget {
 
   Widget _buildImage(BuildContext context) {
     return CachedNetworkImage(
-        imageUrl: article!.urlToImage!,
-        imageBuilder: (context, imageProvider) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.08),
-                      image: DecorationImage(
-                          image: imageProvider, fit: BoxFit.cover,),),
-                ),
+      imageUrl: article!.urlToImage!,
+      imageBuilder: (context, imageProvider) => Padding(
+        padding: const EdgeInsetsDirectional.only(end: 14),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            width: MediaQuery.of(context).size.width / 3,
+            height: double.maxFinite,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.08),
+              image: DecorationImage(
+                image: imageProvider,
+                fit: BoxFit.cover,
               ),
             ),
-        progressIndicatorBuilder: (context, url, downloadProgress) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
-                  ),
-                  child: const CupertinoActivityIndicator(),
-                ),
-              ),
+          ),
+        ),
+      ),
+      progressIndicatorBuilder: (context, url, downloadProgress) => Padding(
+        padding: const EdgeInsetsDirectional.only(end: 14),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            width: MediaQuery.of(context).size.width / 3,
+            height: double.maxFinite,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.08),
             ),
-        errorWidget: (context, url, error) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
-                  ),
-                  child: const Icon(Icons.error),
-                ),
-              ),
-            ),);
+            child: const CupertinoActivityIndicator(),
+          ),
+        ),
+      ),
+      errorWidget: (context, url, error) => Padding(
+        padding: const EdgeInsetsDirectional.only(end: 14),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            width: MediaQuery.of(context).size.width / 3,
+            height: double.maxFinite,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.08),
+            ),
+            child: const Icon(Icons.error),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildTitleAndDescription() {

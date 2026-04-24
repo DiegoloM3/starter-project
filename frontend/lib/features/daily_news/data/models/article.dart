@@ -2,7 +2,7 @@ import 'package:floor/floor.dart';
 import 'package:news_app_clean_architecture/core/constants/constants.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
-@Entity(tableName: 'article',primaryKeys: ['id'])
+@Entity(tableName: 'article', primaryKeys: ['id'])
 class ArticleModel extends ArticleEntity {
   const ArticleModel({
     super.id,
@@ -15,13 +15,15 @@ class ArticleModel extends ArticleEntity {
     super.content,
   });
 
-  factory ArticleModel.fromJson(Map < String, dynamic > map) {
+  factory ArticleModel.fromJson(Map<String, dynamic> map) {
     return ArticleModel(
       author: map['author'] ?? '',
       title: map['title'] ?? '',
       description: map['description'] ?? '',
       url: map['url'] ?? '',
-      urlToImage: map['urlToImage'] != null && map['urlToImage'] != '' ? map['urlToImage'] : kDefaultImage,
+      urlToImage: map['urlToImage'] != null && map['urlToImage'] != ''
+          ? map['urlToImage']
+          : kDefaultImage,
       publishedAt: map['publishedAt'] ?? '',
       content: map['content'] ?? '',
     );

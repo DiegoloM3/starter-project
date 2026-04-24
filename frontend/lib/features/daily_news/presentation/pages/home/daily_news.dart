@@ -37,13 +37,15 @@ class DailyNews extends StatelessWidget {
       builder: (context, state) {
         if (state is RemoteArticlesLoading) {
           return Scaffold(
-              appBar: _buildAppbar(context),
-              body: const Center(child: CupertinoActivityIndicator()),);
+            appBar: _buildAppbar(context),
+            body: const Center(child: CupertinoActivityIndicator()),
+          );
         }
         if (state is RemoteArticlesError) {
           return Scaffold(
-              appBar: _buildAppbar(context),
-              body: const Center(child: Icon(Icons.refresh)),);
+            appBar: _buildAppbar(context),
+            body: const Center(child: Icon(Icons.refresh)),
+          );
         }
         if (state is RemoteArticlesDone) {
           return _buildArticlesPage(context, state.articles!);
@@ -54,13 +56,17 @@ class DailyNews extends StatelessWidget {
   }
 
   Widget _buildArticlesPage(
-      BuildContext context, List<ArticleEntity> articles,) {
+    BuildContext context,
+    List<ArticleEntity> articles,
+  ) {
     final articleWidgets = <Widget>[];
     for (final article in articles) {
-      articleWidgets.add(ArticleWidget(
-        article: article,
-        onArticlePressed: (article) => _onArticlePressed(context, article),
-      ),);
+      articleWidgets.add(
+        ArticleWidget(
+          article: article,
+          onArticlePressed: (article) => _onArticlePressed(context, article),
+        ),
+      );
     }
 
     return Scaffold(
