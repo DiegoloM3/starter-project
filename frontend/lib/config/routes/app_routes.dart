@@ -10,11 +10,19 @@ abstract final class AppRoutes {
   static const String homeName = 'home';
   static const String articleDetailName = 'articleDetail';
   static const String savedName = 'saved';
+  static const String myArticlesName = 'myArticles';
+  static const String userArticleDetailName = 'userArticleDetail';
+  static const String articleEditorNewName = 'articleEditorNew';
+  static const String articleEditorEditName = 'articleEditorEdit';
 
   // Paths.
   static String home() => '/';
   static String saved() => '/saved';
   static String articleDetail(String id) => '/article/$id';
+  static String myArticles() => '/me/articles';
+  static String userArticleDetail(String id) => '/me/articles/$id';
+  static String articleEditorNew() => '/me/articles/new';
+  static String articleEditorEdit(String id) => '/me/articles/$id/edit';
 
   /// Convenience wrapper used while NewsAPI articles lack a stable id —
   /// derives a URL-safe segment from the article's url/title. Once F4
