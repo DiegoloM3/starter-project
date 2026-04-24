@@ -16,3 +16,8 @@ ui-debug.log
 
 # Misc local files
 *.local
+# Local copies of keys.json with real secrets. Committed template is
+# frontend/keys.json; copy it to frontend/keys.local.json and replace the
+# placeholder value. The Makefile (target `run`) picks up the .local copy
+# automatically when present.
+**/*.local.json

@@ -16,15 +16,33 @@ flutter pub get
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-### 2. Provide required secrets via `--dart-define`
+### 2. Provide required secrets via `keys.json` / `keys.local.json`
 
 The NewsAPI key is read through `core/env/app_env.dart` and must be
 injected at build time — nothing is hard-coded.
 
+Two files drive the flow:
+
+- **`frontend/keys.json`** — committed template with placeholder values.
+- **`frontend/keys.local.json`** — gitignored local copy with your real
+  keys. Created on demand via the Makefile target below.
+
 ```bash
-flutter run \
-  --dart-define=NEWS_API_KEY=<your-key>
+# From the repo root
+make keys                 # one-time: copies keys.json → keys.local.json
+# now edit frontend/keys.local.json and replace REPLACE_WITH_YOUR_NEWSAPI_KEY
+make run                  # picks keys.local.json automatically
 ```
+
+If you need to run `flutter run` directly instead of `make`:
+
+```bash
+flutter run --dart-define-from-file=keys.local.json
+```
+
+The `--dart-define-from-file` flag is supported since Flutter 3.7 and
+replaces the older `--dart-define=KEY=VALUE` style. Multiple keys go in
+the same JSON file.
 
 ### 3. (Optional) Wire Firebase for the user_articles feature
 
@@ -51,16 +69,25 @@ The emulator workflow is documented in [`backend/README.md`](../backend/README.m
 
 ## Development commands
 
-| Task                                | Command                                                   |
-|-------------------------------------|-----------------------------------------------------------|
-| Static analysis                     | `flutter analyze`                                         |
-| Auto-format                         | `dart format .`                                           |
-| Run tests                           | `flutter test`                                            |
-| Run tests with coverage             | `flutter test --coverage`                                 |
-| Regenerate freezed / retrofit / g.dart | `flutter pub run build_runner build --delete-conflicting-outputs` |
-| Launch app (debug)                  | `flutter run --dart-define=NEWS_API_KEY=xxx`              |
+Every common task is wrapped in the root [`Makefile`](../Makefile) so you
+don't have to remember flag combinations. From the repo root:
 
-CI mirrors the first three on every push and PR via
+| Task                                | Make target         | Underlying command                                                |
+|-------------------------------------|---------------------|-------------------------------------------------------------------|
+| Static analysis                     | `make analyze`      | `flutter analyze`                                                 |
+| Format check (fails on diffs)       | `make format`       | `dart format --set-exit-if-changed .`                             |
+| Auto-format                         | `make format-fix`   | `dart format .`                                                   |
+| Run tests                           | `make test`         | `flutter test`                                                    |
+| Run tests with coverage             | `make test-coverage`| `flutter test --coverage`                                         |
+| Regenerate freezed / retrofit / g.dart | `make codegen`   | `flutter pub run build_runner build --delete-conflicting-outputs` |
+| Launch app (debug)                  | `make run`          | `flutter run --dart-define-from-file=<keys file>`                 |
+| Full local CI gate                  | `make ci`           | analyze + format + test                                           |
+| Deploy Firestore + Storage rules    | `make deploy-rules` | `firebase deploy --only firestore:rules,storage:rules`            |
+| Arch invariants grep check          | `make grep-violations` | (combined greps that cross-check domain/data/presentation)     |
+
+Run `make help` to see the full list with any targets added later.
+
+CI mirrors `analyze`, `format` and `test` on every push and PR via
 [`.github/workflows/ci.yml`](../.github/workflows/ci.yml).
 
 ---
