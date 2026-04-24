@@ -46,7 +46,7 @@ class SavedArticles extends HookWidget {
         if (state is LocalArticlesLoading) {
           return const Center(child: CupertinoActivityIndicator());
         } else if (state is LocalArticlesDone) {
-          return _buildArticlesList(state.articles!);
+          return _buildArticlesList(state.articles);
         }
         return Container();
       },
