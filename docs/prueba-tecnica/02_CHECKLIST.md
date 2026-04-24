@@ -221,13 +221,16 @@ Auditoría rápida por capa; marcar solo si se verificó manualmente.
 ## I. Reporte y entrega
 
 - [x] 🔴 `docs/REPORT.md` contiene las 7 secciones de `REPORT_INSTRUCTIONS.md`.
-- [ ] 🔴 Screenshots de cada pantalla clave. *(Pendiente capturar.)*
-- [ ] 🔴 Vídeo demo del flujo completo (≤ 2 min). *(Pendiente grabar.)*
+- [x] 🟢 `docs/SOLUCION.md` — narrativa técnica detallada para la reunión de revisión (flujo end-to-end, Q&A anticipada, mapa de archivos).
+- [x] 🟢 `docs/adr/0003-decisiones-consolidadas.md` — fuente de verdad panorámica con las 14 decisiones técnicas del ciclo F0–F9.
+- [x] 🟢 `docs/PRE_PR_MANUAL.md` — checklist operativo para el humano antes del PR (desbloqueo F0, screenshots, vídeo, merge).
+- [ ] 🔴 Screenshots de cada pantalla clave. *(Checklist en [PRE_PR_MANUAL.md §3](../PRE_PR_MANUAL.md).)*
+- [ ] 🔴 Vídeo demo del flujo completo (≤ 2 min). *(Checklist en [PRE_PR_MANUAL.md §4](../PRE_PR_MANUAL.md).)*
 - [x] 🔴 Sección *Overdelivery* detalla lo extra (go_router, design tokens, CI, strict lints, ADRs, AuthSession fallback, `_guard` mapper).
 - [x] 🔴 `frontend/README.md` actualizado con instrucciones para correr el proyecto y `--dart-define=NEWS_API_KEY`.
 - [x] 🟡 Commits con mensajes claros en formato Conventional Commits.
 - [x] 🟡 Rama `chore/modernization` lista para PR a `main`.
-- [ ] 🟢 Tag de versión `v1.0.0` al terminar. *(Pendiente: `git tag v1.0.0` tras el merge.)*
+- [ ] 🟢 Tag de versión `v1.0.0` al terminar. *(Pendiente: ver [PRE_PR_MANUAL.md §7](../PRE_PR_MANUAL.md).)*
 
 ---
 
