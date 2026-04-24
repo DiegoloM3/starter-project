@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
@@ -109,7 +110,7 @@ class ArticleDetailsView extends HookWidget {
   }
 
   void _onBackButtonTapped(BuildContext context) {
-    Navigator.pop(context);
+    context.pop();
   }
 
   void _onFloatingActionButtonPressed(BuildContext context) {

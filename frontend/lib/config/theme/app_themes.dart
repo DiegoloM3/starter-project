@@ -3,12 +3,6 @@ import 'package:news_app_clean_architecture/config/theme/app_theme_extension.dar
 import 'package:news_app_clean_architecture/config/theme/tokens/app_colors.dart';
 import 'package:news_app_clean_architecture/config/theme/tokens/app_typography.dart';
 
-/// Legacy entry point kept only so `app.dart` keeps compiling between
-/// the theme rebuild (B3.3) and the `MaterialApp.router` migration (B3.5).
-/// Delete once `lightTheme()`/`darkTheme()` are wired in directly.
-@Deprecated('Use lightTheme() / darkTheme() — removed in B3.5.')
-ThemeData theme() => lightTheme();
-
 ThemeData lightTheme() {
   final appTheme = AppTheme.light();
   final scheme = ColorScheme.fromSeed(
