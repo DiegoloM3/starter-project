@@ -3,6 +3,12 @@
 > Author: Abraham Jiménez · Branch: `chore/modernization` ·
 > Delivery window: 72 h
 
+**Documentos de soporte:**
+> - [`docs/SOLUCION.md`](./SOLUCION.md) — solución técnica detallada (narrativa de implementación, Q&A anticipada, mapa de archivos).
+> - [`docs/adr/0003-decisiones-consolidadas.md`](./adr/0003-decisiones-consolidadas.md) — fuente de verdad de las 14 decisiones técnicas tomadas.
+> - [`docs/PRE_PR_MANUAL.md`](./PRE_PR_MANUAL.md) — checklist operativo pre-PR (desbloqueo F0, screenshots, vídeo, merge).
+> - [`CHANGELOG.md`](../CHANGELOG.md) — notas de versión 1.0.0.
+
 ---
 
 ## 1. Introduction
