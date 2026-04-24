@@ -44,6 +44,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(
       const PublishArticleParams(
+        id: 'a1',
         authorId: 'u1',
         authorName: 'Author',
         title: 't',

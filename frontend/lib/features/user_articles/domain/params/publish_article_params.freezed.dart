@@ -16,6 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$PublishArticleParams {
+  String get id => throw _privateConstructorUsedError;
   String get authorId => throw _privateConstructorUsedError;
   String get authorName => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
@@ -36,7 +37,8 @@ abstract class $PublishArticleParamsCopyWith<$Res> {
       _$PublishArticleParamsCopyWithImpl<$Res, PublishArticleParams>;
   @useResult
   $Res call(
-      {String authorId,
+      {String id,
+      String authorId,
       String authorName,
       String title,
       String description,
@@ -59,6 +61,7 @@ class _$PublishArticleParamsCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? authorId = null,
     Object? authorName = null,
     Object? title = null,
@@ -68,6 +71,10 @@ class _$PublishArticleParamsCopyWithImpl<$Res,
     Object? tags = null,
   }) {
     return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
       authorId: null == authorId
           ? _value.authorId
           : authorId // ignore: cast_nullable_to_non_nullable
@@ -109,7 +116,8 @@ abstract class _$$PublishArticleParamsImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String authorId,
+      {String id,
+      String authorId,
       String authorName,
       String title,
       String description,
@@ -129,6 +137,7 @@ class __$$PublishArticleParamsImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? authorId = null,
     Object? authorName = null,
     Object? title = null,
@@ -138,6 +147,10 @@ class __$$PublishArticleParamsImplCopyWithImpl<$Res>
     Object? tags = null,
   }) {
     return _then(_$PublishArticleParamsImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
       authorId: null == authorId
           ? _value.authorId
           : authorId // ignore: cast_nullable_to_non_nullable
@@ -174,7 +187,8 @@ class __$$PublishArticleParamsImplCopyWithImpl<$Res>
 
 class _$PublishArticleParamsImpl implements _PublishArticleParams {
   const _$PublishArticleParamsImpl(
-      {required this.authorId,
+      {required this.id,
+      required this.authorId,
       required this.authorName,
       required this.title,
       required this.description,
@@ -183,6 +197,8 @@ class _$PublishArticleParamsImpl implements _PublishArticleParams {
       final List<String> tags = const <String>[]})
       : _tags = tags;
 
+  @override
+  final String id;
   @override
   final String authorId;
   @override
@@ -206,7 +222,7 @@ class _$PublishArticleParamsImpl implements _PublishArticleParams {
 
   @override
   String toString() {
-    return 'PublishArticleParams(authorId: $authorId, authorName: $authorName, title: $title, description: $description, content: $content, thumbnailURL: $thumbnailURL, tags: $tags)';
+    return 'PublishArticleParams(id: $id, authorId: $authorId, authorName: $authorName, title: $title, description: $description, content: $content, thumbnailURL: $thumbnailURL, tags: $tags)';
   }
 
   @override
@@ -214,6 +230,7 @@ class _$PublishArticleParamsImpl implements _PublishArticleParams {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PublishArticleParamsImpl &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.authorId, authorId) ||
                 other.authorId == authorId) &&
             (identical(other.authorName, authorName) ||
@@ -230,6 +247,7 @@ class _$PublishArticleParamsImpl implements _PublishArticleParams {
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      id,
       authorId,
       authorName,
       title,
@@ -249,7 +267,8 @@ class _$PublishArticleParamsImpl implements _PublishArticleParams {
 
 abstract class _PublishArticleParams implements PublishArticleParams {
   const factory _PublishArticleParams(
-      {required final String authorId,
+      {required final String id,
+      required final String authorId,
       required final String authorName,
       required final String title,
       required final String description,
@@ -257,6 +276,8 @@ abstract class _PublishArticleParams implements PublishArticleParams {
       required final String thumbnailURL,
       final List<String> tags}) = _$PublishArticleParamsImpl;
 
+  @override
+  String get id;
   @override
   String get authorId;
   @override

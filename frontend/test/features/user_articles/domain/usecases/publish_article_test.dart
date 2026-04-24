@@ -13,6 +13,7 @@ const _validContent =
     'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 
 PublishArticleParams _params({
+  String id = 'a1',
   String authorId = 'u1',
   String authorName = 'Author',
   String title = 'Clean architecture notes',
@@ -22,6 +23,7 @@ PublishArticleParams _params({
   List<String> tags = const <String>[],
 }) {
   return PublishArticleParams(
+    id: id,
     authorId: authorId,
     authorName: authorName,
     title: title,

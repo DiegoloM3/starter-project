@@ -5,6 +5,7 @@ part 'publish_article_params.freezed.dart';
 @freezed
 class PublishArticleParams with _$PublishArticleParams {
   const factory PublishArticleParams({
+    required String id,
     required String authorId,
     required String authorName,
     required String title,

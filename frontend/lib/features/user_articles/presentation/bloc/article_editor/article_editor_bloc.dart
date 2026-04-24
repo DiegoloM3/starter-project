@@ -93,12 +93,17 @@ class ArticleEditorBloc
 
     emit(state.copyWith(status: EditorStatus.submitting, failure: null));
 
+    // New articles need a client-side id so the thumbnail upload and the
+    // Firestore write share the same path. `storage.rules` and
+    // `firestore.rules#isValidArticle` both pivot on this id.
+    final articleId = state.editingId ?? _generateArticleId();
+
     var thumbnailURL = state.thumbnailURL;
     if (state.hasPendingThumbnail) {
       final uploadResult = await _uploadThumbnail(
         UploadThumbnailParams(
           authorId: user.id,
-          articleId: state.editingId ?? 'new',
+          articleId: articleId,
           fileName: state.pendingFileName!,
           bytes: state.pendingBytes!,
           contentType: state.pendingContentType!,
@@ -153,6 +158,7 @@ class ArticleEditorBloc
 
     final result = await _publishArticle(
       PublishArticleParams(
+        id: articleId,
         authorId: user.id,
         authorName: user.name,
         title: state.title,
@@ -177,5 +183,14 @@ class ArticleEditorBloc
         ),
       ),
     );
+  }
+
+  /// Lightweight client-generated id — stable enough for Firestore because
+  /// Firestore only requires uniqueness within a collection and the high
+  /// microsecond resolution plus the random suffix make collisions
+  /// vanishingly unlikely for a single-user session.
+  String _generateArticleId() {
+    final micros = DateTime.now().microsecondsSinceEpoch;
+    return 'a_$micros';
   }
 }

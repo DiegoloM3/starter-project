@@ -34,7 +34,7 @@ class FakeUserArticleRepository implements UserArticleRepository {
     PublishArticleParams params,
   ) async {
     final now = _now();
-    final id = 'fake_${_idSeed++}';
+    final id = params.id.isNotEmpty ? params.id : 'fake_${_idSeed++}';
     final article = UserArticleEntity(
       id: id,
       authorId: params.authorId,

@@ -8,8 +8,9 @@ import 'package:news_app_clean_architecture/features/user_articles/domain/params
 const _longContent =
     'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 
-PublishArticleParams _publish({String title = 'Hello world'}) {
+PublishArticleParams _publish({String title = 'Hello world', String id = ''}) {
   return PublishArticleParams(
+    id: id,
     authorId: 'u1',
     authorName: 'Author',
     title: title,
