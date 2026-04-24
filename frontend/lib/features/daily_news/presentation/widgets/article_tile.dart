@@ -1,7 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import '../../domain/entities/article.dart';
+=======
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
+>>>>>>> fbce432 (Finish PR (project setup))
 
 class ArticleWidget extends StatelessWidget {
   final ArticleEntity? article;
@@ -24,7 +28,15 @@ class ArticleWidget extends StatelessWidget {
       onTap: _onTap,
       child: Container(
         padding: const EdgeInsetsDirectional.only(
+<<<<<<< HEAD
             start: 14, end: 14, bottom: 7, top: 7),
+=======
+          start: 14,
+          end: 14,
+          bottom: 7,
+          top: 7,
+        ),
+>>>>>>> fbce432 (Finish PR (project setup))
         height: MediaQuery.of(context).size.width / 2.2,
         child: Row(
           children: [
@@ -37,6 +49,7 @@ class ArticleWidget extends StatelessWidget {
     );
   }
 
+<<<<<<< HEAD
   Widget _buildImage(BuildContext context) {
     return CachedNetworkImage(
         imageUrl: article!.urlToImage!,
@@ -82,6 +95,54 @@ class ArticleWidget extends StatelessWidget {
                 ),
               ),
             ));
+=======
+  Widget _buildImageContainer({
+    required BuildContext context,
+    Widget? child,
+    DecorationImage? decorationImage,
+  }) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(end: 14),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20.0),
+        child: Container(
+          width: MediaQuery.of(context).size.width / 3,
+          height: double.maxFinite,
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.08),
+            image: decorationImage,
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImage(BuildContext context) {
+    final url = article?.urlToImage;
+    if (url == null) {
+      return _buildImageContainer(
+        context: context,
+        child: const Icon(Icons.image_not_supported),
+      );
+    }
+    return CachedNetworkImage(
+      imageUrl: url,
+      imageBuilder: (context, imageProvider) => _buildImageContainer(
+        context: context,
+        decorationImage: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+      ),
+      progressIndicatorBuilder: (context, url, downloadProgress) =>
+          _buildImageContainer(
+        context: context,
+        child: const CupertinoActivityIndicator(),
+      ),
+      errorWidget: (context, url, error) => _buildImageContainer(
+        context: context,
+        child: const Icon(Icons.error),
+      ),
+    );
+>>>>>>> fbce432 (Finish PR (project setup))
   }
 
   Widget _buildTitleAndDescription() {
@@ -92,9 +153,14 @@ class ArticleWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+<<<<<<< HEAD
             // Title
             Text(
               article!.title ?? '',
+=======
+            Text(
+              article?.title ?? '',
+>>>>>>> fbce432 (Finish PR (project setup))
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -104,28 +170,43 @@ class ArticleWidget extends StatelessWidget {
                 color: Colors.black87,
               ),
             ),
+<<<<<<< HEAD
 
             // Description
+=======
+>>>>>>> fbce432 (Finish PR (project setup))
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
+<<<<<<< HEAD
                   article!.description ?? '',
+=======
+                  article?.description ?? '',
+>>>>>>> fbce432 (Finish PR (project setup))
                   maxLines: 2,
                 ),
               ),
             ),
+<<<<<<< HEAD
 
             // Datetime
+=======
+>>>>>>> fbce432 (Finish PR (project setup))
             Row(
               children: [
                 const Icon(Icons.timeline_outlined, size: 16),
                 const SizedBox(width: 4),
                 Text(
+<<<<<<< HEAD
                   article!.publishedAt!,
                   style: const TextStyle(
                     fontSize: 12,
                   ),
+=======
+                  article?.publishedAt ?? '',
+                  style: const TextStyle(fontSize: 12),
+>>>>>>> fbce432 (Finish PR (project setup))
                 ),
               ],
             ),
@@ -136,7 +217,11 @@ class ArticleWidget extends StatelessWidget {
   }
 
   Widget _buildRemovableArea() {
+<<<<<<< HEAD
     if (isRemovable!) {
+=======
+    if (isRemovable == true) {
+>>>>>>> fbce432 (Finish PR (project setup))
       return GestureDetector(
         onTap: _onRemove,
         child: const Padding(
@@ -145,7 +230,11 @@ class ArticleWidget extends StatelessWidget {
         ),
       );
     }
+<<<<<<< HEAD
     return Container();
+=======
+    return const SizedBox.shrink();
+>>>>>>> fbce432 (Finish PR (project setup))
   }
 
   void _onTap() {

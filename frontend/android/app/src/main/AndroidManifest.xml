@@ -1,5 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.news_app_clean_architecture">
+<<<<<<< HEAD
+=======
+
+    <!-- Gallery access: legacy (API ≤32) and modern (API 33+) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+>>>>>>> fbce432 (Finish PR (project setup))
    <application
         android:label="news_app_clean_architecture"
         android:name="androidx.multidex.MultiDexApplication"

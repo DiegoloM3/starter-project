@@ -1,6 +1,10 @@
 {
   "projects": {
+<<<<<<< HEAD
     "default": // TODO: ADD PROJECT ID
+=======
+    "default": "demo-symmetry"
+>>>>>>> fbce432 (Finish PR (project setup))
   },
   "targets": {},
   "etags": {}

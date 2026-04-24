@@ -61,7 +61,11 @@ class _$AppDatabase extends AppDatabase {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
+<<<<<<< HEAD
   ArticleDao? _articleDAOInstance;
+=======
+  ArticleDao? _articleDaoInstance;
+>>>>>>> fbce432 (Finish PR (project setup))
 
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
@@ -91,8 +95,13 @@ class _$AppDatabase extends AppDatabase {
   }
 
   @override
+<<<<<<< HEAD
   ArticleDao get articleDAO {
     return _articleDAOInstance ??= _$ArticleDao(database, changeListener);
+=======
+  ArticleDao get articleDao {
+    return _articleDaoInstance ??= _$ArticleDao(database, changeListener);
+>>>>>>> fbce432 (Finish PR (project setup))
   }
 }
 
@@ -143,9 +152,15 @@ class _$ArticleDao extends ArticleDao {
         mapper: (Map<String, Object?> row) => ArticleModel(
             id: row['id'] as int?,
             author: row['author'] as String?,
+<<<<<<< HEAD
             title: row['title'] as String?,
             description: row['description'] as String?,
             url: row['url'] as String?,
+=======
+            title: (row['title'] as String?) ?? '',
+            description: row['description'] as String?,
+            url: (row['url'] as String?) ?? '',
+>>>>>>> fbce432 (Finish PR (project setup))
             urlToImage: row['urlToImage'] as String?,
             publishedAt: row['publishedAt'] as String?,
             content: row['content'] as String?));

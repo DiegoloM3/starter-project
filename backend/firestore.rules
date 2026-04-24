@@ -2,6 +2,39 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+<<<<<<< HEAD
     // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
   }
 }
+=======
+
+    // Emulator: open for unauthenticated reads/writes during local testing.
+    // Production: restore isValidArticle() + auth check below.
+    //
+    // function isValidArticle() {
+    //   let data = request.resource.data;
+    //   return request.auth != null
+    //     && data.keys().hasAll([
+    //         'title', 'content', 'thumbnailUrl',
+    //         'authorId', 'authorName', 'createdAt',
+    //         'updatedAt', 'readTime', 'tags',
+    //         'isPublished', 'views', 'likes'
+    //       ])
+    //     && data.title is string && data.title.size() > 0 && data.title.size() <= 120
+    //     && data.content is string && data.content.size() > 0
+    //     && data.thumbnailUrl is string && data.thumbnailUrl.size() > 0
+    //     && data.authorId is string
+    //     && data.authorName is string
+    //     && data.readTime is number && data.readTime >= 0
+    //     && data.tags is list && data.tags.size() <= 8
+    //     && data.isPublished is bool
+    //     && data.views is number && data.views >= 0
+    //     && data.likes is number && data.likes >= 0;
+    // }
+
+    match /articles/{articleId} {
+      allow read, write: if true;
+    }
+  }
+}
+>>>>>>> fbce432 (Finish PR (project setup))

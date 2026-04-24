@@ -16,7 +16,11 @@ We will judge your work by:
   - Truth is King
     - You must search the truth without regards to other people's opinions or supposed knowledge. If you believe something is the truth, help other people understand your point of view regardless of their position. This could mean changing the design prototypes to something you like more or using a backend framework you consider superior to Firebase (obviously explaining your decision) if you believe that this will bring a better project to life.
   - Total Accountability 
+<<<<<<< HEAD
     - You must always reponsible for your actions and outcomes; this means you are responsible for your happiness and for the quality of your work.
+=======
+    - You must always be responsible for your actions and outcomes; this means you are responsible for your happiness and for the quality of your work.
+>>>>>>> fbce432 (Finish PR (project setup))
   - Maximally Overdeliver
     - You must always give the people more than what they expect from you. You must always rise to the occasion. This could mean you will add more functionality we did not tell you to add or designed new prototypes or came up with ideas on how to improve the project
 

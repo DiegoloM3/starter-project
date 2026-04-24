@@ -32,7 +32,10 @@
 /build/
 
 # Web related
+<<<<<<< HEAD
 lib/generated_plugin_registrant.dart
+=======
+>>>>>>> fbce432 (Finish PR (project setup))
 
 # Symbolication related
 app.*.symbols
@@ -44,3 +47,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+<<<<<<< HEAD
+=======
+
+# API keys and secrets — never commit
+lib/core/constants/secrets.dart
+>>>>>>> fbce432 (Finish PR (project setup))
