@@ -1,7 +1,74 @@
 rules_version = '2';
 
+// Article contract lives in backend/docs/DB_SCHEMA.md. Keep the field
+// list in `isValidArticle` in sync with the table there.
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    // Deny-by-default: anything not matched below is rejected.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /articles/{articleId} {
+      // Public feed + detail view.
+      allow read: if true;
+
+      allow create: if isSignedIn()
+        && request.resource.data.id == articleId
+        && request.resource.data.authorId == request.auth.uid
+        && isValidArticle(request.resource.data)
+        && request.resource.data.publishedAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if isSignedIn()
+        && resource.data.authorId == request.auth.uid
+        && request.resource.data.authorId == resource.data.authorId
+        && request.resource.data.id == resource.data.id
+        && request.resource.data.publishedAt == resource.data.publishedAt
+        && request.resource.data.updatedAt == request.time
+        && isValidArticle(request.resource.data);
+
+      allow delete: if isSignedIn()
+        && resource.data.authorId == request.auth.uid;
+    }
+  }
+
+  function isSignedIn() {
+    return request.auth != null;
+  }
+
+  function isValidArticle(data) {
+    return data.keys().hasAll([
+        'id',
+        'authorId',
+        'authorName',
+        'title',
+        'description',
+        'content',
+        'thumbnailURL',
+        'status',
+        'publishedAt',
+        'updatedAt'
+      ])
+      && data.id is string
+      && data.authorId is string
+      && data.authorName is string
+        && data.authorName.size() >= 1
+        && data.authorName.size() <= 60
+      && data.title is string
+        && data.title.size() >= 5
+        && data.title.size() <= 120
+      && data.description is string
+        && data.description.size() <= 280
+      && data.content is string
+        && data.content.size() >= 50
+        && data.content.size() <= 20000
+      && data.thumbnailURL is string
+        && data.thumbnailURL.matches('https://.*')
+      && data.status in ['draft', 'published']
+      && data.publishedAt is timestamp
+      && data.updatedAt is timestamp
+      && (!('tags' in data) || (data.tags is list && data.tags.size() <= 5));
   }
 }
