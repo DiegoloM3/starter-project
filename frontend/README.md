@@ -102,8 +102,8 @@ for the invariants each layer must respect.
 
 The moves that deviate from the starter skeleton are captured as ADRs:
 
-- [`docs/adr/0001-lint-migration-and-info-debt-budget.md`](../docs/adr/0001-lint-migration-and-info-debt-budget.md)
-- [`docs/adr/0002-dependency-version-bands.md`](../docs/adr/0002-dependency-version-bands.md)
+- [`docs/adr/0001-lint-migration-and-info-debt-budget.md`](../docs/prueba-tecnica/adr/0001-lint-migration-and-info-debt-budget.md)
+- [`docs/adr/0002-dependency-version-bands.md`](../docs/prueba-tecnica/adr/0002-dependency-version-bands.md)
 
 And the full fase-by-fase plan lives under
 [`docs/prueba-tecnica/01_PLAN_FASES.md`](../docs/prueba-tecnica/01_PLAN_FASES.md).

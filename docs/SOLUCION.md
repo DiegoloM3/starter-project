@@ -1,6 +1,6 @@
 # Solución técnica — Prueba Symmetry
 
-> **Propósito de este documento.** Explicación exhaustiva de **qué** se construyó, **cómo** funciona y **por qué** se tomó cada decisión. Pensado para defender el trabajo en la reunión técnica de revisión. El [ADR-0003](./adr/0003-decisiones-consolidadas.md) resume las decisiones; este documento narra la implementación.
+> **Propósito de este documento.** Explicación exhaustiva de **qué** se construyó, **cómo** funciona y **por qué** se tomó cada decisión. Pensado para defender el trabajo en la reunión técnica de revisión. El [ADR-0003](./prueba-tecnica/adr/0003-decisiones-consolidadas.md) resume las decisiones; este documento narra la implementación.
 >
 > Lectura estimada: 20–25 minutos. Si solo se tiene tiempo para una sección, leer §3 (flujo end-to-end) y §11 (Q&A anticipada).
 
@@ -73,8 +73,8 @@ El README oficial pide tres entregables principales: **backend (schema + reglas)
 | Requisito README §3                              | Evidencia                                                   | Estado |
 |--------------------------------------------------|-------------------------------------------------------------|--------|
 | 7 secciones de [`REPORT_INSTRUCTIONS.md`](./REPORT_INSTRUCTIONS.md) | [`docs/REPORT.md`](./REPORT.md) | ✅ |
-| Screenshots                                      | pendiente manual (ver [`PRE_PR_MANUAL.md`](./PRE_PR_MANUAL.md) §3) | ⏳ |
-| Vídeo demo ≤ 2 min                               | pendiente manual ([`PRE_PR_MANUAL.md`](./PRE_PR_MANUAL.md) §4) | ⏳ |
+| Screenshots                                      | pendiente manual (ver [`PRE_PR_MANUAL.md`](./prueba-tecnica/PRE_PR_MANUAL.md) §3) | ⏳ |
+| Vídeo demo ≤ 2 min                               | pendiente manual ([`PRE_PR_MANUAL.md`](./prueba-tecnica/PRE_PR_MANUAL.md) §4) | ⏳ |
 | Sección Overdelivery explícita                   | §6 del REPORT cubre go_router, tokens, CI, lints, ADRs, AuthSession, `_guard` | ✅ |
 | README principal actualizado                     | `frontend/README.md` reescrito con run/--dart-define/layout | ✅ |
 | Commits con mensajes claros                      | 60 commits en Conventional Commits (feat/refactor/test/chore/docs/ci/fix) | ✅ |
@@ -85,10 +85,10 @@ El README oficial pide tres entregables principales: **backend (schema + reglas)
 | Fuente                                                  | Cumplimiento                                                                 |
 |---------------------------------------------------------|------------------------------------------------------------------------------|
 | [APP_ARCHITECTURE.md](./APP_ARCHITECTURE.md)            | 3 capas (data/domain/presentation); domain sin imports externos; data_sources lanzan excepciones; solo `repository/*_impl.dart` importa providers |
-| [ARCHITECTURE_VIOLATIONS.md](./ARCHITECTURE_VIOLATIONS.md) | Todas las violaciones 1.x, 2.x, 3.x **ausentes** (verificado por grep — ver [ADR-0003 §14](./adr/0003-decisiones-consolidadas.md#14-criterios-arquitectónicos-verificados)) |
+| [ARCHITECTURE_VIOLATIONS.md](./ARCHITECTURE_VIOLATIONS.md) | Todas las violaciones 1.x, 2.x, 3.x **ausentes** (verificado por grep — ver [ADR-0003 §14](./prueba-tecnica/adr/0003-decisiones-consolidadas.md#14-criterios-arquitectónicos-verificados)) |
 | [CODING_GUIDELINES.md](./CODING_GUIDELINES.md)          | Nombres descriptivos (`UserArticleRepositoryImpl`, `_guard`, `reserveId`); funciones pequeñas (el más largo es `_onSubmitted`, 60 líneas con 2 niveles de anidamiento); abstract classes aisladas (`UserArticleRepository`, `AuthSession`, `ThumbnailPickerService`) |
 
-**Las pequeñas desviaciones** (data layer retorna `Either<AppFailure, T>` en vez del `DataState<T>` que proponía la versión original de 1.4.3) están justificadas por [ADR-0003 §4](./adr/0003-decisiones-consolidadas.md#4-d3-d4-d5--contrato-universal-de-errores) y están explícitamente permitidas por el valor *"Truth is King"* que el README llama a ejercitar.
+**Las pequeñas desviaciones** (data layer retorna `Either<AppFailure, T>` en vez del `DataState<T>` que proponía la versión original de 1.4.3) están justificadas por [ADR-0003 §4](./prueba-tecnica/adr/0003-decisiones-consolidadas.md#4-d3-d4-d5--contrato-universal-de-errores) y están explícitamente permitidas por el valor *"Truth is King"* que el README llama a ejercitar.
 
 ---
 
@@ -296,7 +296,7 @@ bool get isPublished => status == UserArticleStatus.published;
 
 Cada operación de escritura tiene su propia clase de parámetros:
 
-- `PublishArticleParams` — campos completos + `id` generado client-side (ver [ADR-0003 §13](./adr/0003-decisiones-consolidadas.md#13-d14--article-id-generado-client-side))
+- `PublishArticleParams` — campos completos + `id` generado client-side (ver [ADR-0003 §13](./prueba-tecnica/adr/0003-decisiones-consolidadas.md#13-d14--article-id-generado-client-side))
 - `UpdateArticleParams` — mismo set pero sin `authorId`/`authorName` (inmutables en update)
 - `DeleteArticleParams` — solo `id`
 - `UploadThumbnailParams` — `authorId`, `articleId`, `fileName`, `bytes`, `contentType`
@@ -377,7 +377,7 @@ Future<Either<AppFailure, T>> _guard<T>(Future<T> Function() action) async {
 }
 ```
 
-Esta es la **única** función en todo `lib/` que atrapa `FirebaseException`. Todo lo demás arriba de ella ve `Either<AppFailure, T>`. La correspondencia de códigos está en §4 de [ADR-0003](./adr/0003-decisiones-consolidadas.md).
+Esta es la **única** función en todo `lib/` que atrapa `FirebaseException`. Todo lo demás arriba de ella ve `Either<AppFailure, T>`. La correspondencia de códigos está en §4 de [ADR-0003](./prueba-tecnica/adr/0003-decisiones-consolidadas.md).
 
 ### 7.4 `FakeUserArticleRepository`
 
@@ -435,7 +435,7 @@ Rutas nested bajo `/me/articles`:
 
 ### 9.1 `core/error/app_failure.dart`
 
-Sealed class con 5 variantes. Ver §4 de [ADR-0003](./adr/0003-decisiones-consolidadas.md) para la justificación completa.
+Sealed class con 5 variantes. Ver §4 de [ADR-0003](./prueba-tecnica/adr/0003-decisiones-consolidadas.md) para la justificación completa.
 
 ### 9.2 `core/usecase/usecase.dart`
 
@@ -463,7 +463,7 @@ Tres handlers globales que `bootstrap.dart` registra:
 - `PlatformDispatcher.instance.onError` — errores nativos no capturados.
 - `runZonedGuarded` — async no capturado.
 
-En dev imprimen a consola; en producción se conectaría Crashlytics (ver §15 de [ADR-0003](./adr/0003-decisiones-consolidadas.md)).
+En dev imprimen a consola; en producción se conectaría Crashlytics (ver §15 de [ADR-0003](./prueba-tecnica/adr/0003-decisiones-consolidadas.md)).
 
 ### 9.5 `core/session/auth_session.dart`
 
@@ -494,7 +494,7 @@ Consumo: `final theme = context.appTheme;` → `theme.primary`, `theme.spacing.l
 `GetIt` service locator. Dos funciones:
 
 - `initializeDependencies()` — wiring cross-feature (database, Dio, use cases, blocs de daily_news).
-- `_registerUserArticles()` — wiring específico con el **gate de Firebase** (ver §12 de [ADR-0003](./adr/0003-decisiones-consolidadas.md)).
+- `_registerUserArticles()` — wiring específico con el **gate de Firebase** (ver §12 de [ADR-0003](./prueba-tecnica/adr/0003-decisiones-consolidadas.md)).
 
 ---
 
@@ -527,7 +527,7 @@ Consumo: `final theme = context.appTheme;` → `theme.primary`, `theme.spacing.l
 2. Setup Flutter (SDK pineado).
 3. `flutter pub get`.
 4. `flutter pub run build_runner build --delete-conflicting-outputs`.
-5. `flutter analyze` (exit code 0 requerido; ver `--no-fatal-infos` en [ADR-0001](./adr/0001-lint-migration-and-info-debt-budget.md)).
+5. `flutter analyze` (exit code 0 requerido; ver `--no-fatal-infos` en [ADR-0001](./prueba-tecnica/adr/0001-lint-migration-and-info-debt-budget.md)).
 6. `dart format --set-exit-if-changed .`.
 7. `flutter test --coverage`.
 
@@ -557,23 +557,23 @@ Formulario de ensayo para la reunión, ordenado por probabilidad de que aparezca
 
 **Q1. ¿Por qué `Either<AppFailure, T>` en vez del `DataState<T>` que propone `ARCHITECTURE_VIOLATIONS.md` 1.4.3?**
 
-Porque `DataState<T>` en el código base exponía `DioError` hacia presentation (las pantallas hacían `state is DataFailed<T>` y accedían a `state.error as DioError`). Reemplazar `DataState` por `Either` con el tipo de error sellado (`AppFailure`) cumple el mismo objetivo — forzar al consumidor a manejar éxito y fallo — sin filtrar el tipo de librería HTTP. La decisión está en [ADR-0003 §4](./adr/0003-decisiones-consolidadas.md#4-d3-d4-d5--contrato-universal-de-errores). Si quieren que vuelva a `DataState<T>`, es un refactor de ~1 hora: cambiar el wrapper, las firmas, y los `fold` a `when`.
+Porque `DataState<T>` en el código base exponía `DioError` hacia presentation (las pantallas hacían `state is DataFailed<T>` y accedían a `state.error as DioError`). Reemplazar `DataState` por `Either` con el tipo de error sellado (`AppFailure`) cumple el mismo objetivo — forzar al consumidor a manejar éxito y fallo — sin filtrar el tipo de librería HTTP. La decisión está en [ADR-0003 §4](./prueba-tecnica/adr/0003-decisiones-consolidadas.md#4-d3-d4-d5--contrato-universal-de-errores). Si quieren que vuelva a `DataState<T>`, es un refactor de ~1 hora: cambiar el wrapper, las firmas, y los `fold` a `when`.
 
 **Q2. ¿Por qué el fake está en `data/fake/` y no solo en `test/`?**
 
-Porque F7 (presentation) necesitaba correr con datos antes de F8 (Firestore real). Opciones: (a) bloquear F7 hasta F8, (b) usar el fake solo en tests y meter un placeholder en el bloc, (c) tener el fake en producción detrás del gate de Firebase. Se eligió (c) porque también permite que la demo corra localmente sin credenciales. Ver [ADR-0003 §10](./adr/0003-decisiones-consolidadas.md#10-d11--fake-repository-en-datafake).
+Porque F7 (presentation) necesitaba correr con datos antes de F8 (Firestore real). Opciones: (a) bloquear F7 hasta F8, (b) usar el fake solo en tests y meter un placeholder en el bloc, (c) tener el fake en producción detrás del gate de Firebase. Se eligió (c) porque también permite que la demo corra localmente sin credenciales. Ver [ADR-0003 §10](./prueba-tecnica/adr/0003-decisiones-consolidadas.md#10-d11--fake-repository-en-datafake).
 
 **Q3. ¿Es seguro generar el article id en el cliente?**
 
-Sí, con dos caveats: (1) Firestore solo requiere unicidad dentro de la colección, no global — un `microsecondsSinceEpoch` es suficiente para una sesión individual. (2) Las reglas del backend enforcean `request.resource.data.id == articleId`, así que un cliente malicioso no puede escribir documentos con ids que no controla. Detalles en [ADR-0003 §13](./adr/0003-decisiones-consolidadas.md#13-d14--article-id-generado-client-side).
+Sí, con dos caveats: (1) Firestore solo requiere unicidad dentro de la colección, no global — un `microsecondsSinceEpoch` es suficiente para una sesión individual. (2) Las reglas del backend enforcean `request.resource.data.id == articleId`, así que un cliente malicioso no puede escribir documentos con ids que no controla. Detalles en [ADR-0003 §13](./prueba-tecnica/adr/0003-decisiones-consolidadas.md#13-d14--article-id-generado-client-side).
 
 **Q4. ¿Por qué no usaron `freezed 3`?**
 
-Porque `floor_generator ^1.4.x` bloquea `analyzer ≥ 6.5`, que es lo que `freezed 3` pide. El corredor de compatibilidad está en [ADR-0002](./adr/0002-dependency-version-bands.md). Cuando `daily_news` reescriba su persistencia sin `floor` (fuera de alcance), se desbloquea.
+Porque `floor_generator ^1.4.x` bloquea `analyzer ≥ 6.5`, que es lo que `freezed 3` pide. El corredor de compatibilidad está en [ADR-0002](./prueba-tecnica/adr/0002-dependency-version-bands.md). Cuando `daily_news` reescriba su persistencia sin `floor` (fuera de alcance), se desbloquea.
 
 **Q5. ¿No les preocupa tener tests con `fake_cloud_firestore` en vez del emulador real?**
 
-Sí, un poco. `fake_cloud_firestore` no evalúa `firestore.rules`. Los tests validan el **wiring** del repositorio (que `publish` escribe al path correcto, que `getMyArticles` filtra por `authorId`, que los mapeos `FirebaseException → AppFailure` funcionan). La validación real de reglas quedaría en un test de `@firebase/rules-unit-testing` (Node) o contra el emulador. Lo dejamos como overdelivery pendiente en [`PRE_PR_MANUAL.md`](./PRE_PR_MANUAL.md).
+Sí, un poco. `fake_cloud_firestore` no evalúa `firestore.rules`. Los tests validan el **wiring** del repositorio (que `publish` escribe al path correcto, que `getMyArticles` filtra por `authorId`, que los mapeos `FirebaseException → AppFailure` funcionan). La validación real de reglas quedaría en un test de `@firebase/rules-unit-testing` (Node) o contra el emulador. Lo dejamos como overdelivery pendiente en [`PRE_PR_MANUAL.md`](./prueba-tecnica/PRE_PR_MANUAL.md).
 
 **Q6. ¿Cómo harían offline-first?**
 
@@ -581,14 +581,14 @@ Dos pasos: (1) Activar `FirebaseFirestore.instance.settings = Settings(persisten
 
 **Q7. El overdelivery oficial del plan era #15 y #21. Dicen que entregaron ambos — ¿dónde?**
 
-- **#15 (router declarativo):** `go_router ^14` en `config/routes/app_router.dart`, helpers tipados en `app_routes.dart`. Documentado en [ADR-0003 §7](./adr/0003-decisiones-consolidadas.md#7-d8--router-declarativo-con-go_router).
-- **#21 (design tokens + ThemeExtension):** 4 archivos de tokens en `config/theme/tokens/` alimentando `AppTheme extends ThemeExtension<AppTheme>`. Documentado en [ADR-0003 §6](./adr/0003-decisiones-consolidadas.md#6-d7--design-tokens--themeextension).
+- **#15 (router declarativo):** `go_router ^14` en `config/routes/app_router.dart`, helpers tipados en `app_routes.dart`. Documentado en [ADR-0003 §7](./prueba-tecnica/adr/0003-decisiones-consolidadas.md#7-d8--router-declarativo-con-go_router).
+- **#21 (design tokens + ThemeExtension):** 4 archivos de tokens en `config/theme/tokens/` alimentando `AppTheme extends ThemeExtension<AppTheme>`. Documentado en [ADR-0003 §6](./prueba-tecnica/adr/0003-decisiones-consolidadas.md#6-d7--design-tokens--themeextension).
 
 Ambos están arriba y el consumo está estandarizado en toda la feature nueva.
 
 **Q8. ¿Por qué el `main.dart` tiene solo 2 líneas?**
 
-Para cumplir el criterio de salida de F2: *"`main.dart` ≤ 10 líneas"*. La intención es que arrancar la app sea obvio — delegar toda la inicialización a `bootstrap.dart`, que tiene responsabilidades agrupadas y probables. Ver [ADR-0003 §5](./adr/0003-decisiones-consolidadas.md#5-d6--bootstrap-separado-y-handlers-globales-de-error).
+Para cumplir el criterio de salida de F2: *"`main.dart` ≤ 10 líneas"*. La intención es que arrancar la app sea obvio — delegar toda la inicialización a `bootstrap.dart`, que tiene responsabilidades agrupadas y probables. Ver [ADR-0003 §5](./prueba-tecnica/adr/0003-decisiones-consolidadas.md#5-d6--bootstrap-separado-y-handlers-globales-de-error).
 
 **Q9. ¿Por qué `AuthSession` es un port y no directamente `firebase_auth`?**
 
@@ -616,7 +616,7 @@ Animaciones y transiciones entre pantallas que el Figma sugería (fade del thumb
 | 3 infos `avoid_redundant_argument_values` en tests | Deliberado | Ninguno          | Se conservan para claridad del test                 |
 | `dependency_overrides` en `analyzer`/`dart_style` | ADR-0002 | Enmascara CVEs potenciales | F10: reemplazar `floor` por `drift` → libera la banda |
 | Widget tests solo cubren `PrimaryButton`      | Scope de 72h | Test suite no cubre pantallas completas | Añadir pumpWidget tests de las 3 páginas con DI aislada |
-| Screenshots y vídeo de la demo                | Scope de 72h | REPORT.md completo pero sin anexos visuales | Ver [`PRE_PR_MANUAL.md`](./PRE_PR_MANUAL.md) §3-4 |
+| Screenshots y vídeo de la demo                | Scope de 72h | REPORT.md completo pero sin anexos visuales | Ver [`PRE_PR_MANUAL.md`](./prueba-tecnica/PRE_PR_MANUAL.md) §3-4 |
 
 ### 12.2 Orden sugerido de cierre post-PR
 

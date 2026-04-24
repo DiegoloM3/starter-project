@@ -10,14 +10,14 @@ Convención:
 
 ## A. Entorno y configuración
 
-- [x] 🔴 `flutter doctor` sin errores bloqueantes. *(Flutter 3.38.5 / Dart 3.10.4; única observación no bloqueante: Android licenses pendientes de aceptar.)*
-- [~] 🔴 Firebase CLI instalada y autenticada (`firebase login`). *(CLI 15.1.0 instalada; credenciales de `dev@pik.lat` expiradas → requiere `firebase login --reauth` manual.)*
-- [ ] 🔴 `backend/.firebaserc` apunta a un `projectId` real. *(Pendiente: sigue con `// TODO: ADD PROJECT ID`.)*
-- [ ] 🔴 Proyecto Firebase tiene **Firestore**, **Storage** y **Emulator Suite** habilitados. *(Acción manual en la Consola.)*
-- [ ] 🔴 `firebase emulators:start` levanta Firestore y Storage localmente.
-- [ ] 🔴 `frontend/firebase_options.dart` generado con `flutterfire configure`. *(CLI `flutterfire_cli 1.3.1` instalada; corre tras el reauth.)*
-- [ ] 🔴 `Firebase.initializeApp()` invocado en `main()`. *(Se cablea en F2.)*
-- [ ] 🟡 `.gitignore` excluye `google-services.json`, `GoogleService-Info.plist` y `firebase_options.dart` si contienen secretos sensibles (o se documenta que son públicos).
+- [x] 🔴 `flutter doctor` sin errores bloqueantes. *(Flutter 3.38.5 / Dart 3.10.4.)*
+- [x] 🔴 Firebase CLI instalada y autenticada. *(Integración confirmada en commit `ff2b2ed`.)*
+- [x] 🔴 `backend/.firebaserc` apunta a `symmetry-test-cf818` (projectId real).
+- [x] 🔴 Proyecto Firebase tiene **Firestore**, **Storage** y **Authentication** habilitados. *(Confirmado por `google-services.json` y `firebase_options.dart`.)*
+- [~] 🔴 `firebase emulators:start` levanta Firestore y Storage localmente. *(Config lista en `backend/firebase.json`; usado mayormente para tests vía `fake_cloud_firestore`.)*
+- [x] 🔴 `frontend/lib/firebase_options.dart` generado con `flutterfire configure` (Android: `1:801293053002:android:204703bcdccefb3264cab3`).
+- [x] 🔴 `Firebase.initializeApp()` invocado en `bootstrap.dart` con `DefaultFirebaseOptions.currentPlatform`.
+- [x] 🟡 `firebase_options.dart` se compromete al repo porque las claves son públicas por diseño (validadas con SHA-1 Android / bundleId iOS).
 
 ---
 
@@ -42,9 +42,11 @@ Convención:
 - [x] 🔴 `isValidArticle()` valida tipos, longitudes (title 5–120, description ≤280, content 50–20000, thumbnailURL https) y enum `status`.
 - [x] 🔴 `storage.rules` restringe writes al path `media/articles/{authorId}/{articleId}/{file}` al autor autenticado.
 - [x] 🔴 Storage valida `contentType` (`image/*`) y tamaño (`< 5 * 1024 * 1024`).
-- [ ] 🔴 Reglas desplegadas: `firebase deploy --only firestore:rules,storage:rules`. *(Pendiente F0: requiere `firebase login --reauth`.)*
-- [ ] 🟡 Probadas con el simulador web de Firebase (al menos caso permitido + caso denegado). *(Pendiente F9.)*
+- [ ] 🔴 Reglas desplegadas: `firebase deploy --only firestore:rules,storage:rules`. *(Pendiente manual — guía visual en [backend/docs/RULES_VISUAL.md §1](../../backend/docs/RULES_VISUAL.md#1-cómo-subir-las-reglas-a-firebase).)*
+- [ ] 🟡 Probadas con el simulador web de Firebase (al menos caso permitido + caso denegado). *(Casos listos para copiar en [RULES_VISUAL.md §3 y §5](../../backend/docs/RULES_VISUAL.md#3-casos-de-prueba--firestore-playground); pendiente ejecutar en la consola.)*
 - [ ] 🟢 Tests automatizados con `@firebase/rules-unit-testing`.
+- [x] 🟢 [`backend/docs/RULES_VISUAL.md`](../../backend/docs/RULES_VISUAL.md) — guía visual con diagramas de decisión y 13 casos de prueba (8 Firestore + 5 Storage).
+- [x] 🟢 [`backend/docs/SCHEMA_RATIONALE.md`](../../backend/docs/SCHEMA_RATIONALE.md) — argumentación campo por campo del schema (principios, decisiones, alternativas descartadas).
 
 ---
 
@@ -98,7 +100,7 @@ Convención:
 
 ## G. Calidad de código (Clean Code)
 
-- [~] 🔴 `flutter analyze` sin warnings críticos. *(0 errores / 0 warnings. 27 infos restantes presupuestados como deuda en [ADR-0001](../adr/0001-lint-migration-and-info-debt-budget.md); F9 debe cerrar a 0.)*
+- [~] 🔴 `flutter analyze` sin warnings críticos. *(0 errores / 0 warnings. 27 infos restantes presupuestados como deuda en [ADR-0001](./adr/0001-lint-migration-and-info-debt-budget.md); F9 debe cerrar a 0.)*
 - [x] 🔴 `dart format .` aplicado. *(Adelantado desde F9/B9.1 para destrabar el CI en F2–F8.)*
 - [ ] 🔴 Funciones cortas (máx. ~20 líneas) y con una responsabilidad.
 - [ ] 🔴 Nombres intention-revealing; sin abreviaturas oscuras.
@@ -119,7 +121,7 @@ Convención:
 - [x] 🔴 `build_runner` re-genera los `.g.dart` sin errores.
 - [x] 🔴 Test directory (`frontend/test/`) creado con smoke test (`placeholder_test.dart`).
 - [x] 🔴 Pipeline CI GitHub Actions: analyze + format + test con cobertura.
-- [x] 🟡 ADRs registradas para decisiones de F1: [ADR-0001](../adr/0001-lint-migration-and-info-debt-budget.md), [ADR-0002](../adr/0002-dependency-version-bands.md).
+- [x] 🟡 ADRs registradas para decisiones de F1: [ADR-0001](./adr/0001-lint-migration-and-info-debt-budget.md), [ADR-0002](./adr/0002-dependency-version-bands.md).
 
 ### G.2 Fundamentos core/shared + bootstrap (F2)
 
@@ -133,7 +135,7 @@ Convención:
 - [x] 🔴 `main.dart` ≤ 10 líneas; lógica extraída a `bootstrap.dart` y `app.dart`.
 - [x] 🔴 `AppLogger` + handlers globales (`FlutterError.onError`, `PlatformDispatcher.onError`, `runZonedGuarded`).
 - [x] 🔴 Tests cubren `AppFailure` (4) y `UseCase` base (3) → suite 8/8 verde.
-- [ ] 🟡 `Firebase.initializeApp` cableado en `bootstrap.dart` *(bloqueado por F0: requiere `flutterfire configure`).*
+- [x] 🟡 `Firebase.initializeApp` cableado en `bootstrap.dart` con `DefaultFirebaseOptions.currentPlatform`.
 
 ### G.3b Refactor `daily_news` al nuevo estándar (F4)
 
@@ -143,7 +145,7 @@ Convención:
 - [x] 🟡 Estados `RemoteArticlesState` y `LocalArticlesState` migrados a uniones `@freezed` (`loading`/`done`/`error`).
 - [x] 🟡 `MultiBlocProvider` global extraído a `lib/config/app_providers.dart` (listo para registrar los blocs de F7).
 - [x] 🧪 Tests añadidos: `GetArticleUseCase`, `ArticleRepositoryImpl` (4 casos), `RemoteArticlesBloc` (2 casos).
-- [x] 🔴 `flutter analyze`: 18 issues (todos preexistentes del presupuesto de [ADR-0001](../adr/0001-lint-migration-and-info-debt-budget.md); los 7 errors de `data/models/article.dart` de F3 están cerrados con `json_serializable`).
+- [x] 🔴 `flutter analyze`: 18 issues (todos preexistentes del presupuesto de [ADR-0001](./adr/0001-lint-migration-and-info-debt-budget.md); los 7 errors de `data/models/article.dart` de F3 están cerrados con `json_serializable`).
 
 ### G.4 Domain `user_articles` (F6)
 
@@ -173,14 +175,14 @@ Convención:
 - [x] 🔴 `UserArticlesStorageDataSource`: upload a `media/articles/{authorId}/{articleId}/{file}` con content-type, retorna `getDownloadURL()`.
 - [x] 🔴 `UserArticleModel` (plain class) con `fromFirestore`, `toEntity`, `createPayload`, `updatePayload`; mapeo de `Timestamp` y fallback a `DateTime.now()` para server-stamped writes.
 - [x] 🔴 `UserArticleRepositoryImpl` retorna `Either<AppFailure, T>` con `_guard` que mapea `FirebaseException.code` → `AuthFailure|NetworkFailure|ValidationFailure|UnknownFailure`.
-- [x] 🔴 DI gate `Firebase.apps.isNotEmpty`: real impl cuando Firebase está cableado, fake cuando no.
+- [x] 🔴 DI gate `Firebase.apps.isNotEmpty`: real impl cuando Firebase está cableado (caso actual, F0 desbloqueada), fake cuando no (tests).
 - [x] 🔴 Article id generado client-side en el bloc y propagado a upload + publish (necesario por `data.id == articleId` en `firestore.rules`).
 - [x] 🧪 Suite **58/58 verde** con `fake_cloud_firestore` + `firebase_storage_mocks`: publish/list/update/delete, upload al path whitelisted, y `FirebaseException(permission-denied)` mapeada a `AuthFailure`.
 
 ### G.7 QA y entrega (F9)
 
 - [x] 🔴 `dart format` aplicado al codebase.
-- [x] 🔴 `flutter analyze`: 0 errors, 0 warnings, 6 infos (todas presupuestadas en [ADR-0001](../adr/0001-lint-migration-and-info-debt-budget.md) o ruido cosmético).
+- [x] 🔴 `flutter analyze`: 0 errors, 0 warnings, 6 infos (todas presupuestadas en [ADR-0001](./adr/0001-lint-migration-and-info-debt-budget.md) o ruido cosmético).
 - [x] 🔴 `flutter test`: 58/58 verde.
 - [x] 🔴 `frontend/README.md` reescrito con instrucciones de ejecución, `--dart-define`, layout del proyecto y toggling Firebase.
 - [x] 🔴 `docs/REPORT.md` con las 7 secciones.
@@ -222,15 +224,15 @@ Auditoría rápida por capa; marcar solo si se verificó manualmente.
 
 - [x] 🔴 `docs/REPORT.md` contiene las 7 secciones de `REPORT_INSTRUCTIONS.md`.
 - [x] 🟢 `docs/SOLUCION.md` — narrativa técnica detallada para la reunión de revisión (flujo end-to-end, Q&A anticipada, mapa de archivos).
-- [x] 🟢 `docs/adr/0003-decisiones-consolidadas.md` — fuente de verdad panorámica con las 14 decisiones técnicas del ciclo F0–F9.
-- [x] 🟢 `docs/PRE_PR_MANUAL.md` — checklist operativo para el humano antes del PR (desbloqueo F0, screenshots, vídeo, merge).
-- [ ] 🔴 Screenshots de cada pantalla clave. *(Checklist en [PRE_PR_MANUAL.md §3](../PRE_PR_MANUAL.md).)*
-- [ ] 🔴 Vídeo demo del flujo completo (≤ 2 min). *(Checklist en [PRE_PR_MANUAL.md §4](../PRE_PR_MANUAL.md).)*
+- [x] 🟢 [`docs/prueba-tecnica/adr/0003-decisiones-consolidadas.md`](./adr/0003-decisiones-consolidadas.md) — fuente de verdad panorámica con las 14 decisiones técnicas del ciclo F0–F9.
+- [x] 🟢 `docs/prueba-tecnica/PRE_PR_MANUAL.md` — checklist operativo para el humano antes del PR (desbloqueo F0, screenshots, vídeo, merge).
+- [ ] 🔴 Screenshots de cada pantalla clave. *(Checklist en [PRE_PR_MANUAL.md §3](./PRE_PR_MANUAL.md).)*
+- [ ] 🔴 Vídeo demo del flujo completo (≤ 2 min). *(Checklist en [PRE_PR_MANUAL.md §4](./PRE_PR_MANUAL.md).)*
 - [x] 🔴 Sección *Overdelivery* detalla lo extra (go_router, design tokens, CI, strict lints, ADRs, AuthSession fallback, `_guard` mapper).
 - [x] 🔴 `frontend/README.md` actualizado con instrucciones para correr el proyecto y `--dart-define=NEWS_API_KEY`.
 - [x] 🟡 Commits con mensajes claros en formato Conventional Commits.
 - [x] 🟡 Rama `chore/modernization` lista para PR a `main`.
-- [ ] 🟢 Tag de versión `v1.0.0` al terminar. *(Pendiente: ver [PRE_PR_MANUAL.md §7](../PRE_PR_MANUAL.md).)*
+- [ ] 🟢 Tag de versión `v1.0.0` al terminar. *(Pendiente: ver [PRE_PR_MANUAL.md §7](./PRE_PR_MANUAL.md).)*
 
 ---
 

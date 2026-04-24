@@ -5,8 +5,8 @@
 
 **Documentos de soporte:**
 > - [`docs/SOLUCION.md`](./SOLUCION.md) — solución técnica detallada (narrativa de implementación, Q&A anticipada, mapa de archivos).
-> - [`docs/adr/0003-decisiones-consolidadas.md`](./adr/0003-decisiones-consolidadas.md) — fuente de verdad de las 14 decisiones técnicas tomadas.
-> - [`docs/PRE_PR_MANUAL.md`](./PRE_PR_MANUAL.md) — checklist operativo pre-PR (desbloqueo F0, screenshots, vídeo, merge).
+> - [`docs/adr/0003-decisiones-consolidadas.md`](./prueba-tecnica/adr/0003-decisiones-consolidadas.md) — fuente de verdad de las 14 decisiones técnicas tomadas.
+> - [`docs/PRE_PR_MANUAL.md`](./prueba-tecnica/PRE_PR_MANUAL.md) — checklist operativo pre-PR (desbloqueo F0, screenshots, vídeo, merge).
 > - [`CHANGELOG.md`](../CHANGELOG.md) — notas de versión 1.0.0.
 
 ---
@@ -39,7 +39,7 @@ the odd one out.
 | **Firestore security rules**  | express "only the author can write, never rewrite `authorId`/`publishedAt`" in the rules DSL | wrote `firestore.rules#isValidArticle` in sync with `backend/docs/DB_SCHEMA.md` |
 | **`fake_cloud_firestore`**    | test the repo without touching the cloud | wrote `user_article_repository_impl_test.dart` that round-trips publish/update/delete/upload |
 | **`firebase_storage_mocks`**  | ditto for Storage | verified the `media/articles/{authorId}/{articleId}/` path on upload |
-| **`very_good_analysis ^6`**   | stricter lints under Dart 3 | adopted + catalogued the remaining info-level debt in [ADR-0001](./adr/0001-lint-migration-and-info-debt-budget.md) |
+| **`very_good_analysis ^6`**   | stricter lints under Dart 3 | adopted + catalogued the remaining info-level debt in [ADR-0001](./prueba-tecnica/adr/0001-lint-migration-and-info-debt-budget.md) |
 
 Primary references: official Flutter docs, `bloclibrary.dev`, Firebase's
 rules language reference, and Reso Coder's clean architecture tutorial.
@@ -51,7 +51,7 @@ rules language reference, and Reso Coder's clean architecture tutorial.
    3.19's toolchain nor `freezed ^2.4.7` agreed with. I pinned both
    `analyzer` and `dart_style` under `dependency_overrides` — the
    reasoning is written up in
-   [ADR-0002](./adr/0002-dependency-version-bands.md).
+   [ADR-0002](./prueba-tecnica/adr/0002-dependency-version-bands.md).
 
 2. **Firebase init blocked at F0.** The challenge window didn't include
    a real Firebase project, so `flutterfire configure` couldn't run.
@@ -142,7 +142,7 @@ Cloud Storage without a line of UI code changing.
 3. **Strict lints + ADR trail.** Bumped to `very_good_analysis ^6.0.0`
    with `strict-casts`, `strict-inference` and `strict-raw-types` on.
    Every deviation (pinned analyzer, info-level debt budget) is tracked
-   in `docs/adr/`.
+   in `docs/prueba-tecnica/adr/`.
 
 4. **CI on push + pull_request.** `.github/workflows/ci.yml` runs
    `flutter analyze`, `dart format --set-exit-if-changed`, and

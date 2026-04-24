@@ -63,8 +63,8 @@ planned batches.
 
 ### Architecture Decision Records
 
-- [ADR-0001 — Lint migration and info-debt budget](./docs/adr/0001-lint-migration-and-info-debt-budget.md)
-- [ADR-0002 — Dependency version bands (analyzer + dart_style pins)](./docs/adr/0002-dependency-version-bands.md)
+- [ADR-0001 — Lint migration and info-debt budget](./docs/prueba-tecnica/adr/0001-lint-migration-and-info-debt-budget.md)
+- [ADR-0002 — Dependency version bands (analyzer + dart_style pins)](./docs/prueba-tecnica/adr/0002-dependency-version-bands.md)
 
 ### Delivery metrics
 
