@@ -1,9 +1,10 @@
-import 'package:news_app_clean_architecture/core/resources/data_state.dart';
+import 'package:dartz/dartz.dart';
+import 'package:news_app_clean_architecture/core/error/app_failure.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
 abstract class ArticleRepository {
   // API methods
-  Future<DataState<List<ArticleEntity>>> getNewsArticles();
+  Future<Either<AppFailure, List<ArticleEntity>>> getNewsArticles();
 
   // Database methods
   Future<List<ArticleEntity>> getSavedArticles();
