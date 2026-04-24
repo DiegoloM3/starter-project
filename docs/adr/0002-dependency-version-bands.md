@@ -68,6 +68,7 @@ Cuando ocurra, crear `ADR-XXXX — Desbloqueo de bandas de dependencias post-F4`
 
 ## Referencias
 
+- **ADR panorámico:** [`ADR-0003 — Decisiones consolidadas`](./0003-decisiones-consolidadas.md) (este ADR aparece como D2 en su índice).
 - Plan maestro: [`docs/prueba-tecnica/01_PLAN_FASES.md`](../prueba-tecnica/01_PLAN_FASES.md) — F1 (tareas de deps) y F4 (refactor `daily_news`).
 - ADR previo: [`ADR-0001`](./0001-lint-migration-and-info-debt-budget.md).
 - Issue Dart macros: https://github.com/dart-lang/language/issues/1482 (discusión del decommission).

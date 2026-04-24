@@ -57,6 +57,7 @@ Este ADR se considera **superseded** cuando F9 termine con `flutter analyze` lim
 
 ## Referencias
 
+- **ADR panorámico:** [`ADR-0003 — Decisiones consolidadas`](./0003-decisiones-consolidadas.md) (este ADR aparece como D1 en su índice).
 - Plan maestro: [`docs/prueba-tecnica/01_PLAN_FASES.md`](../prueba-tecnica/01_PLAN_FASES.md) — Fase 1 y sección *Plan de batches y commits*.
 - Checklist: [`docs/prueba-tecnica/02_CHECKLIST.md`](../prueba-tecnica/02_CHECKLIST.md) — sección **G. Calidad de código**.
 - Análisis arquitectónico: [`docs/prueba-tecnica/03_ANALISIS_ARQUITECTURA.md`](../prueba-tecnica/03_ANALISIS_ARQUITECTURA.md) — **R4**, **D8**.
