@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_state.dart';
 
+import '../../../../../config/theme/ui_parameters.dart';
 import '../../../domain/entities/article.dart';
 import '../../widgets/article_tile.dart';
 
@@ -37,14 +39,10 @@ class DailyNews extends StatelessWidget {
     return BlocBuilder<RemoteArticlesBloc, RemoteArticlesState>(
       builder: (context, state) {
         if (state is RemoteArticlesLoading) {
-          return Scaffold(
-              appBar: _buildAppbar(context),
-              body: const Center(child: CupertinoActivityIndicator()));
+          return _buildLoading(context);
         }
         if (state is RemoteArticlesError) {
-          return Scaffold(
-              appBar: _buildAppbar(context),
-              body: const Center(child: Icon(Icons.refresh)));
+          return _buildError(context);
         }
         if (state is RemoteArticlesDone) {
           return _buildArticlesPage(context, state.articles!);
@@ -70,16 +68,54 @@ class DailyNews extends StatelessWidget {
         children: articleWidgets,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: REPLACE ROUTE WITH YOUR "ADD ARTICLE" PAGE
-        },
+        onPressed: () => _onAddArticlePressed(context),
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget _buildLoading(BuildContext context) {
+    return Scaffold(
+      appBar: _buildAppbar(context),
+      body: const Center(
+        child: CupertinoActivityIndicator(),
+      ),
+    );
+  }
+
+  Widget _buildError(BuildContext context) {
+    return Scaffold(
+      appBar: _buildAppbar(context),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline,
+                color: Colors.red, size: UIParameters.iconSizeXL),
+            const Text(
+              "Error al cargar noticias",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              onPressed: () => _onRetryPressed(context),
+              icon: const Icon(Icons.refresh),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   void _onArticlePressed(BuildContext context, ArticleEntity article) {
     Navigator.pushNamed(context, '/ArticleDetails', arguments: article);
+  }
+
+  void _onRetryPressed(BuildContext context) {
+    context.read<RemoteArticlesBloc>().add(const GetArticles());
+  }
+
+  void _onAddArticlePressed(BuildContext context) {
+    Navigator.pushNamed(context, '/AddArticle');
   }
 
   void _onShowSavedArticlesViewTapped(BuildContext context) {
