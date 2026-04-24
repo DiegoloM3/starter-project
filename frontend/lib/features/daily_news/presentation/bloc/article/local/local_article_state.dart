@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../../domain/entities/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
 abstract class LocalArticlesState extends Equatable {
-  final List<ArticleEntity> ? articles;
 
   const LocalArticlesState({this.articles});
+  final List<ArticleEntity> ? articles;
 
   @override
   List<Object> get props => [articles!];

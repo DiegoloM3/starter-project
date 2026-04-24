@@ -6,25 +6,25 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 
 class RemoteArticlesBloc extends Bloc<RemoteArticlesEvent,RemoteArticlesState> {
   
-  final GetArticleUseCase _getArticleUseCase;
-  
   RemoteArticlesBloc(this._getArticleUseCase) : super(const RemoteArticlesLoading()){
     on <GetArticles> (onGetArticles);
   }
+  
+  final GetArticleUseCase _getArticleUseCase;
 
 
-  void onGetArticles(GetArticles event, Emitter < RemoteArticlesState > emit) async {
+  Future<void> onGetArticles(GetArticles event, Emitter < RemoteArticlesState > emit) async {
     final dataState = await _getArticleUseCase();
 
     if (dataState is DataSuccess && dataState.data!.isNotEmpty) {
       emit(
-        RemoteArticlesDone(dataState.data!)
+        RemoteArticlesDone(dataState.data!),
       );
     }
     
     if (dataState is DataFailed) {
       emit(
-        RemoteArticlesError(dataState.error!)
+        RemoteArticlesError(dataState.error!),
       );
     }
   }

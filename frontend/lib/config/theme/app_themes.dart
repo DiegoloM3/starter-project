@@ -4,13 +4,13 @@ ThemeData theme() {
   return ThemeData(
     scaffoldBackgroundColor: Colors.white,
     fontFamily: 'Muli',
-    appBarTheme: appBarTheme()
+    appBarTheme: appBarTheme(),
   );
 }
 
 AppBarTheme appBarTheme() {
   return const AppBarTheme(
-    color: Colors.white,
+    backgroundColor: Colors.white,
     elevation: 0,
     centerTitle: true,
     iconTheme: IconThemeData(color: Color(0XFF8B8B8B)),
