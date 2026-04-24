@@ -67,32 +67,32 @@ Convención:
 
 ## E. Frontend — Presentation layer
 
-- [ ] 🔴 BLoCs/Cubits creados por feature en `presentation/bloc/`.
-- [ ] 🔴 Los blocs son lo **único** que importa `use_cases`.
-- [ ] 🔴 Los widgets/screens **no** acceden a repositorios ni data sources.
-- [ ] 🔴 Todas las pantallas del Figma relevantes están implementadas:
-  - [ ] Lista de mis artículos.
-  - [ ] Crear/editar artículo.
-  - [ ] Detalle/preview.
-- [ ] 🔴 Cada pantalla tiene estados de **carga**, **éxito**, **vacío** y **error**.
-- [ ] 🔴 Blocs registrados en `injection_container.dart` con `registerFactory`.
-- [ ] 🟡 Navegación centralizada en `config/routes/routes.dart`.
-- [ ] 🟡 Componentes reutilizables en `presentation/widgets/`.
+- [x] 🔴 BLoCs/Cubits creados por feature en `presentation/bloc/`. *(`MyArticlesCubit`, `ArticleEditorBloc`.)*
+- [x] 🔴 Los blocs son lo **único** que importa `use_cases`.
+- [x] 🔴 Los widgets/screens **no** acceden a repositorios ni data sources.
+- [x] 🔴 Todas las pantallas del Figma relevantes están implementadas:
+  - [x] Lista de mis artículos (`MyArticlesPage`).
+  - [x] Crear/editar artículo (`ArticleEditorPage`).
+  - [x] Detalle/preview (`UserArticleDetailPage`).
+- [x] 🔴 Cada pantalla tiene estados de **carga**, **éxito**, **vacío** y **error**.
+- [x] 🔴 Blocs registrados en `injection_container.dart` con `registerFactory`.
+- [x] 🟡 Navegación centralizada en `config/routes/app_router.dart` + `AppRoutes` helpers.
+- [x] 🟡 Componentes reutilizables en `presentation/widgets/` (`ArticleCard`, `ThumbnailPickerTile`, `PrimaryButton`).
 - [ ] 🟢 Animaciones y transiciones fieles al Figma.
-- [ ] 🟢 Modo oscuro funcional.
+- [x] 🟢 Modo oscuro funcional vía `AppTheme.dark()`.
 
 ---
 
 ## F. Frontend — Data layer
 
-- [ ] 🔴 `data_sources/` contiene solo conexión externa; **lanza excepciones**.
-- [ ] 🔴 `models/` extienden entidades y exponen `fromRawData` + `toEntity()`.
-- [ ] 🔴 `repository/*_impl.dart` implementa la interfaz del dominio y retorna `DataState<T>`.
-- [ ] 🔴 Solo `repository/*_impl.dart` importa providers (Firestore/Storage/Floor/Dio).
-- [ ] 🔴 Flujo probado contra **emulador Firebase**.
-- [ ] 🔴 Flujo probado contra **proyecto Firebase real**.
-- [ ] 🟡 Cache local o reintentos básicos de red.
-- [ ] 🟢 Sincronización offline (Firestore persistence + Floor).
+- [x] 🔴 `data_sources/` contiene solo conexión externa; **lanza excepciones** (`UserArticlesFirestoreDataSource`, `UserArticlesStorageDataSource`).
+- [x] 🔴 `models/` exponen `fromFirestore` + `toEntity()` (`UserArticleModel`).
+- [x] 🔴 `repository/*_impl.dart` implementa la interfaz del dominio y retorna `Either<AppFailure, T>`.
+- [x] 🔴 Solo `repository/*_impl.dart` importa providers (Firestore/Storage).
+- [~] 🔴 Flujo probado contra **emulador Firebase**. *(Probado con `fake_cloud_firestore` + `firebase_storage_mocks`; pendiente verificar manualmente con emulador una vez se desbloquee F0.)*
+- [ ] 🔴 Flujo probado contra **proyecto Firebase real**. *(Pendiente: requiere `flutterfire configure` + `Firebase.initializeApp`.)*
+- [x] 🟡 Cache local (Firestore persistence) delegada al SDK; retries automáticos vía `cloud_firestore`.
+- [ ] 🟢 Sincronización offline explícita (Firestore persistence + Floor mirror).
 
 ---
 
@@ -155,6 +155,39 @@ Convención:
 - [x] 🧪 Suite **42/42 verde** (entidad + 5 use cases + fake roundtrip).
 - [x] 🔴 `grep` de imports prohibidos en `features/user_articles/domain/` → vacío.
 
+### G.5 Presentation `user_articles` (F7)
+
+- [x] 🔴 `MyArticlesCubit` con estados freezed (initial / loading / success / failure) y delete optimista con rollback.
+- [x] 🔴 `ArticleEditorBloc` con eventos freezed (title/description/content/tags/thumbnail/submitted) y decisión automática publish vs. update según `editingId`.
+- [x] 🔴 Pantallas `MyArticlesPage`, `ArticleEditorPage`, `UserArticleDetailPage` con estados loading / empty / error y pull-to-refresh.
+- [x] 🔴 Widgets reutilizables `ArticleCard`, `ThumbnailPickerTile`, `PrimaryButton` consumiendo `context.appTheme`.
+- [x] 🔴 Rutas nested en `app_router.dart`: `/me/articles`, `/me/articles/new`, `/me/articles/:id`, `/me/articles/:id/edit`.
+- [x] 🔴 Blocs / cubits registrados en `injection_container.dart` (`registerFactory` para cubits, singletons para use cases).
+- [x] 🔴 `AuthSession` port + `DevAuthSession` stub para desacoplar la UI de Firebase Auth.
+- [x] 🔴 `ThumbnailPickerService` port + `StubThumbnailPickerService` para desacoplar la UI de `image_picker`.
+- [x] 🧪 Suite **52/52 verde** (añadidos `MyArticlesCubit`, `ArticleEditorBloc`, widget test de `PrimaryButton`).
+
+### G.6 Data `user_articles` (F8)
+
+- [x] 🔴 `UserArticlesFirestoreDataSource`: CRUD + `reserveId()` usando `FieldValue.serverTimestamp()` para `publishedAt`/`updatedAt` (satisface `request.time` en las reglas).
+- [x] 🔴 `UserArticlesStorageDataSource`: upload a `media/articles/{authorId}/{articleId}/{file}` con content-type, retorna `getDownloadURL()`.
+- [x] 🔴 `UserArticleModel` (plain class) con `fromFirestore`, `toEntity`, `createPayload`, `updatePayload`; mapeo de `Timestamp` y fallback a `DateTime.now()` para server-stamped writes.
+- [x] 🔴 `UserArticleRepositoryImpl` retorna `Either<AppFailure, T>` con `_guard` que mapea `FirebaseException.code` → `AuthFailure|NetworkFailure|ValidationFailure|UnknownFailure`.
+- [x] 🔴 DI gate `Firebase.apps.isNotEmpty`: real impl cuando Firebase está cableado, fake cuando no.
+- [x] 🔴 Article id generado client-side en el bloc y propagado a upload + publish (necesario por `data.id == articleId` en `firestore.rules`).
+- [x] 🧪 Suite **58/58 verde** con `fake_cloud_firestore` + `firebase_storage_mocks`: publish/list/update/delete, upload al path whitelisted, y `FirebaseException(permission-denied)` mapeada a `AuthFailure`.
+
+### G.7 QA y entrega (F9)
+
+- [x] 🔴 `dart format` aplicado al codebase.
+- [x] 🔴 `flutter analyze`: 0 errors, 0 warnings, 6 infos (todas presupuestadas en [ADR-0001](../adr/0001-lint-migration-and-info-debt-budget.md) o ruido cosmético).
+- [x] 🔴 `flutter test`: 58/58 verde.
+- [x] 🔴 `frontend/README.md` reescrito con instrucciones de ejecución, `--dart-define`, layout del proyecto y toggling Firebase.
+- [x] 🔴 `docs/REPORT.md` con las 7 secciones.
+- [x] 🔴 `CHANGELOG.md` entrada 1.0.0 con added/changed/removed/ADRs/métricas.
+- [x] 🟡 Accesibilidad: `Semantics` header en títulos, `Semantics` label en cada form field, tooltips en edit/delete icon buttons.
+- [ ] 🔴 Screenshots + vídeo demo. *(Pendiente capturar; todo lo demás está listo para entregar.)*
+
 ### G.3 Design system + Router declarativo (F3)
 
 - [x] 🟢 Tokens de diseño en `lib/config/theme/tokens/`: `app_colors.dart`, `app_spacing.dart` (escala 4-pt), `app_radii.dart`, `app_typography.dart`.
@@ -187,14 +220,14 @@ Auditoría rápida por capa; marcar solo si se verificó manualmente.
 
 ## I. Reporte y entrega
 
-- [ ] 🔴 `docs/REPORT.md` contiene las 7 secciones de `REPORT_INSTRUCTIONS.md`.
-- [ ] 🔴 Screenshots de cada pantalla clave.
-- [ ] 🔴 Vídeo demo del flujo completo (≤ 2 min).
-- [ ] 🔴 Sección *Overdelivery* detalla lo extra (o indica explícitamente que no hubo).
-- [ ] 🔴 README principal actualizado con instrucciones para correr el proyecto (credenciales de emulador, etc.).
-- [ ] 🟡 Commits con mensajes claros (`feat:`, `fix:`, `docs:`, `refactor:`...).
-- [ ] 🟡 Una rama por entregable + PR a `main` (demuestra el flujo de Symmetry).
-- [ ] 🟢 Tag de versión `v1.0.0` al terminar.
+- [x] 🔴 `docs/REPORT.md` contiene las 7 secciones de `REPORT_INSTRUCTIONS.md`.
+- [ ] 🔴 Screenshots de cada pantalla clave. *(Pendiente capturar.)*
+- [ ] 🔴 Vídeo demo del flujo completo (≤ 2 min). *(Pendiente grabar.)*
+- [x] 🔴 Sección *Overdelivery* detalla lo extra (go_router, design tokens, CI, strict lints, ADRs, AuthSession fallback, `_guard` mapper).
+- [x] 🔴 `frontend/README.md` actualizado con instrucciones para correr el proyecto y `--dart-define=NEWS_API_KEY`.
+- [x] 🟡 Commits con mensajes claros en formato Conventional Commits.
+- [x] 🟡 Rama `chore/modernization` lista para PR a `main`.
+- [ ] 🟢 Tag de versión `v1.0.0` al terminar. *(Pendiente: `git tag v1.0.0` tras el merge.)*
 
 ---
 
