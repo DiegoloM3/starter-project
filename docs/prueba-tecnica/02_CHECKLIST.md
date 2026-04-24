@@ -99,7 +99,7 @@ Convención:
 
 ## G. Calidad de código (Clean Code)
 
-- [~] 🔴 `flutter analyze` sin warnings críticos. *(0 errores / 0 warnings. Quedan 34 infos presupuestados como deuda en [ADR-0001](../adr/0001-lint-migration-and-info-debt-budget.md); F9 debe cerrar a 0.)*
+- [~] 🔴 `flutter analyze` sin warnings críticos. *(0 errores / 0 warnings. 27 infos restantes presupuestados como deuda en [ADR-0001](../adr/0001-lint-migration-and-info-debt-budget.md); F9 debe cerrar a 0.)*
 - [x] 🔴 `dart format .` aplicado. *(Adelantado desde F9/B9.1 para destrabar el CI en F2–F8.)*
 - [ ] 🔴 Funciones cortas (máx. ~20 líneas) y con una responsabilidad.
 - [ ] 🔴 Nombres intention-revealing; sin abreviaturas oscuras.
@@ -121,6 +121,20 @@ Convención:
 - [x] 🔴 Test directory (`frontend/test/`) creado con smoke test (`placeholder_test.dart`).
 - [x] 🔴 Pipeline CI GitHub Actions: analyze + format + test con cobertura.
 - [x] 🟡 ADRs registradas para decisiones de F1: [ADR-0001](../adr/0001-lint-migration-and-info-debt-budget.md), [ADR-0002](../adr/0002-dependency-version-bands.md).
+
+### G.2 Fundamentos core/shared + bootstrap (F2)
+
+- [x] 🔴 Carpeta `frontend/lib/shared/` creada con el invariante documentado.
+- [x] 🔴 `AppFailure` freezed sellado: `network`, `cache`, `validation`, `auth`, `unknown`.
+- [x] 🔴 `DataState` eliminado; `grep -R "DioError\|DataState" frontend/lib` vacío.
+- [x] 🔴 Repositorios de `daily_news` devuelven `Either<AppFailure, T>` (`Unit` para operaciones void).
+- [x] 🔴 Base `UseCase<R, P>` con `call(P params)` retornando `Future<Either<AppFailure, R>>` + `NoParams`.
+- [x] 🔴 Cuatro use cases de `daily_news` migrados a la nueva base.
+- [x] 🔴 `AppEnv` lee `NEWS_API_KEY` vía `--dart-define` (pass-through desde `constants.dart`).
+- [x] 🔴 `main.dart` ≤ 10 líneas; lógica extraída a `bootstrap.dart` y `app.dart`.
+- [x] 🔴 `AppLogger` + handlers globales (`FlutterError.onError`, `PlatformDispatcher.onError`, `runZonedGuarded`).
+- [x] 🔴 Tests cubren `AppFailure` (4) y `UseCase` base (3) → suite 8/8 verde.
+- [ ] 🟡 `Firebase.initializeApp` cableado en `bootstrap.dart` *(bloqueado por F0: requiere `flutterfire configure`).*
 
 ---
 
