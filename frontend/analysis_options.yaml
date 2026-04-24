@@ -14,3 +14,7 @@ linter:
   rules:
     public_member_api_docs: false
     lines_longer_than_80_chars: false
+    # Clean Architecture uses many one-member abstract classes (base
+    # UseCase, repository interfaces, data source interfaces). This is
+    # intentional — see ADR-0001.
+    one_member_abstracts: false

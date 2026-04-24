@@ -40,21 +40,36 @@ class ArticleRepositoryImpl implements ArticleRepository {
   }
 
   @override
-  Future<List<ArticleEntity>> getSavedArticles() async {
-    return _appDatabase.articleDAO.getArticles();
+  Future<Either<AppFailure, List<ArticleEntity>>> getSavedArticles() async {
+    try {
+      final articles = await _appDatabase.articleDAO.getArticles();
+      return Right(articles);
+    } catch (e) {
+      return Left(AppFailure.cache(message: e.toString()));
+    }
   }
 
   @override
-  Future<void> removeArticle(ArticleEntity article) {
-    return _appDatabase.articleDAO.deleteArticle(
-      ArticleModel.fromEntity(article),
-    );
+  Future<Either<AppFailure, Unit>> removeArticle(ArticleEntity article) async {
+    try {
+      await _appDatabase.articleDAO.deleteArticle(
+        ArticleModel.fromEntity(article),
+      );
+      return const Right(unit);
+    } catch (e) {
+      return Left(AppFailure.cache(message: e.toString()));
+    }
   }
 
   @override
-  Future<void> saveArticle(ArticleEntity article) {
-    return _appDatabase.articleDAO.insertArticle(
-      ArticleModel.fromEntity(article),
-    );
+  Future<Either<AppFailure, Unit>> saveArticle(ArticleEntity article) async {
+    try {
+      await _appDatabase.articleDAO.insertArticle(
+        ArticleModel.fromEntity(article),
+      );
+      return const Right(unit);
+    } catch (e) {
+      return Left(AppFailure.cache(message: e.toString()));
+    }
   }
 }

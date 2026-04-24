@@ -4,14 +4,13 @@ import 'package:news_app_clean_architecture/core/usecase/usecase.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart';
 
-class GetArticleUseCase
-    implements UseCase<Either<AppFailure, List<ArticleEntity>>, void> {
+class GetArticleUseCase extends UseCase<List<ArticleEntity>, NoParams> {
   GetArticleUseCase(this._articleRepository);
 
   final ArticleRepository _articleRepository;
 
   @override
-  Future<Either<AppFailure, List<ArticleEntity>>> call({void params}) {
+  Future<Either<AppFailure, List<ArticleEntity>>> call(NoParams params) {
     return _articleRepository.getNewsArticles();
   }
 }
