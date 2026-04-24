@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: "3.38.5"
+
+jobs:
+  frontend:
+    name: Flutter · analyze · format · test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Verify formatting
+        run: dart format --set-exit-if-changed .
+
+      - name: Static analysis
+        # Info-level issues are tracked as debt in ADR-0001 and drained
+        # in F4 / F9. CI gates on errors and warnings only.
+        run: flutter analyze --fatal-warnings --no-fatal-infos
+
+      - name: Run unit and widget tests
+        env:
+          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
+        run: flutter test --coverage --dart-define=NEWS_API_KEY=$NEWS_API_KEY
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: frontend/coverage/lcov.info
+          if-no-files-found: ignore
+          retention-days: 7
