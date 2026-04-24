@@ -16,3 +16,4 @@ Formato inspirado en [Michael Nygard](https://cognitect.com/blog/2011/11/15/docu
 | ADR | Título | Estado | Fase |
 |-----|--------|--------|------|
 | [0001](./0001-lint-migration-and-info-debt-budget.md) | Migración de lints a `very_good_analysis` y presupuesto de deuda de infos | Accepted | F1 |
+| [0002](./0002-dependency-version-bands.md) | Bandas de versión de dependencias de generación de código | Accepted | F1 |
