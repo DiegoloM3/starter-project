@@ -66,5 +66,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to the camera to take photos for news articles.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to the photo library to select images for news articles.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to the microphone (required by the camera library).</string>
 </dict>
 </plist>
