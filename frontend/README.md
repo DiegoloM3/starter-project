@@ -1,31 +1,109 @@
 # Flutter Frontend
-In this folder are all the [Flutter](https://docs.flutter.dev/) related files.
-This folder is essentially the app and what the user sees. 
-It has a dependency to the backend which ensures that there is data consistency.
-You will be doing most of your work in this folder.
 
-## Getting Started
-Before you can run the app, you will need to add the Firebase options file to this project.
-To do this, follow these steps:
-1. Complete the [backend tutorial](../backend/README.md) to create a Firebase project which satisfies the requirements
-2. Watch this [tutorial to setup Firebase for Flutter](https://youtu.be/Wa0rdbb53I8?list=PL4cUxeGkcC9j--TKIdkb3ISfRbJeJYQwC)
-Once you have completed this appropriately, you can start to work with the project.
+This is the Flutter app that surfaces Symmetry's daily news feed and lets
+authenticated users publish their own articles (`user_articles` feature,
+added for the 72h prueba técnica).
 
-### Generate files for routing, di etc.:
-`flutter pub run build_runner build --delete-conflicting-outputs`
-### Generate the icons:
-`flutter pub run flutter_launcher_icons`
-### Install the Project Dependencies (in pubsec.yaml)
-`flutter pub get`
+---
 
-### How can I best understand this project?
-In order to best understand this project and its underlying intricacies, we recommend that you watch this tutorial: [Flutter Clean Architecture Tutorial](https://www.youtube.com/watch?v=7V_P6dovixg).
-This tutorial **literally builds this project from the ground up** so we really recommend you watch it before developing.
+## Running the app
 
-Furthermore, we will now leave the index of this project with all the documentation that must be read before contributing to the frontend.
+### 1. Install dependencies
 
-# Index
-1. [Contribution Guidelines](./docs/CONTRIBUTION_GUIDELINES.md)
-2. [Architecture Violations](./docs/ARCHITECTURE_VIOLATIONS.md)
-3. [Code Quality Violations](./docs/CODING_GUIDELINES.md)
-4. [Our App Architecture](./docs/APP_ARCHITECTURE.md)
+```bash
+cd frontend
+flutter pub get
+flutter pub run build_runner build --delete-conflicting-outputs
+```
+
+### 2. Provide required secrets via `--dart-define`
+
+The NewsAPI key is read through `core/env/app_env.dart` and must be
+injected at build time — nothing is hard-coded.
+
+```bash
+flutter run \
+  --dart-define=NEWS_API_KEY=<your-key>
+```
+
+### 3. (Optional) Wire Firebase for the user_articles feature
+
+Until `flutterfire configure` has produced a `lib/firebase_options.dart`
+and `Firebase.initializeApp` runs in `bootstrap.dart`, the DI container
+automatically falls back to an in-memory fake repository
+(`FakeUserArticleRepository`). This keeps the app runnable locally and
+under CI without requiring Firebase credentials.
+
+To use the real Firestore + Storage backend:
+
+```bash
+# Once, to generate firebase_options.dart
+dart pub global activate flutterfire_cli
+flutterfire configure
+
+# Then enable the Firebase.initializeApp call in bootstrap.dart
+# (search for the TODO(F0) block)
+```
+
+The emulator workflow is documented in [`backend/README.md`](../backend/README.md).
+
+---
+
+## Development commands
+
+| Task                                | Command                                                   |
+|-------------------------------------|-----------------------------------------------------------|
+| Static analysis                     | `flutter analyze`                                         |
+| Auto-format                         | `dart format .`                                           |
+| Run tests                           | `flutter test`                                            |
+| Run tests with coverage             | `flutter test --coverage`                                 |
+| Regenerate freezed / retrofit / g.dart | `flutter pub run build_runner build --delete-conflicting-outputs` |
+| Launch app (debug)                  | `flutter run --dart-define=NEWS_API_KEY=xxx`              |
+
+CI mirrors the first three on every push and PR via
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml).
+
+---
+
+## Project layout (clean architecture)
+
+```
+lib/
+├── config/
+│   ├── app_providers.dart         # MultiBlocProvider root
+│   ├── routes/                    # go_router + typed AppRoutes helpers
+│   └── theme/                     # design tokens + ThemeExtension
+├── core/
+│   ├── env/                       # --dart-define readers
+│   ├── error/                     # AppFailure sealed union
+│   ├── logger/                    # zoned error reporting
+│   ├── session/                   # AuthSession port + DevAuthSession stub
+│   └── usecase/                   # base UseCase<R, P>
+├── features/
+│   ├── daily_news/                # pre-existing feature, migrated to Either
+│   └── user_articles/             # new feature for the prueba técnica
+│       ├── data/                  # Firestore/Storage data sources + repo
+│       ├── domain/                # entities, params, usecases (no Flutter/Firebase imports)
+│       └── presentation/          # cubits, pages, widgets, services
+├── shared/                        # cross-feature UI helpers
+├── app.dart
+├── bootstrap.dart
+├── injection_container.dart
+└── main.dart
+```
+
+See [`docs/APP_ARCHITECTURE.md`](../docs/APP_ARCHITECTURE.md) and
+[`docs/ARCHITECTURE_VIOLATIONS.md`](../docs/ARCHITECTURE_VIOLATIONS.md)
+for the invariants each layer must respect.
+
+---
+
+## Architectural decisions
+
+The moves that deviate from the starter skeleton are captured as ADRs:
+
+- [`docs/adr/0001-lint-migration-and-info-debt-budget.md`](../docs/adr/0001-lint-migration-and-info-debt-budget.md)
+- [`docs/adr/0002-dependency-version-bands.md`](../docs/adr/0002-dependency-version-bands.md)
+
+And the full fase-by-fase plan lives under
+[`docs/prueba-tecnica/01_PLAN_FASES.md`](../docs/prueba-tecnica/01_PLAN_FASES.md).
