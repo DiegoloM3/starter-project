@@ -34,7 +34,7 @@ dependencies:
   floor: any
 
   #make request to api
-  retrofit: ^3.0.1
+  retrofit: 3.0.1
 
   # Firebase
   firebase_core: ^2.24.0
@@ -45,18 +45,40 @@ dependencies:
   #Hooks
   flutter_hooks: ^0.18.3
 
-  #chached image 
+  #chached image
   cached_network_image: ^3.2.0
 
   dio: any
   sqflite: any
+
+  # immutable models / unions
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+
+  # functional error handling
+  dartz: ^0.10.1
+
+  # declarative routing
+  go_router: ^14.2.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   very_good_analysis: ^6.0.0
   retrofit_generator: 3.0.1+1
-  floor_generator: 1.2.0
-  build_runner: 2.1.2
+  floor_generator: ^1.4.2
+  build_runner: ^2.4.13
+  freezed: ^2.4.7
+  json_serializable: ^6.8.0
+
+dependency_overrides:
+  # dart_style pinned to the band that compiles on Dart 3.10 without
+  # requiring MixinOnClause (added to analyzer 6.5+). See ADR-0002.
+  dart_style: ">=2.3.4 <2.3.7"
+  # analyzer pinned to a band that neither depends on the removed `_macros`
+  # SDK package (6.6.0..7.3.0) nor conflicts with floor_generator 1.4.x
+  # (which requires analyzer ^5 or ^6.0.0 < 6.5.0). See ADR-0002.
+  analyzer: ">=6.4.1 <6.5.0"
   
 
 flutter:
