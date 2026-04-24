@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:news_app_clean_architecture/core/session/auth_session.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/app_database.dart';
@@ -11,7 +14,10 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/save_article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
+import 'package:news_app_clean_architecture/features/user_articles/data/data_sources/remote/user_articles_firestore_data_source.dart';
+import 'package:news_app_clean_architecture/features/user_articles/data/data_sources/remote/user_articles_storage_data_source.dart';
 import 'package:news_app_clean_architecture/features/user_articles/data/fake/fake_user_article_repository.dart';
+import 'package:news_app_clean_architecture/features/user_articles/data/repository/user_article_repository_impl.dart';
 import 'package:news_app_clean_architecture/features/user_articles/domain/repository/user_article_repository.dart';
 import 'package:news_app_clean_architecture/features/user_articles/domain/usecases/delete_article.dart';
 import 'package:news_app_clean_architecture/features/user_articles/domain/usecases/get_my_articles.dart';
@@ -53,16 +59,27 @@ Future<void> initializeDependencies() async {
   _registerUserArticles();
 }
 
-/// Wires the user_articles feature. F8 replaces the Fake binding with the
-/// real Firestore/Storage implementation by swapping *only* the
-/// [UserArticleRepository] registration below — every use case and bloc
-/// keeps its existing wiring.
+/// Wires the user_articles feature.
+///
+/// When `Firebase.initializeApp` has already run (F0 unblocked), the real
+/// Firestore-backed repository is registered. Otherwise the in-memory
+/// fake keeps the app runnable in development and under tests.
 void _registerUserArticles() {
   sl.registerSingleton<AuthSession>(const DevAuthSession());
 
-  // Fake repository until F8 wires Firestore. Kept behind the
-  // `UserArticleRepository` port so use cases stay agnostic.
-  sl.registerSingleton<UserArticleRepository>(FakeUserArticleRepository());
+  if (Firebase.apps.isNotEmpty) {
+    sl.registerSingleton<UserArticlesFirestoreDataSource>(
+      UserArticlesFirestoreDataSource(FirebaseFirestore.instance),
+    );
+    sl.registerSingleton<UserArticlesStorageDataSource>(
+      UserArticlesStorageDataSource(FirebaseStorage.instance),
+    );
+    sl.registerSingleton<UserArticleRepository>(
+      UserArticleRepositoryImpl(sl(), sl()),
+    );
+  } else {
+    sl.registerSingleton<UserArticleRepository>(FakeUserArticleRepository());
+  }
 
   sl.registerSingleton<ThumbnailPickerService>(
     const StubThumbnailPickerService(),
