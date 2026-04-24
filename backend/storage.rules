@@ -1,7 +1,26 @@
 rules_version = '2';
 
+// Thumbnails and attachments for `articles/{articleId}` live under
+// media/articles/{authorId}/{articleId}/{file}. Contract documented in
+// backend/docs/DB_SCHEMA.md.
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+
+    // Deny-by-default — anything not explicitly matched is rejected.
+    match /{allPaths=**} {
+      allow read, write: if false;
     }
+
+    match /media/articles/{authorId}/{articleId}/{file} {
+      allow read: if true;
+
+      allow write: if request.auth != null
+        && request.auth.uid == authorId
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+
+      allow delete: if request.auth != null
+        && request.auth.uid == authorId;
+    }
+  }
 }
