@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,8 +10,13 @@ import '../../../../../core/utils/datetime_extensions.dart';
 import '../../../../../injection_container.dart';
 import '../../../data/data_sources/remote/firebase_storage_service.dart';
 import '../../../domain/entities/article.dart';
+import '../../bloc/add_article/remote/remote_add_article_bloc.dart';
+import '../../bloc/add_article/remote/remote_add_article_event.dart';
+import '../../bloc/add_article/remote/remote_add_article_state.dart';
 import '../../bloc/article/local/local_article_bloc.dart';
 import '../../bloc/article/local/local_article_event.dart';
+import 'widgets/custom_text_field.dart';
+import 'widgets/image_picker_section.dart';
 
 class AddArticle extends StatefulWidget {
   const AddArticle({Key? key}) : super(key: key);
@@ -28,8 +34,6 @@ class _AddArticleState extends State<AddArticle> {
   final _imageController = TextEditingController();
 
   File? _selectedImage;
-
-  bool _isUploading = false;
 
   @override
   void dispose() {
@@ -57,105 +61,62 @@ class _AddArticleState extends State<AddArticle> {
     }
   }
 
-  void _showImageSourceOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(
-            UIParameters.paddingS,
-          ),
-        ),
-      ),
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Gallery'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(AppImageSource.gallery);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Camera'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(AppImageSource.camera);
-              },
-            ),
-          ],
-        ),
-      ),
+  ArticleEntity _createArticleEntity(String? imageUrl) {
+    return ArticleEntity(
+      title: _titleController.text,
+      description: _descController.text,
+      urlToImage: (imageUrl != null && imageUrl.isNotEmpty) ? imageUrl : null,
+      publishedAt: DateTime.now().toUtc().toIso8601Short(),
+      content: _contentController.text,
     );
-  }
-
-  void _onSavePressed(BuildContext context) async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isUploading = true);
-
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
-      );
-
-      try {
-        String? finalImageUrl = _imageController.text;
-
-        if (_selectedImage != null) {
-          final storageService = sl<FirebaseStorageService>();
-          finalImageUrl =
-              await storageService.uploadArticleImage(_selectedImage!);
-        }
-
-        final article = ArticleEntity(
-          title: _titleController.text,
-          description: _descController.text,
-          urlToImage: finalImageUrl.isNotEmpty ? finalImageUrl : null,
-          publishedAt: DateTime.now().toUtc().toIso8601Short(),
-          content: _contentController.text,
-        );
-
-        context.read<LocalArticleBloc>().add(SaveArticle(article));
-
-        Navigator.pop(context);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Article saved successfully!')),
-        );
-
-        Navigator.pop(context);
-      } catch (e) {
-        setState(() => _isUploading = false);
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving article: $e')),
-        );
-      }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: !_isUploading,
-      onPopInvokedWithResult: (bool didPop, Object? result) {
-        if (didPop) return;
+    return BlocProvider<RemoteAddArticleBloc>(
+      create: (_) => sl<RemoteAddArticleBloc>(),
+      child: Builder(
+        builder: (context) {
+          return BlocConsumer<RemoteAddArticleBloc, RemoteAddArticleState>(
+            listener: (context, state) {
+              if (state is AIImageSuccess) {
+                setState(() {
+                  _selectedImage = null;
+                  _imageController.text = state.imageUrl;
+                });
+              }
+              if (state is AIImageError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('AI Error: ${state.message}'),
+                  ),
+                );
+              }
+            },
+            builder: (context, state) {
+              final isGenerating = state is AIImageLoading;
+              return PopScope(
+                canPop: !isGenerating,
+                onPopInvokedWithResult: (bool didPop, Object? result) {
+                  if (didPop) return;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please wait until the upload is finished'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      },
-      child: Scaffold(
-        appBar: _buildAppbar(context),
-        body: _buildBody(context),
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Please wait until the AI generation is finished',
+                      ),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+                child: Scaffold(
+                  appBar: _buildAppbar(context),
+                  body: _buildBody(context, isGenerating),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -169,39 +130,44 @@ class _AddArticleState extends State<AddArticle> {
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context, bool isGenerating) {
     return Padding(
       padding: const EdgeInsets.all(UIParameters.paddingM),
       child: Form(
         key: _formKey,
         child: ListView(
           children: [
-            _buildTextField(
-              _titleController,
-              'Title',
-              'Enter article title',
+            CustomTextField(
+              controller: _titleController,
+              label: 'Title',
+              hint: 'Enter article title',
             ),
             UIParameters.sBoxVS,
-            _buildTextField(
-              _descController,
-              'Description',
-              'Enter description',
+            CustomTextField(
+              controller: _descController,
+              label: 'Description',
+              hint: 'Enter description',
             ),
             UIParameters.sBoxVS,
-            _buildTextField(
-              _contentController,
-              'Content',
-              'Full article content',
+            CustomTextField(
+              controller: _contentController,
+              label: 'Content',
+              hint: 'Full article content',
               maxLines: 6,
             ),
             UIParameters.sBoxVS,
-            _buildTextField(
-              _imageController,
-              'Image URL',
-              'Paste image link (optional)',
+            CustomTextField(
+              controller: _imageController,
+              label: 'Image URL',
+              hint: 'Paste image link (optional)',
             ),
             UIParameters.sBoxVM,
-            _buildImagePickerSection(),
+            ImagePickerSection(
+              isGenerating: isGenerating,
+              preview: _getPreviewImage(),
+              onTap: () => _showImageSourceOptions(
+                  context, context.read<RemoteAddArticleBloc>()),
+            ),
             UIParameters.sBoxVM,
             _buildSaveButton(context),
           ],
@@ -210,91 +176,82 @@ class _AddArticleState extends State<AddArticle> {
     );
   }
 
-  Widget _buildTextField(
-      TextEditingController controller, String label, String hint,
-      {int maxLines = 1}) {
-    return TextFormField(
-      controller: controller,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      validator: (value) =>
-          value == null || value.isEmpty ? 'This field is required' : null,
-    );
-  }
-
-  Widget _buildImagePickerSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: _isUploading ? null : () => _showImageSourceOptions(context),
-          child: Container(
-            width: double.infinity,
-            height: UIParameters.imagePickerHeight,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: UIParameters.borderCard,
-              border: Border.all(color: Colors.grey[400]!),
-            ),
-            child: _buildImagePreviewContent(), // Lógica extraída
+  void _showImageSourceOptions(
+      BuildContext context, RemoteAddArticleBloc bloc) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(
+            UIParameters.paddingS,
           ),
         ),
-        if (_selectedImage != null && !_isUploading) _buildRemoveButton(),
-      ],
+      ),
+      builder: (modalContext) {
+        return BlocProvider.value(
+          value: bloc,
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading:
+                      const Icon(Icons.auto_awesome, color: Colors.deepPurple),
+                  title: const Text('Generate with AI (Demo)'),
+                  onTap: () {
+                    Navigator.pop(modalContext);
+                    _generateAIImage(bloc);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text('Gallery'),
+                  onTap: () {
+                    Navigator.pop(modalContext);
+                    _pickImage(AppImageSource.gallery);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text('Camera'),
+                  onTap: () {
+                    Navigator.pop(modalContext);
+                    _pickImage(AppImageSource.camera);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildImagePreviewContent() {
-    if (_selectedImage != null) {
-      return ClipRRect(
-        borderRadius: UIParameters.borderCard,
-        child: Image.file(_selectedImage!, fit: BoxFit.cover),
+  void _generateAIImage(RemoteAddArticleBloc bloc) {
+    final content = _contentController.text.isNotEmpty
+        ? _contentController.text
+        : _titleController.text;
+
+    if (content.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Please enter title or content for the AI')),
       );
+      return;
     }
 
-    return const Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.add_a_photo,
-          size: UIParameters.iconSizeXL,
-          color: Colors.grey,
-        ),
-        UIParameters.sBoxVS,
-        Text(
-          "Tap to select image",
-          style: TextStyle(
-            color: Colors.grey,
-          ),
-        ),
-      ],
-    );
+    bloc.add(GenerateAIImageEvent(content));
   }
 
-  Widget _buildRemoveButton() {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: TextButton.icon(
-        onPressed: () => setState(() => _selectedImage = null),
-        icon: const Icon(
-          Icons.delete_outline,
-          size: 20,
-        ),
-        label: const Text(
-          "Remove image",
-          style: TextStyle(
-            color: Colors.red,
-          ),
-        ),
-        style: TextButton.styleFrom(
-          foregroundColor: Colors.red,
-        ),
-      ),
-    );
+  ImageProvider? _getPreviewImage() {
+    if (_selectedImage != null) {
+      return FileImage(_selectedImage!);
+    }
+    if (_imageController.text.isNotEmpty &&
+        _imageController.text.startsWith('http')) {
+      return CachedNetworkImageProvider(_imageController.text);
+    }
+    return null;
   }
 
   Widget _buildSaveButton(BuildContext context) {
@@ -310,5 +267,42 @@ class _AddArticleState extends State<AddArticle> {
         ),
       ),
     );
+  }
+
+  void _onSavePressed(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      try {
+        String? finalImageUrl = _imageController.text;
+
+        if (_selectedImage != null) {
+          final storageService = sl<FirebaseStorageService>();
+          finalImageUrl =
+              await storageService.uploadArticleImage(_selectedImage!);
+        }
+
+        final article = _createArticleEntity(finalImageUrl);
+        context.read<LocalArticleBloc>().add(SaveArticle(article));
+
+        if (!mounted) return;
+        Navigator.pop(context);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Article saved successfully!')),
+        );
+
+        Navigator.pop(context);
+      } catch (e) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving article: $e')),
+        );
+      }
+    }
   }
 }
