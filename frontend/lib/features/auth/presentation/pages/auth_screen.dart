@@ -137,16 +137,13 @@ class _AuthBodyState extends State<_AuthBody> {
           child: Text(
             label,
             style: AppTypography.labelLarge.copyWith(
-              color: isActive
-                  ? AppColors.textPrimary
-                  : AppColors.textSecondary,
+              color: isActive ? AppColors.textPrimary : AppColors.textSecondary,
             ),
           ),
         ),
       ),
     );
   }
-
 
   // ── Sign In form ─────────────────────────────────────────────────────────
 
@@ -194,8 +191,7 @@ class _AuthBodyState extends State<_AuthBody> {
             ),
             child: Text(
               'Forgot password?',
-              style: AppTypography.bodyMedium
-                  .copyWith(color: AppColors.accent),
+              style: AppTypography.bodyMedium.copyWith(color: AppColors.accent),
             ),
           ),
         ),
@@ -302,8 +298,7 @@ class _AuthBodyState extends State<_AuthBody> {
       children: [
         const Expanded(child: Divider(color: AppColors.border)),
         Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
           child: Text('or', style: AppTypography.bodySmall),
         ),
         const Expanded(child: Divider(color: AppColors.border)),

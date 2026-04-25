@@ -23,6 +23,20 @@ import 'features/daily_news/domain/usecases/get_saved_article.dart';
 import 'features/daily_news/domain/usecases/remove_article.dart';
 import 'features/daily_news/domain/usecases/save_article.dart';
 import 'features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:news_app_clean_architecture/features/articles/data/datasources/remote/article_remote_data_source.dart'
+    as art_ds;
+import 'package:news_app_clean_architecture/features/articles/data/repositories/article_repository_impl.dart'
+    as art_impl;
+import 'package:news_app_clean_architecture/features/articles/domain/repositories/article_repository.dart'
+    as art_repo;
+import 'package:news_app_clean_architecture/features/articles/domain/usecases/create_article_use_case.dart';
+import 'package:news_app_clean_architecture/features/articles/domain/usecases/delete_article_use_case.dart';
+import 'package:news_app_clean_architecture/features/articles/domain/usecases/get_article_by_id_use_case.dart';
+import 'package:news_app_clean_architecture/features/articles/domain/usecases/get_articles_use_case.dart';
+import 'package:news_app_clean_architecture/features/articles/domain/usecases/get_my_articles_use_case.dart';
+import 'package:news_app_clean_architecture/features/articles/domain/usecases/update_article_use_case.dart';
+import 'package:news_app_clean_architecture/features/articles/presentation/bloc/articles_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -57,6 +71,7 @@ Future<void> initializeDependencies() async {
   // Firebase
   sl.registerSingleton<FirebaseAuth>(FirebaseAuth.instance);
   sl.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
+  sl.registerSingleton<FirebaseStorage>(FirebaseStorage.instance);
   sl.registerSingleton<GoogleSignIn>(GoogleSignIn());
 
   // Auth data sources
@@ -77,4 +92,30 @@ Future<void> initializeDependencies() async {
   // Auth cubit
   sl.registerFactory<AuthCubit>(
       () => AuthCubit(sl(), sl(), sl(), sl(), sl(), sl()));
+
+  // Articles data source
+  sl.registerSingleton<art_ds.ArticleRemoteDataSource>(
+      art_ds.ArticleRemoteDataSourceImpl(sl(), sl(), sl()));
+
+  // Articles repository
+  sl.registerSingleton<art_repo.ArticleRepository>(
+      art_impl.ArticleRepositoryImpl(sl()));
+
+  // Articles use cases
+  sl.registerSingleton<GetArticlesUseCase>(
+      GetArticlesUseCase(sl<art_repo.ArticleRepository>()));
+  sl.registerSingleton<GetMyArticlesUseCase>(
+      GetMyArticlesUseCase(sl<art_repo.ArticleRepository>()));
+  sl.registerSingleton<GetArticleByIdUseCase>(
+      GetArticleByIdUseCase(sl<art_repo.ArticleRepository>()));
+  sl.registerSingleton<CreateArticleUseCase>(
+      CreateArticleUseCase(sl<art_repo.ArticleRepository>()));
+  sl.registerSingleton<UpdateArticleUseCase>(
+      UpdateArticleUseCase(sl<art_repo.ArticleRepository>()));
+  sl.registerSingleton<DeleteArticleUseCase>(
+      DeleteArticleUseCase(sl<art_repo.ArticleRepository>()));
+
+  // Articles cubit
+  sl.registerFactory<ArticlesCubit>(
+      () => ArticlesCubit(sl(), sl(), sl(), sl(), sl()));
 }

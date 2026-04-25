@@ -83,4 +83,3 @@ class _AuthGateState extends State<_AuthGate> {
     );
   }
 }
-
