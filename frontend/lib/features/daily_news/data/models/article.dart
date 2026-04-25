@@ -1,6 +1,7 @@
 import 'package:floor/floor.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:news_app_clean_architecture/core/constants/constants.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/models/source_model.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
 part 'article.g.dart';
@@ -11,6 +12,10 @@ part 'article.g.dart';
 /// `retrofit_generator` expect a named-argument constructor and public
 /// fields to synthesise their adapters. Mapping to/from the domain entity
 /// happens explicitly via `toEntity`/`fromEntity` instead of inheritance.
+///
+/// `source` mirrors NewsAPI's nested `{ id, name }` block. It is flagged
+/// `@ignore` so Floor skips it during persistence; `toEntity` flattens the
+/// useful bits (`sourceId`, `sourceName`) onto the domain entity.
 @Entity(tableName: 'article', primaryKeys: ['id'])
 @JsonSerializable()
 class ArticleModel {
@@ -23,6 +28,7 @@ class ArticleModel {
     this.urlToImage,
     this.publishedAt,
     this.content,
+    this.source,
   });
 
   factory ArticleModel.fromJson(Map<String, dynamic> json) =>
@@ -37,6 +43,9 @@ class ArticleModel {
         urlToImage: entity.urlToImage,
         publishedAt: entity.publishedAt,
         content: entity.content,
+        source: (entity.sourceId == null && entity.sourceName == null)
+            ? null
+            : SourceModel(id: entity.sourceId, name: entity.sourceName),
       );
 
   final int? id;
@@ -59,8 +68,10 @@ class ArticleModel {
   @JsonKey(defaultValue: '')
   final String? publishedAt;
 
-  @JsonKey(defaultValue: '')
   final String? content;
+
+  @ignore
+  final SourceModel? source;
 
   Map<String, dynamic> toJson() => _$ArticleModelToJson(this);
 
@@ -75,5 +86,7 @@ class ArticleModel {
             : urlToImage,
         publishedAt: publishedAt,
         content: content,
+        sourceId: source?.id,
+        sourceName: source?.name,
       );
 }

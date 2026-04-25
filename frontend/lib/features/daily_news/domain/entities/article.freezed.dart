@@ -24,6 +24,8 @@ mixin _$ArticleEntity {
   String? get urlToImage => throw _privateConstructorUsedError;
   String? get publishedAt => throw _privateConstructorUsedError;
   String? get content => throw _privateConstructorUsedError;
+  String? get sourceId => throw _privateConstructorUsedError;
+  String? get sourceName => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ArticleEntityCopyWith<ArticleEntity> get copyWith =>
@@ -44,7 +46,9 @@ abstract class $ArticleEntityCopyWith<$Res> {
       String? url,
       String? urlToImage,
       String? publishedAt,
-      String? content});
+      String? content,
+      String? sourceId,
+      String? sourceName});
 }
 
 /// @nodoc
@@ -68,6 +72,8 @@ class _$ArticleEntityCopyWithImpl<$Res, $Val extends ArticleEntity>
     Object? urlToImage = freezed,
     Object? publishedAt = freezed,
     Object? content = freezed,
+    Object? sourceId = freezed,
+    Object? sourceName = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -102,6 +108,14 @@ class _$ArticleEntityCopyWithImpl<$Res, $Val extends ArticleEntity>
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
               as String?,
+      sourceId: freezed == sourceId
+          ? _value.sourceId
+          : sourceId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      sourceName: freezed == sourceName
+          ? _value.sourceName
+          : sourceName // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -122,7 +136,9 @@ abstract class _$$ArticleEntityImplCopyWith<$Res>
       String? url,
       String? urlToImage,
       String? publishedAt,
-      String? content});
+      String? content,
+      String? sourceId,
+      String? sourceName});
 }
 
 /// @nodoc
@@ -144,6 +160,8 @@ class __$$ArticleEntityImplCopyWithImpl<$Res>
     Object? urlToImage = freezed,
     Object? publishedAt = freezed,
     Object? content = freezed,
+    Object? sourceId = freezed,
+    Object? sourceName = freezed,
   }) {
     return _then(_$ArticleEntityImpl(
       id: freezed == id
@@ -178,6 +196,14 @@ class __$$ArticleEntityImplCopyWithImpl<$Res>
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
               as String?,
+      sourceId: freezed == sourceId
+          ? _value.sourceId
+          : sourceId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      sourceName: freezed == sourceName
+          ? _value.sourceName
+          : sourceName // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -193,7 +219,9 @@ class _$ArticleEntityImpl extends _ArticleEntity {
       this.url,
       this.urlToImage,
       this.publishedAt,
-      this.content})
+      this.content,
+      this.sourceId,
+      this.sourceName})
       : super._();
 
   @override
@@ -212,10 +240,14 @@ class _$ArticleEntityImpl extends _ArticleEntity {
   final String? publishedAt;
   @override
   final String? content;
+  @override
+  final String? sourceId;
+  @override
+  final String? sourceName;
 
   @override
   String toString() {
-    return 'ArticleEntity(id: $id, author: $author, title: $title, description: $description, url: $url, urlToImage: $urlToImage, publishedAt: $publishedAt, content: $content)';
+    return 'ArticleEntity(id: $id, author: $author, title: $title, description: $description, url: $url, urlToImage: $urlToImage, publishedAt: $publishedAt, content: $content, sourceId: $sourceId, sourceName: $sourceName)';
   }
 
   @override
@@ -233,12 +265,16 @@ class _$ArticleEntityImpl extends _ArticleEntity {
                 other.urlToImage == urlToImage) &&
             (identical(other.publishedAt, publishedAt) ||
                 other.publishedAt == publishedAt) &&
-            (identical(other.content, content) || other.content == content));
+            (identical(other.content, content) || other.content == content) &&
+            (identical(other.sourceId, sourceId) ||
+                other.sourceId == sourceId) &&
+            (identical(other.sourceName, sourceName) ||
+                other.sourceName == sourceName));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, id, author, title, description,
-      url, urlToImage, publishedAt, content);
+      url, urlToImage, publishedAt, content, sourceId, sourceName);
 
   @JsonKey(ignore: true)
   @override
@@ -256,7 +292,9 @@ abstract class _ArticleEntity extends ArticleEntity {
       final String? url,
       final String? urlToImage,
       final String? publishedAt,
-      final String? content}) = _$ArticleEntityImpl;
+      final String? content,
+      final String? sourceId,
+      final String? sourceName}) = _$ArticleEntityImpl;
   const _ArticleEntity._() : super._();
 
   @override
@@ -275,6 +313,10 @@ abstract class _ArticleEntity extends ArticleEntity {
   String? get publishedAt;
   @override
   String? get content;
+  @override
+  String? get sourceId;
+  @override
+  String? get sourceName;
   @override
   @JsonKey(ignore: true)
   _$$ArticleEntityImplCopyWith<_$ArticleEntityImpl> get copyWith =>

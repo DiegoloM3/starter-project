@@ -9,6 +9,7 @@ import 'package:news_app_clean_architecture/features/daily_news/data/data_source
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/app_database.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/news_api_service.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/models/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/models/news_top_headlines_response.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/repository/article_repository_impl.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:retrofit/dio.dart';
@@ -55,7 +56,14 @@ void main() {
           category: any(named: 'category'),
         ),
       ).thenAnswer(
-        (_) async => HttpResponse([model], _response(HttpStatus.ok)),
+        (_) async => HttpResponse(
+          const NewsTopHeadlinesResponse(
+            status: 'ok',
+            totalResults: 1,
+            articles: [model],
+          ),
+          _response(HttpStatus.ok),
+        ),
       );
 
       final result = await repository.getNewsArticles();
@@ -75,7 +83,11 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => HttpResponse(
-          const <ArticleModel>[],
+          const NewsTopHeadlinesResponse(
+            status: 'error',
+            totalResults: 0,
+            articles: [],
+          ),
           _response(HttpStatus.internalServerError, message: 'Boom'),
         ),
       );

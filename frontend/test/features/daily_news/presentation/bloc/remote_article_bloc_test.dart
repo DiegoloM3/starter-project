@@ -27,18 +27,21 @@ void main() {
     const articles = [ArticleEntity(id: 1, title: 'a')];
 
     blocTest<RemoteArticlesBloc, RemoteArticlesState>(
-      'emits done(articles) on a Right result',
+      'emits loading -> done(articles) on a Right result',
       build: () {
         when(() => useCase(any()))
             .thenAnswer((_) async => const Right(articles));
         return RemoteArticlesBloc(useCase);
       },
       act: (bloc) => bloc.add(const GetArticles()),
-      expect: () => const [RemoteArticlesDone(articles)],
+      expect: () => const [
+        RemoteArticlesLoading(),
+        RemoteArticlesDone(articles),
+      ],
     );
 
     blocTest<RemoteArticlesBloc, RemoteArticlesState>(
-      'emits error(failure) on a Left result',
+      'emits loading -> error(failure) on a Left result',
       build: () {
         when(() => useCase(any())).thenAnswer(
           (_) async => const Left(AppFailure.network(message: 'boom')),
@@ -47,6 +50,7 @@ void main() {
       },
       act: (bloc) => bloc.add(const GetArticles()),
       expect: () => const [
+        RemoteArticlesLoading(),
         RemoteArticlesError(AppFailure.network(message: 'boom')),
       ],
     );

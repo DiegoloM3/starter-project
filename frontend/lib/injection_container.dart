@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:news_app_clean_architecture/core/session/auth_session.dart';
+import 'package:news_app_clean_architecture/core/session/firebase_auth_session.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/app_database.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/news_api_service.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/repository/article_repository_impl.dart';
@@ -57,7 +59,14 @@ Future<void> initializeDependencies() async {
 /// Firestore-backed repository is registered. Otherwise the in-memory
 /// fake keeps the app runnable in development and under tests.
 void _registerUserArticles() {
-  sl.registerSingleton<AuthSession>(const DevAuthSession());
+  if (Firebase.apps.isNotEmpty) {
+    final firebaseAuthSession = FirebaseAuthSession(FirebaseAuth.instance);
+    sl
+      ..registerSingleton<FirebaseAuthSession>(firebaseAuthSession)
+      ..registerSingleton<AuthSession>(firebaseAuthSession);
+  } else {
+    sl.registerSingleton<AuthSession>(DevAuthSession());
+  }
 
   if (Firebase.apps.isNotEmpty) {
     sl
@@ -76,7 +85,9 @@ void _registerUserArticles() {
 
   sl
     ..registerSingleton<ThumbnailPickerService>(
-      const StubThumbnailPickerService(),
+      Firebase.apps.isNotEmpty
+          ? GalleryThumbnailPickerService()
+          : const StubThumbnailPickerService(),
     )
     ..registerSingleton<GetMyArticlesUseCase>(GetMyArticlesUseCase(sl()))
     ..registerSingleton<PublishArticleUseCase>(PublishArticleUseCase(sl()))

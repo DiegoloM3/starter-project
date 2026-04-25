@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:news_app_clean_architecture/app.dart';
+import 'package:news_app_clean_architecture/core/env/app_env.dart';
 import 'package:news_app_clean_architecture/core/logger/app_logger.dart';
 import 'package:news_app_clean_architecture/firebase_options.dart';
 import 'package:news_app_clean_architecture/injection_container.dart';
@@ -26,6 +27,8 @@ Future<void> bootstrap() async {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
+      _logDartDefineStatus();
+
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
@@ -36,4 +39,24 @@ Future<void> bootstrap() async {
     },
     AppLogger.report,
   );
+}
+
+/// Confirms at boot whether `--dart-define=NEWS_API_KEY` was injected. The
+/// key value is never logged — only its presence and a masked preview — so
+/// the debug console is safe to paste into tickets.
+void _logDartDefineStatus() {
+  if (AppEnv.hasNewsApiKey) {
+    final preview = _maskSecret(AppEnv.newsApiKey);
+    AppLogger.info('NEWS_API_KEY loaded via --dart-define ($preview)');
+  } else {
+    AppLogger.warn(
+      'NEWS_API_KEY missing: run with --dart-define-from-file=keys.local.json '
+      '(or use `make run` / the VS Code Flutter launch config).',
+    );
+  }
+}
+
+String _maskSecret(String value) {
+  if (value.length <= 4) return '****';
+  return '${value.substring(0, 2)}***${value.substring(value.length - 2)}';
 }

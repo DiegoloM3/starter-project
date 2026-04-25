@@ -1,3 +1,148 @@
+# Symmetry — Applicant Showcase App
+
+> Solución entregada por **Abraham Jiménez** — Flutter clean architecture + Firebase, con feature `user_articles` para que el usuario publique sus propios artículos.
+
+## TL;DR
+
+| Métrica                          | Valor |
+|----------------------------------|-------|
+| `flutter analyze`                | ✅ 0 errors · 0 warnings · 6 infos cosméticos |
+| `flutter test`                   | ✅ 58 / 58 |
+| Capas afectadas                  | domain · data · presentation · core · config · backend |
+| Features nuevas                  | `user_articles`, `auth` (login + register) |
+| Features migradas                | `daily_news` (entity, model, repo, blocs al contrato `Either<AppFailure, T>`) |
+| Backend                          | Firestore + Storage en `symmetry-test-cf818`, rules con `isValidArticle()` y `deny-by-default` |
+| ADRs                             | 3 (lints, dependency bands, decisiones consolidadas) |
+| Overdelivery oficial             | go_router tipado · design tokens vía `ThemeExtension` |
+| Plataforma Android               | Gradle 8.11.1 · AGP 8.9.1 · Kotlin 2.1.0 (toolchain al día) |
+
+---
+
+## Mapa de la solución (lectura rápida)
+
+```
+Usuario
+   │
+   ├── /                      DailyNews — feed de NewsAPI con fuente, retry, dark/light theme tokens
+   ├── /saved                 SavedArticles — caché Floor local
+   ├── /article/:id           ArticleDetailsView
+   ├── /auth                  AuthPage — login + registro (Firebase Email/Password)
+   └── /me/articles           MyArticlesPage 🔒 (gateado por go_router redirect)
+        ├── /me/articles/new       ArticleEditorPage (publica)
+        └── /me/articles/:id       UserArticleDetailPage
+            └── /me/articles/:id/edit   ArticleEditorPage (edita)
+```
+
+Las rutas `/me/*` están **protegidas**: el `redirect` de go_router observa `AuthSession.changes` y bota al usuario a `/auth?next=…` cuando no hay sesión.
+
+---
+
+## Cómo correrla en 5 minutos
+
+```bash
+# 1. Instalar deps + codegen
+make setup
+
+# 2. Crear keys.local.json desde el template (gitignoreado)
+make keys
+#   → edita frontend/keys.local.json y pon tu NEWS_API_KEY real
+
+# 3. Habilitar manualmente Email/Password en Firebase Console
+#    (Authentication → Sign-in method → Enable)
+
+# 4. Desplegar las firestore.rules + storage.rules
+make deploy-rules
+
+# 5. Run
+make run            # debug, usa keys.local.json automáticamente
+# o desde VS Code: F5 con la config "Flutter (debug)"
+```
+
+Calidad y CI:
+
+```bash
+make analyze        # flutter analyze (0 errors / 0 warnings esperado)
+make test           # flutter test
+make ci             # analyze + format + test (mismo pipeline que GitHub Actions)
+```
+
+---
+
+## Decisiones de diseño clave
+
+| Decisión                                            | Razón                                                                                  | ADR / referencia |
+|-----------------------------------------------------|----------------------------------------------------------------------------------------|------------------|
+| `Either<AppFailure, T>` en vez de `DataState<T>`    | El `DataState` original filtraba `DioError` a presentation; `Either + AppFailure` aísla el tipo de librería | [ADR-0003 §4](./docs/prueba-tecnica/adr/0003-decisiones-consolidadas.md#4-d3-d4-d5--contrato-universal-de-errores) |
+| Fake repository en `data/fake/`, no solo en `test/` | Permite que F7 (presentation) avanzara antes de F8 (Firestore real) y que la demo corra sin credenciales | [ADR-0003 §10](./docs/prueba-tecnica/adr/0003-decisiones-consolidadas.md#10-d11--fake-repository-en-datafake) |
+| `--dart-define-from-file` con `keys.json` template + `keys.local.json` gitignoreado | Secretos nunca tocan git history; el desarrollador clona y corre `make keys` | [SOLUCION §9.10](./docs/SOLUCION.md#910-gestión-de-secretos-y-makefile) |
+| Article `id` generado client-side (`microsecondsSinceEpoch`) | Firestore solo exige unicidad de colección; las rules enforcean `request.resource.data.id == articleId` | [ADR-0003 §13](./docs/prueba-tecnica/adr/0003-decisiones-consolidadas.md#13-d14--article-id-generado-client-side) |
+| `AuthSession` como **port read-only** + `FirebaseAuthSession` con comandos | El bloc del editor no debe importar `firebase_auth` (regla 3.1.1); el cubit de auth necesita comandos concretos. Misma instancia bajo dos tipos en GetIt | [SOLUCION §13.5](./docs/SOLUCION.md#135-firebase-auth-con-ui-de-login--registro-cierra-122-punto-4) |
+| `image_picker` con `ImageSource.gallery` + permisos diferenciados por API level | Android 13+ usa Photo Picker (sin permiso runtime); Android ≤12 usa `READ_EXTERNAL_STORAGE` (legacy) | [SOLUCION §13.4](./docs/SOLUCION.md#134-galería-real-de-thumbnails-cierra-122-punto-3) |
+| Modelo `NewsTopHeadlinesResponse` envuelve la respuesta de NewsAPI | Retrofit fallaba con `_Map<String,dynamic> is not a subtype of List` porque la respuesta es un objeto, no una lista | [SOLUCION §13.2](./docs/SOLUCION.md#132-modelo-de-respuesta-newsapi-alineado-al-contrato) |
+| `dependency_overrides` en `analyzer` / `dart_style` / `win32` / `path_provider_android` / `sqflite` | `floor_generator 1.4.x` bloquea `analyzer ≥ 6.5`; algunos plugins viejos arrastran código incompatible con Dart 3.5+ y el embedding v1 de Flutter 3.29+ | [ADR-0002](./docs/prueba-tecnica/adr/0002-dependency-version-bands.md) |
+
+---
+
+## Arquitectura en una imagen
+
+```
+                ┌────────────────────────────────────────────┐
+                │ presentation/                              │
+                │ ┌──────────────┐  ┌──────────────────────┐ │
+                │ │ AuthPage     │  │ ArticleEditor / List │ │
+                │ │ (Cubit)      │  │ (Bloc + Cubit)       │ │
+                │ └──────┬───────┘  └─────────┬────────────┘ │
+                └────────┼────────────────────┼──────────────┘
+                         │                    │
+                         ▼                    ▼
+                ┌────────────────────────────────────────────┐
+                │ domain/                                    │
+                │   UseCases · Entities · Params · Ports     │
+                │   AuthSession · UserArticleRepository      │
+                └─────────────────────┬──────────────────────┘
+                                      │
+                                      ▼
+                ┌────────────────────────────────────────────┐
+                │ data/                                      │
+                │   Repository impls (Firestore + Storage)   │
+                │   FakeUserArticleRepository (offline/tests)│
+                │   ArticleRepositoryImpl (NewsAPI + Floor)  │
+                └─────────────────────┬──────────────────────┘
+                                      │
+                                      ▼
+                ┌────────────────────────────────────────────┐
+                │ Firebase · Floor · NewsAPI · image_picker  │
+                └────────────────────────────────────────────┘
+```
+
+Las flechas son **unidireccionales** y verificadas por `make grep-violations` (regla `presentation` no importa providers, `domain` no importa Flutter ni Firebase).
+
+---
+
+## Documentación de respaldo
+
+> Todo el detalle exhaustivo está en `docs/`. Esta tabla es el índice rápido — si solo tienes 5 minutos abre **SOLUCION.md** §3 (flujo end-to-end) y §11 (Q&A anticipada).
+
+| Documento | Para qué sirve |
+|---|---|
+| **[docs/SOLUCION.md](./docs/SOLUCION.md)** | Narrativa exhaustiva: qué se construyó, cómo funciona, por qué se decidió cada cosa. 13 secciones + Apéndice de archivos clave. |
+| [docs/REPORT.md](./docs/REPORT.md) | Reporte requerido por la prueba — 7 secciones con tono de retrospectiva |
+| [docs/APP_ARCHITECTURE.md](./docs/APP_ARCHITECTURE.md) | Reglas de arquitectura del proyecto (originales + extendidas) |
+| [docs/prueba-tecnica/adr/](./docs/prueba-tecnica/adr/) | 3 ADRs con decisiones consolidadas (lints, dependency bands, todas las decisiones de diseño) |
+| [docs/prueba-tecnica/PRE_PR_MANUAL.md](./docs/prueba-tecnica/PRE_PR_MANUAL.md) | Checklist manual antes del PR (screenshots, vídeo, deploy de rules) |
+| [backend/firestore.rules](./backend/firestore.rules) | Rules con `isValidArticle()` (mismo predicate que el bloc del editor) |
+| [backend/storage.rules](./backend/storage.rules) | Rules de Storage para `media/articles/{authorId}/{articleId}/*` |
+| [backend/docs/DB_SCHEMA.md](./backend/docs/DB_SCHEMA.md) | Schema de la colección `articles` con tabla de campos + ejemplo JSON |
+| [backend/docs/SCHEMA_RATIONALE.md](./backend/docs/SCHEMA_RATIONALE.md) | Argumentación campo a campo del schema |
+| [backend/docs/RULES_VISUAL.md](./backend/docs/RULES_VISUAL.md) | Manual operativo: 13 casos para Rules Playground + procedimiento de deploy |
+| [Makefile](./Makefile) | 20+ targets para run/build/test/ci/deploy/emulators |
+
+---
+
+## Brief original de la prueba
+
+> A continuación se preserva el README original de Symmetry para que el revisor pueda contrastar lo entregado contra la consigna.
+
 # Applicant Showcase App
 Welcome to the repository for our Applicant Showcase App - an application designed for job applicants of Symmetry to showcase their capacity to learn and program good code.
 

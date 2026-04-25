@@ -17,6 +17,8 @@ class ArticleEntity with _$ArticleEntity {
     String? urlToImage,
     String? publishedAt,
     String? content,
+    String? sourceId,
+    String? sourceName,
   }) = _ArticleEntity;
 
   const ArticleEntity._();

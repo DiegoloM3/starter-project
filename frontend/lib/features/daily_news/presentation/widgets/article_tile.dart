@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:news_app_clean_architecture/config/theme/app_theme_extension.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 
 class ArticleWidget extends StatelessWidget {
@@ -32,8 +33,8 @@ class ArticleWidget extends StatelessWidget {
         child: Row(
           children: [
             _buildImage(context),
-            _buildTitleAndDescription(),
-            _buildRemovableArea(),
+            _buildTitleAndDescription(context),
+            _buildRemovableArea(context),
           ],
         ),
       ),
@@ -41,6 +42,7 @@ class ArticleWidget extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context) {
+    final placeholderColor = context.appTheme.surfaceMuted;
     return CachedNetworkImage(
       imageUrl: article!.urlToImage!,
       imageBuilder: (context, imageProvider) => Padding(
@@ -51,7 +53,7 @@ class ArticleWidget extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 3,
             height: double.maxFinite,
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.08),
+              color: placeholderColor,
               image: DecorationImage(
                 image: imageProvider,
                 fit: BoxFit.cover,
@@ -67,9 +69,7 @@ class ArticleWidget extends StatelessWidget {
           child: Container(
             width: MediaQuery.of(context).size.width / 3,
             height: double.maxFinite,
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.08),
-            ),
+            decoration: BoxDecoration(color: placeholderColor),
             child: const CupertinoActivityIndicator(),
           ),
         ),
@@ -81,9 +81,7 @@ class ArticleWidget extends StatelessWidget {
           child: Container(
             width: MediaQuery.of(context).size.width / 3,
             height: double.maxFinite,
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.08),
-            ),
+            decoration: BoxDecoration(color: placeholderColor),
             child: const Icon(Icons.error),
           ),
         ),
@@ -91,7 +89,12 @@ class ArticleWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTitleAndDescription() {
+  Widget _buildTitleAndDescription(BuildContext context) {
+    final theme = context.appTheme;
+    final sourceName = article!.sourceName;
+    final publishedAt = article!.publishedAt ?? '';
+    final mutedStyle = TextStyle(fontSize: 12, color: theme.onSurfaceMuted);
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 7),
@@ -99,16 +102,32 @@ class ArticleWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Source name (when NewsAPI provided it)
+            if (sourceName != null && sourceName.isNotEmpty) ...[
+              Text(
+                sourceName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: theme.accent,
+                  letterSpacing: 0.2,
+                ),
+              ),
+              const SizedBox(height: 2),
+            ],
+
             // Title
             Text(
               article!.title ?? '',
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Butler',
                 fontWeight: FontWeight.w900,
                 fontSize: 18,
-                color: Colors.black87,
+                color: theme.onSurface,
               ),
             ),
 
@@ -119,6 +138,7 @@ class ArticleWidget extends StatelessWidget {
                 child: Text(
                   article!.description ?? '',
                   maxLines: 2,
+                  style: TextStyle(color: theme.onSurfaceMuted),
                 ),
               ),
             ),
@@ -126,12 +146,18 @@ class ArticleWidget extends StatelessWidget {
             // Datetime
             Row(
               children: [
-                const Icon(Icons.timeline_outlined, size: 16),
+                Icon(
+                  Icons.timeline_outlined,
+                  size: 16,
+                  color: theme.onSurfaceMuted,
+                ),
                 const SizedBox(width: 4),
-                Text(
-                  article!.publishedAt!,
-                  style: const TextStyle(
-                    fontSize: 12,
+                Expanded(
+                  child: Text(
+                    publishedAt,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: mutedStyle,
                   ),
                 ),
               ],
@@ -142,13 +168,16 @@ class ArticleWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildRemovableArea() {
+  Widget _buildRemovableArea(BuildContext context) {
     if (isRemovable!) {
       return GestureDetector(
         onTap: _onRemove,
-        child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Icon(Icons.remove_circle_outline, color: Colors.red),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Icon(
+            Icons.remove_circle_outline,
+            color: context.appTheme.danger,
+          ),
         ),
       );
     }

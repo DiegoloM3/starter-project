@@ -1,3 +1,5 @@
+import 'package:image_picker/image_picker.dart';
+
 /// Minimal payload returned by the platform picker — kept as a plain DTO
 /// so unit tests can produce canned results without wiring image_picker.
 class PickedThumbnail {
@@ -18,6 +20,47 @@ class PickedThumbnail {
 /// gallery, drag-and-drop on web) — it just needs a [PickedThumbnail].
 abstract class ThumbnailPickerService {
   Future<PickedThumbnail?> pickImage();
+}
+
+/// Gallery-only picker used in the running app.
+///
+/// Uses Android's system Photo Picker on API 33+ (no permission prompt) and
+/// falls back to the legacy gallery (covered by `READ_EXTERNAL_STORAGE`
+/// declared in `AndroidManifest.xml`) on older devices.
+class GalleryThumbnailPickerService implements ThumbnailPickerService {
+  GalleryThumbnailPickerService({ImagePicker? picker})
+      : _picker = picker ?? ImagePicker();
+
+  final ImagePicker _picker;
+
+  @override
+  Future<PickedThumbnail?> pickImage() async {
+    final file = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1920,
+      imageQuality: 85,
+    );
+    if (file == null) return null;
+
+    final bytes = await file.readAsBytes();
+    return PickedThumbnail(
+      fileName: file.name,
+      bytes: bytes,
+      contentType: _contentTypeFor(file.name, file.mimeType),
+    );
+  }
+
+  String _contentTypeFor(String fileName, String? mimeType) {
+    if (mimeType != null && mimeType.isNotEmpty) return mimeType;
+    final ext = fileName.split('.').last.toLowerCase();
+    return switch (ext) {
+      'png' => 'image/png',
+      'webp' => 'image/webp',
+      'gif' => 'image/gif',
+      'heic' || 'heif' => 'image/heic',
+      _ => 'image/jpeg',
+    };
+  }
 }
 
 /// Stub used while platform integration is deferred. Returns a 1×1 PNG so

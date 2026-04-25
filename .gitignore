@@ -3,7 +3,11 @@
 Thumbs.db
 
 # Editors / IDEs
-.vscode/
+# Ignore everything under .vscode/ except the launch config — sharing it
+# lets any reviewer cloning the repo press F5 with the right
+# --dart-define-from-file=keys.local.json wiring (see SOLUCION.md §13.6).
+.vscode/*
+!.vscode/launch.json
 .idea/
 *.iml
 

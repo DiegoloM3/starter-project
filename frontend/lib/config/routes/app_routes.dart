@@ -10,6 +10,7 @@ abstract final class AppRoutes {
   static const String homeName = 'home';
   static const String articleDetailName = 'articleDetail';
   static const String savedName = 'saved';
+  static const String authName = 'auth';
   static const String myArticlesName = 'myArticles';
   static const String userArticleDetailName = 'userArticleDetail';
   static const String articleEditorNewName = 'articleEditorNew';
@@ -19,10 +20,15 @@ abstract final class AppRoutes {
   static String home() => '/';
   static String saved() => '/saved';
   static String articleDetail(String id) => '/article/$id';
+  static String auth() => '/auth';
   static String myArticles() => '/me/articles';
   static String userArticleDetail(String id) => '/me/articles/$id';
   static String articleEditorNew() => '/me/articles/new';
   static String articleEditorEdit(String id) => '/me/articles/$id/edit';
+
+  /// Routes whose access requires an authenticated user. Anything matching
+  /// these prefixes is gated by the go_router `redirect` in `app_router.dart`.
+  static const List<String> protectedPathPrefixes = ['/me'];
 
   /// Convenience wrapper used while NewsAPI articles lack a stable id —
   /// derives a URL-safe segment from the article's url/title. Once F4

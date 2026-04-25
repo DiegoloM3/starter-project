@@ -39,7 +39,9 @@ void main() {
   late _MockPublish publish;
   late _MockUpdate update;
   late _MockUpload upload;
-  const auth = DevAuthSession(user: AuthUser(id: 'u1', name: 'Author'));
+  final auth = DevAuthSession(
+    user: const AuthUser(id: 'u1', name: 'Author'),
+  );
 
   setUpAll(() {
     registerFallbackValue(

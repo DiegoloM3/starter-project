@@ -14,7 +14,10 @@ ArticleModel _$ArticleModelFromJson(Map<String, dynamic> json) => ArticleModel(
       url: json['url'] as String? ?? '',
       urlToImage: json['urlToImage'] as String? ?? '',
       publishedAt: json['publishedAt'] as String? ?? '',
-      content: json['content'] as String? ?? '',
+      content: json['content'] as String?,
+      source: json['source'] == null
+          ? null
+          : SourceModel.fromJson(json['source'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ArticleModelToJson(ArticleModel instance) =>
@@ -27,4 +30,5 @@ Map<String, dynamic> _$ArticleModelToJson(ArticleModel instance) =>
       'urlToImage': instance.urlToImage,
       'publishedAt': instance.publishedAt,
       'content': instance.content,
+      'source': instance.source,
     };

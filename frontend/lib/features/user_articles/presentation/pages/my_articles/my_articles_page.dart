@@ -5,6 +5,7 @@ import 'package:news_app_clean_architecture/config/routes/app_routes.dart';
 import 'package:news_app_clean_architecture/config/theme/app_theme_extension.dart';
 import 'package:news_app_clean_architecture/core/error/app_failure.dart';
 import 'package:news_app_clean_architecture/core/session/auth_session.dart';
+import 'package:news_app_clean_architecture/core/session/firebase_auth_session.dart';
 import 'package:news_app_clean_architecture/features/user_articles/domain/entities/user_article_entity.dart';
 import 'package:news_app_clean_architecture/features/user_articles/presentation/bloc/my_articles/my_articles_cubit.dart';
 import 'package:news_app_clean_architecture/features/user_articles/presentation/bloc/my_articles/my_articles_state.dart';
@@ -21,13 +22,15 @@ class MyArticlesPage extends StatefulWidget {
 
 class _MyArticlesPageState extends State<MyArticlesPage> {
   late final MyArticlesCubit _cubit;
-  late final String _authorId;
+
+  /// Reads the current user from the session each time so that a re-login as
+  /// a different user (e.g. after sign-out) doesn't query against a stale id.
+  String get _authorId => sl<AuthSession>().currentUser?.id ?? '';
 
   @override
   void initState() {
     super.initState();
     _cubit = sl<MyArticlesCubit>();
-    _authorId = sl<AuthSession>().currentUser?.id ?? '';
     _cubit.load(_authorId);
   }
 
@@ -45,6 +48,19 @@ class _MyArticlesPageState extends State<MyArticlesPage> {
         appBar: AppBar(
           title: const Text('My Articles'),
           elevation: 0,
+          leading: IconButton(
+            tooltip: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            onPressed: () => context.go(AppRoutes.home()),
+          ),
+          actions: [
+            if (sl.isRegistered<FirebaseAuthSession>())
+              IconButton(
+                tooltip: 'Sign out',
+                icon: const Icon(Icons.logout),
+                onPressed: () => _confirmSignOut(context),
+              ),
+          ],
         ),
         body: BlocBuilder<MyArticlesCubit, MyArticlesState>(
           builder: (context, state) {
@@ -74,6 +90,36 @@ class _MyArticlesPageState extends State<MyArticlesPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmSignOut(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Sign out?'),
+        content: const Text('You can sign back in any time.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Sign out'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await sl<FirebaseAuthSession>().signOut();
+    // Belt-and-braces navigation: the router's `refreshListenable` should
+    // fire on the auth-state change and bounce us via the redirect, but in
+    // practice some go_router builds don't re-evaluate `redirect` for the
+    // current location. Pushing /auth explicitly guarantees the user lands
+    // on the login screen. Guarded with `context.mounted` because the
+    // redirect may have unmounted us during the await.
+    if (!context.mounted) return;
+    context.go(AppRoutes.auth());
   }
 }
 

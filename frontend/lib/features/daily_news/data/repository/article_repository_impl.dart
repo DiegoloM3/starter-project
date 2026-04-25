@@ -24,7 +24,8 @@ class ArticleRepositoryImpl implements ArticleRepository {
       );
 
       if (httpResponse.response.statusCode == HttpStatus.ok) {
-        final articles = httpResponse.data.map((m) => m.toEntity()).toList();
+        final articles =
+            httpResponse.data.articles.map((m) => m.toEntity()).toList();
         return Right(articles);
       }
       return Left(
