@@ -1,51 +1,92 @@
 import 'package:floor/floor.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:news_app_clean_architecture/core/constants/constants.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/models/source_model.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
-import '../../../../core/constants/constants.dart';
 
-@Entity(tableName: 'article',primaryKeys: ['id'])
-class ArticleModel extends ArticleEntity {
+part 'article.g.dart';
+
+/// Floor + NewsAPI data model.
+///
+/// Kept as a plain class (not freezed) because both `floor_generator` and
+/// `retrofit_generator` expect a named-argument constructor and public
+/// fields to synthesise their adapters. Mapping to/from the domain entity
+/// happens explicitly via `toEntity`/`fromEntity` instead of inheritance.
+///
+/// `source` mirrors NewsAPI's nested `{ id, name }` block. It is flagged
+/// `@ignore` so Floor skips it during persistence; `toEntity` flattens the
+/// useful bits (`sourceId`, `sourceName`) onto the domain entity.
+@Entity(tableName: 'article', primaryKeys: ['id'])
+@JsonSerializable()
+class ArticleModel {
   const ArticleModel({
-    int ? id,
-    String ? author,
-    String ? title,
-    String ? description,
-    String ? url,
-    String ? urlToImage,
-    String ? publishedAt,
-    String ? content,
-  }): super(
-    id: id,
-    author: author,
-    title: title,
-    description: description,
-    url: url,
-    urlToImage: urlToImage,
-    publishedAt: publishedAt,
-    content: content,
-  );
+    this.id,
+    this.author,
+    this.title,
+    this.description,
+    this.url,
+    this.urlToImage,
+    this.publishedAt,
+    this.content,
+    this.source,
+  });
 
-  factory ArticleModel.fromJson(Map < String, dynamic > map) {
-    return ArticleModel(
-      author: map['author'] ?? "",
-      title: map['title'] ?? "",
-      description: map['description'] ?? "",
-      url: map['url'] ?? "",
-      urlToImage: map['urlToImage'] != null && map['urlToImage'] != "" ? map['urlToImage'] : kDefaultImage,
-      publishedAt: map['publishedAt'] ?? "",
-      content: map['content'] ?? "",
-    );
-  }
+  factory ArticleModel.fromJson(Map<String, dynamic> json) =>
+      _$ArticleModelFromJson(json);
 
-  factory ArticleModel.fromEntity(ArticleEntity entity) {
-    return ArticleModel(
-      id: entity.id,
-      author: entity.author,
-      title: entity.title,
-      description: entity.description,
-      url: entity.url,
-      urlToImage: entity.urlToImage,
-      publishedAt: entity.publishedAt,
-      content: entity.content
-    );
-  }
+  factory ArticleModel.fromEntity(ArticleEntity entity) => ArticleModel(
+        id: entity.id,
+        author: entity.author,
+        title: entity.title,
+        description: entity.description,
+        url: entity.url,
+        urlToImage: entity.urlToImage,
+        publishedAt: entity.publishedAt,
+        content: entity.content,
+        source: (entity.sourceId == null && entity.sourceName == null)
+            ? null
+            : SourceModel(id: entity.sourceId, name: entity.sourceName),
+      );
+
+  final int? id;
+
+  @JsonKey(defaultValue: '')
+  final String? author;
+
+  @JsonKey(defaultValue: '')
+  final String? title;
+
+  @JsonKey(defaultValue: '')
+  final String? description;
+
+  @JsonKey(defaultValue: '')
+  final String? url;
+
+  @JsonKey(defaultValue: '')
+  final String? urlToImage;
+
+  @JsonKey(defaultValue: '')
+  final String? publishedAt;
+
+  final String? content;
+
+  @ignore
+  final SourceModel? source;
+
+  Map<String, dynamic> toJson() => _$ArticleModelToJson(this);
+
+  ArticleEntity toEntity() => ArticleEntity(
+        id: id,
+        author: author,
+        title: title,
+        description: description,
+        url: url,
+        urlToImage: (urlToImage == null || urlToImage!.isEmpty)
+            ? kDefaultImage
+            : urlToImage,
+        publishedAt: publishedAt,
+        content: content,
+        sourceId: source?.id,
+        sourceName: source?.name,
+      );
 }

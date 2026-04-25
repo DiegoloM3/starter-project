@@ -2,16 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
-import '../../../../../injection_container.dart';
-import '../../../domain/entities/article.dart';
-import '../../bloc/article/local/local_article_bloc.dart';
-import '../../bloc/article/local/local_article_event.dart';
-import '../../bloc/article/local/local_article_state.dart';
-import '../../widgets/article_tile.dart';
+import 'package:news_app_clean_architecture/config/routes/app_routes.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_event.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_state.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/article_tile.dart';
+import 'package:news_app_clean_architecture/injection_container.dart';
 
 class SavedArticles extends HookWidget {
-  const SavedArticles({Key ? key}) : super(key: key);
+  const SavedArticles({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +32,10 @@ class SavedArticles extends HookWidget {
         builder: (context) => GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () => _onBackButtonTapped(context),
-          child: const Icon(Ionicons.chevron_back, color: Colors.black),
+          child: const Icon(Ionicons.chevron_back),
         ),
       ),
-      title: const Text('Saved Articles', style: TextStyle(color: Colors.black)),
+      title: const Text('Saved Articles'),
     );
   }
 
@@ -43,7 +45,7 @@ class SavedArticles extends HookWidget {
         if (state is LocalArticlesLoading) {
           return const Center(child: CupertinoActivityIndicator());
         } else if (state is LocalArticlesDone) {
-          return _buildArticlesList(state.articles!);
+          return _buildArticlesList(state.articles);
         }
         return Container();
       },
@@ -53,10 +55,8 @@ class SavedArticles extends HookWidget {
   Widget _buildArticlesList(List<ArticleEntity> articles) {
     if (articles.isEmpty) {
       return const Center(
-          child: Text(
-        'NO SAVED ARTICLES',
-        style: TextStyle(color: Colors.black),
-      ));
+        child: Text('NO SAVED ARTICLES'),
+      );
     }
 
     return ListView.builder(
@@ -73,7 +73,7 @@ class SavedArticles extends HookWidget {
   }
 
   void _onBackButtonTapped(BuildContext context) {
-    Navigator.pop(context);
+    context.pop();
   }
 
   void _onRemoveArticle(BuildContext context, ArticleEntity article) {
@@ -81,6 +81,6 @@ class SavedArticles extends HookWidget {
   }
 
   void _onArticlePressed(BuildContext context, ArticleEntity article) {
-    Navigator.pushNamed(context, '/ArticleDetails', arguments: article);
+    context.push(AppRoutes.articleDetailFor(article), extra: article);
   }
 }

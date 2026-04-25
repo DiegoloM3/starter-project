@@ -1,5 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.news_app_clean_architecture">
+
+    <!-- Internet for NewsAPI / Firestore / Storage. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Gallery access for the article-thumbnail picker. -->
+    <!-- Android 13+ (API 33+) — granular media permission. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- Android 12 and below — legacy storage read for the gallery picker. -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
    <application
         android:label="news_app_clean_architecture"
         android:name="androidx.multidex.MultiDexApplication"

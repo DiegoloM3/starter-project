@@ -6,7 +6,8 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.16.1 <3.0.0"
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
 
 dependencies:
   flutter:
@@ -33,10 +34,11 @@ dependencies:
   floor: any
 
   #make request to api
-  retrofit: ^3.0.1
+  retrofit: 3.0.1
 
   # Firebase
   firebase_core: ^2.24.0
+  firebase_auth: ^4.20.0
   cloud_firestore: ^4.13.3
   firebase_storage: ^11.5.5
 
@@ -44,16 +46,58 @@ dependencies:
   #Hooks
   flutter_hooks: ^0.18.3
 
-  #chached image 
+  #chached image
   cached_network_image: ^3.2.0
+
+  dio: any
+  sqflite: any
+
+  # immutable models / unions
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+
+  # functional error handling
+  dartz: ^0.10.1
+
+  # declarative routing
+  go_router: ^14.2.7
+
+  # gallery image picker (system Photo Picker on Android 13+)
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.0
+  very_good_analysis: ^6.0.0
   retrofit_generator: 3.0.1+1
-  floor_generator: 1.2.0
-  build_runner: 2.1.2
+  floor_generator: ^1.4.2
+  build_runner: ^2.4.13
+  freezed: ^2.4.7
+  json_serializable: ^6.8.0
+
+  # test tooling
+  mocktail: ^1.0.4
+  bloc_test: ^9.1.7
+  firebase_auth_mocks: ^0.13.0
+  fake_cloud_firestore: ^2.5.2
+  firebase_storage_mocks: ^0.6.1
+
+dependency_overrides:
+  # dart_style pinned to the band that compiles on Dart 3.10 without
+  # requiring MixinOnClause (added to analyzer 6.5+). See ADR-0002.
+  dart_style: ">=2.3.4 <2.3.7"
+  # analyzer pinned to a band that neither depends on the removed `_macros`
+  # SDK package (6.6.0..7.3.0) nor conflicts with floor_generator 1.4.x
+  # (which requires analyzer ^5 or ^6.0.0 < 6.5.0). See ADR-0002.
+  analyzer: ">=6.4.1 <6.5.0"
+  # win32 5.3.0 references UnmodifiableUint8ListView, removed in Dart 3.5+.
+  # 5.5.4+ switched to UnmodifiableListView and compiles on current SDKs.
+  win32: ^5.5.4
+  # path_provider_android 2.2.2 still references PluginRegistry.Registrar
+  # (v1 embedding), removed in Flutter 3.29+. 2.2.14+ drops the reference.
+  path_provider_android: ^2.2.14
+  # sqflite 2.3.2 also uses the v1-embedding Registrar. 2.4.x removes it.
+  sqflite: ^2.4.0
   
 
 flutter:

@@ -1,49 +1,74 @@
-# Firebase Firestore Backend
-In this folder are all the [Firebase Firestore](https://firebase.google.com/docs/firestore) related files. 
-You will use this folder to add the schema of the *Articles* you want to upload for the app and to add the rules that enforce this schema. 
+# Firebase Backend — `symmetry-test-cf818`
 
-## DB Schema
-**TODO: ADD YOUR DB SCHEMA (SCHEMA FOR "ARTICLES" AND ANY OTHER SCHEMAS) HERE**
+Rules + schema para la colección `articles/` y el bucket `media/articles/`.
+Todo lo que vive en esta carpeta se sube a Firebase con un solo
+`firebase deploy` y representa el contrato de datos que consume el
+frontend Flutter.
 
-## Getting Started
-Before starting to work on the backend, you must have a Firebase project with the [Firebase Firestore](https://firebase.google.com/docs/firestore), [Firebase Cloud Storage](https://firebase.google.com/docs/storage) and [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite) technologies enabled.
-To do this, create a project but enable only Firebase Cloud Storage, Firebase Firestore, and Firebase Local Emulator Suite technologies.
+---
 
+## Índice de documentos
 
-## Deploying the Project
-In order to deploy the Firestore rules from this repository to the [Firebase console](https://firebase.google.com/)  of your project, follow these steps:
+| Archivo                             | Para qué sirve                                                                 |
+|-------------------------------------|-------------------------------------------------------------------------------|
+| [`docs/DB_SCHEMA.md`](./docs/DB_SCHEMA.md) | Especificación formal del documento `articles/{id}` (campos, tipos, ejemplo, diagrama). |
+| [`docs/SCHEMA_RATIONALE.md`](./docs/SCHEMA_RATIONALE.md) | **Argumentación** del schema: por qué cada campo es como es, qué alternativas se descartaron. |
+| [`docs/RULES_VISUAL.md`](./docs/RULES_VISUAL.md) | Guía visual para subir y validar reglas (diagramas de decisión, casos de prueba en el Playground). |
+| [`firestore.rules`](./firestore.rules) | Reglas activas en Firestore.                                                  |
+| [`storage.rules`](./storage.rules)   | Reglas activas en Cloud Storage.                                              |
+| [`firestore.indexes.json`](./firestore.indexes.json) | Índices compuestos declarados explícitamente (los automáticos quedan en la consola). |
+| [`firebase.json`](./firebase.json)   | Puntos de entrada para `firebase deploy` y el emulator suite.                 |
+| [`.firebaserc`](./.firebaserc)       | Alias del proyecto activo (`symmetry-test-cf818`).                             |
 
-### 1. Install firebase CLI
+---
+
+## Deploy rápido de reglas
+
+```bash
+cd backend
+firebase login --reauth                        # si el token expiró
+firebase deploy --only firestore:rules,storage:rules
 ```
-npm install -g firebase-tools
+
+Salida esperada:
+
 ```
-### 2. Login to your account
-```
-firebase login
+✔  cloud.firestore: rules file firestore.rules compiled successfully
+✔  storage: rules file storage.rules compiled successfully
+✔  Deploy complete!
 ```
 
-### 3. Add your project id to the .firebasesrc file 
-This corresponds to the project Id of the firebase project you created in the Firebase web-app.
-[Change project id](.firebaserc)
+**Antes de deployar cambios de reglas**, ejecutar las pruebas de
+[`docs/RULES_VISUAL.md`](./docs/RULES_VISUAL.md) §3 y §5 para confirmar
+que los casos críticos siguen verdes.
 
-### 4. Initialize the project
+---
+
+## Emuladores locales (opcional)
+
+```bash
+firebase emulators:start
 ```
-firebase init
-```
 
-You should leave everything as it is, choose:
-- emulators
-- firestore
-- cloud storage
+- Firestore: `localhost:8080`
+- Storage:   `localhost:9199`
+- UI:        `localhost:4000`
 
-### 5. Deploy to firebase
-```
-firebase deploy
-```
-This will deploy all the rules you write in `firestore.rules` to your Firebase Firestore project.
-Be careful becasuse it will overwrite the existing firestore.rules file of your project.
+El frontend ya está preparado para hablar con el proyecto real
+(`symmetry-test-cf818`). Si se quisiera apuntar a los emuladores,
+añadir `FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080)`
+en `bootstrap.dart` detrás de un flag `--dart-define=USE_EMULATORS=true`.
+(No implementado: fuera del alcance de la prueba.)
 
-## Running the project in a local emulator
-To run the application locally, use the following command:
+---
 
-```firebase emulators:start```
+## Flujo recomendado para cambiar una regla o el schema
+
+1. Editar `firestore.rules` / `storage.rules` / `docs/DB_SCHEMA.md` en el repo.
+2. Actualizar [`docs/SCHEMA_RATIONALE.md`](./docs/SCHEMA_RATIONALE.md) si el argumento
+   detrás del cambio es relevante (casi siempre lo es).
+3. Actualizar [`docs/RULES_VISUAL.md`](./docs/RULES_VISUAL.md) §6 (tabla maestra) y
+   añadir casos de prueba §3/§5 si aplica.
+4. `firebase deploy --only firestore:rules,storage:rules` (con `--dry-run` primero
+   para validar sintaxis sin subir).
+5. Reejecutar los casos de §3/§5 en la consola antes de merge.

@@ -1,37 +1,28 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class ArticleEntity extends Equatable{
-  final int ? id;
-  final String ? author;
-  final String ? title;
-  final String ? description;
-  final String ? url;
-  final String ? urlToImage;
-  final String ? publishedAt;
-  final String ? content;
+part 'article.freezed.dart';
 
-  const ArticleEntity({
-    this.id,
-    this.author,
-    this.title,
-    this.description,
-    this.url,
-    this.urlToImage,
-    this.publishedAt,
-    this.content,
-  });
+/// Immutable domain entity representing a news article.
+///
+/// Fields stay nullable because NewsAPI frequently omits them and we prefer
+/// carrying partial records into the UI over discarding them.
+@freezed
+class ArticleEntity with _$ArticleEntity {
+  const factory ArticleEntity({
+    int? id,
+    String? author,
+    String? title,
+    String? description,
+    String? url,
+    String? urlToImage,
+    String? publishedAt,
+    String? content,
+    String? sourceId,
+    String? sourceName,
+  }) = _ArticleEntity;
 
-  @override
-  List < Object ? > get props {
-    return [
-      id,
-      author,
-      title,
-      description,
-      url,
-      urlToImage,
-      publishedAt,
-      content,
-    ];
-  }
+  const ArticleEntity._();
+
+  /// Minimum data we need to show an article in a list/card.
+  bool get isValidForDisplay => title?.isNotEmpty ?? false;
 }
