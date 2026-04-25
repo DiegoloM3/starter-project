@@ -28,27 +28,35 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> checkAuthStatus() async {
     emit(const AuthLoading());
-    final result = await _getCurrentUserUseCase();
-    if (result is DataSuccess) {
-      if (result.data != null) {
-        emit(AuthAuthenticated(result.data!));
-      } else {
-        emit(const AuthUnauthenticated());
+    try {
+      final result = await _getCurrentUserUseCase();
+      if (result is DataSuccess) {
+        if (result.data != null) {
+          emit(AuthAuthenticated(result.data!));
+        } else {
+          emit(const AuthUnauthenticated());
+        }
+      } else if (result is DataFailed) {
+        emit(AuthError(_messageFrom(result)));
       }
-    } else if (result is DataFailed) {
-      emit(AuthError(_messageFrom(result)));
+    } catch (_) {
+      emit(const AuthError('Something went wrong. Please try again.'));
     }
   }
 
   Future<void> signIn({required String email, required String password}) async {
     emit(const AuthLoading());
-    final result = await _signInUseCase(
-      params: SignInParams(email: email, password: password),
-    );
-    if (result is DataSuccess) {
-      emit(AuthAuthenticated(result.data!));
-    } else if (result is DataFailed) {
-      emit(AuthError(_messageFrom(result)));
+    try {
+      final result = await _signInUseCase(
+        params: SignInParams(email: email, password: password),
+      );
+      if (result is DataSuccess) {
+        emit(AuthAuthenticated(result.data!));
+      } else if (result is DataFailed) {
+        emit(AuthError(_messageFrom(result)));
+      }
+    } catch (_) {
+      emit(const AuthError('Something went wrong. Please try again.'));
     }
   }
 
@@ -58,49 +66,65 @@ class AuthCubit extends Cubit<AuthState> {
     required String displayName,
   }) async {
     emit(const AuthLoading());
-    final result = await _signUpUseCase(
-      params: SignUpParams(
-        email: email,
-        password: password,
-        displayName: displayName,
-      ),
-    );
-    if (result is DataSuccess) {
-      emit(AuthAuthenticated(result.data!));
-    } else if (result is DataFailed) {
-      emit(AuthError(_messageFrom(result)));
+    try {
+      final result = await _signUpUseCase(
+        params: SignUpParams(
+          email: email,
+          password: password,
+          displayName: displayName,
+        ),
+      );
+      if (result is DataSuccess) {
+        emit(AuthAuthenticated(result.data!));
+      } else if (result is DataFailed) {
+        emit(AuthError(_messageFrom(result)));
+      }
+    } catch (_) {
+      emit(const AuthError('Something went wrong. Please try again.'));
     }
   }
 
   Future<void> signInWithGoogle() async {
     emit(const AuthLoading());
-    final result = await _signInWithGoogleUseCase();
-    if (result is DataSuccess) {
-      emit(AuthAuthenticated(result.data!));
-    } else if (result is DataFailed) {
-      emit(AuthError(_messageFrom(result)));
+    try {
+      final result = await _signInWithGoogleUseCase();
+      if (result is DataSuccess) {
+        emit(AuthAuthenticated(result.data!));
+      } else if (result is DataFailed) {
+        emit(AuthError(_messageFrom(result)));
+      }
+    } catch (_) {
+      emit(const AuthError('Something went wrong. Please try again.'));
     }
   }
 
   Future<void> signOut() async {
     emit(const AuthLoading());
-    final result = await _signOutUseCase();
-    if (result is DataSuccess) {
-      emit(const AuthUnauthenticated());
-    } else if (result is DataFailed) {
-      emit(AuthError(_messageFrom(result)));
+    try {
+      final result = await _signOutUseCase();
+      if (result is DataSuccess) {
+        emit(const AuthUnauthenticated());
+      } else if (result is DataFailed) {
+        emit(AuthError(_messageFrom(result)));
+      }
+    } catch (_) {
+      emit(const AuthError('Something went wrong. Please try again.'));
     }
   }
 
   Future<void> forgotPassword({required String email}) async {
     emit(const AuthLoading());
-    final result = await _forgotPasswordUseCase(
-      params: ForgotPasswordParams(email: email),
-    );
-    if (result is DataSuccess) {
-      emit(const AuthPasswordResetSent());
-    } else if (result is DataFailed) {
-      emit(AuthError(_messageFrom(result)));
+    try {
+      final result = await _forgotPasswordUseCase(
+        params: ForgotPasswordParams(email: email),
+      );
+      if (result is DataSuccess) {
+        emit(const AuthPasswordResetSent());
+      } else if (result is DataFailed) {
+        emit(AuthError(_messageFrom(result)));
+      }
+    } catch (_) {
+      emit(const AuthError('Something went wrong. Please try again.'));
     }
   }
 

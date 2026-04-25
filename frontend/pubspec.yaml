@@ -48,7 +48,7 @@ dependencies:
   flutter_screenutil: ^5.9.0
 
   #image picker
-  image_picker: ^1.0.4
+  image_picker: ^1.1.0
 
   #env vars
   flutter_dotenv: ^5.1.0
@@ -70,11 +70,16 @@ dev_dependencies:
   floor_generator: ^1.5.0
   build_runner: ^2.4.0
 
+dependency_overrides:
+  win32: ^6.0.0
+  path_provider_windows: ^2.3.0
+
 flutter:
   uses-material-design: true
 
   assets:
     - .env
+    - assets/images/
 
   fonts:
     - family: Muli
