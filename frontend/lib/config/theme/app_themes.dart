@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
 
-ThemeData theme() {
-  return ThemeData(
-    scaffoldBackgroundColor: Colors.white,
-    fontFamily: 'Muli',
-    appBarTheme: appBarTheme()
-  );
-}
+import '../../core/theme/app_theme.dart';
 
-AppBarTheme appBarTheme() {
-  return const AppBarTheme(
-    color: Colors.white,
-    elevation: 0,
-    centerTitle: true,
-    iconTheme: IconThemeData(color: Color(0XFF8B8B8B)),
-    titleTextStyle: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
-  );
-}
+export '../../core/theme/app_colors.dart';
+export '../../core/theme/app_metrics.dart';
+export '../../core/theme/app_spacing.dart';
+export '../../core/theme/app_theme.dart';
+export '../../core/theme/app_typography.dart';
+
+/// Delegates to [appTheme] from the design system.
+/// Keep calling [theme()] anywhere the old signature was used.
+ThemeData theme() => appTheme();
