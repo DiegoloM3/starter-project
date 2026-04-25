@@ -7,10 +7,12 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/repositor
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
 import 'features/daily_news/data/data_sources/local/app_database.dart';
+import 'features/daily_news/data/data_sources/remote/ai_image_service.dart';
 import 'features/daily_news/data/data_sources/remote/firebase_storage_service.dart';
 import 'features/daily_news/domain/usecases/get_saved_article.dart';
 import 'features/daily_news/domain/usecases/remove_article.dart';
 import 'features/daily_news/domain/usecases/save_article.dart';
+import 'features/daily_news/presentation/bloc/add_article/remote/remote_add_article_bloc.dart';
 import 'features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 
 final sl = GetIt.instance;
@@ -29,6 +31,9 @@ Future<void> initializeDependencies() async {
   // MediaService
   sl.registerSingleton<MediaService>(MediaService());
 
+  // AIImageService
+  sl.registerSingleton<AIImageService>(AIImageService());
+
   // Dependencies
   sl.registerSingleton<NewsApiService>(NewsApiService(sl()));
 
@@ -46,6 +51,9 @@ Future<void> initializeDependencies() async {
 
   //Blocs
   sl.registerFactory<RemoteArticlesBloc>(() => RemoteArticlesBloc(sl()));
+
+  sl.registerFactory<RemoteAddArticleBloc>(
+      () => RemoteAddArticleBloc(sl(), sl()));
 
   sl.registerFactory<LocalArticleBloc>(
       () => LocalArticleBloc(sl(), sl(), sl()));

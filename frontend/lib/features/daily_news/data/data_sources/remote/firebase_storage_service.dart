@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class FirebaseStorageService {
@@ -24,6 +27,27 @@ class FirebaseStorageService {
       await ref.delete();
     } catch (e) {
       throw Exception("Failed to delete image: $e");
+    }
+  }
+
+  Future<String> uploadImageFromUrl(String url) async {
+    try {
+      final response = await Dio().get<List<int>>(
+        url,
+        options: Options(responseType: ResponseType.bytes),
+      );
+
+      final fileName = 'ai_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final ref = _storage.ref().child('media/articles/$fileName');
+
+      final uploadTask = await ref.putData(
+        Uint8List.fromList(response.data!),
+        SettableMetadata(contentType: 'image/jpeg'),
+      );
+
+      return await uploadTask.ref.getDownloadURL();
+    } catch (e) {
+      throw Exception("Error uploading image from URL: $e");
     }
   }
 }
