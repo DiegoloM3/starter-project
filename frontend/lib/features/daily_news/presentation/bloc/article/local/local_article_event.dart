@@ -1,14 +1,16 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 
 import '../../../../domain/entities/article.dart';
 
 abstract class LocalArticlesEvent extends Equatable {
-  final ArticleEntity ? article;
+  final ArticleEntity? article;
 
   const LocalArticlesEvent({this.article});
 
   @override
-  List<Object> get props => [article!];
+  List<Object?> get props => [article];
 }
 
 class GetSavedArticles extends LocalArticlesEvent {
@@ -21,4 +23,9 @@ class RemoveArticle extends LocalArticlesEvent {
 
 class SaveArticle extends LocalArticlesEvent {
   const SaveArticle(ArticleEntity article) : super(article: article);
+}
+
+class ImagePickedEvent extends LocalArticlesEvent {
+  final File image;
+  const ImagePickedEvent(this.image);
 }
