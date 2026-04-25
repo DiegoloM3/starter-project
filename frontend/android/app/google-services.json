@@ -1,0 +1,37 @@
+{
+  "project_info": {
+    "project_number": "842182175158",
+    "project_id": "gsc-test-cd9c0",
+    "storage_bucket": "gsc-test-cd9c0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:842182175158:android:b3e2a947f962ae5bed7917",
+        "android_client_info": {
+          "package_name": "com.example.news_app_clean_architecture"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0vs91NAYVT2N9FV2OoRmcFOrtoKgq5kA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "842182175158-52emo1dv43uoa90ui4b0fq0p19pocra3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.san-carlos"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

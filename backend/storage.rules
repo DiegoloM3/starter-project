@@ -2,6 +2,19 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+
+    // Article thumbnails
+    match /media/articles/{fileName} {
+      // Anyone can view article images
+      allow read: if true;
+
+      // Only authenticated users can upload images (max 5MB, images only)
+      allow write: if request.auth != null
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+
+      // Only authenticated users can delete
+      allow delete: if request.auth != null;
     }
+  }
 }

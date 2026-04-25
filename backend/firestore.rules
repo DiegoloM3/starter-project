@@ -2,6 +2,67 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isRegisteredUser() {
+      return isAuthenticated()
+          && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated()
+          && request.auth.uid == userId;
+    }
+
+    function isNonEmptyString(field) {
+      return field is string && field.size() > 0;
+    }
+
+    // ============================
+    // Users Collection
+    // ============================
+    match /users/{userId} {
+
+      allow read: if isAuthenticated();
+
+      allow create: if isOwner(userId)
+                    && isNonEmptyString(request.resource.data.displayName)
+                    && isNonEmptyString(request.resource.data.email)
+                    && request.resource.data.createdAt is timestamp;
+
+      allow update: if isOwner(userId);
+
+      allow delete: if isOwner(userId);
+    }
+
+    // ============================
+    // Articles Collection
+    // ============================
+    match /articles/{articleId} {
+
+      allow read: if isAuthenticated();
+
+      allow create: if isRegisteredUser()
+                    && isNonEmptyString(request.resource.data.title)
+                    && isNonEmptyString(request.resource.data.content)
+                    && isNonEmptyString(request.resource.data.author)
+                    && request.resource.data.authorId == request.auth.uid;
+
+      allow update: if isAuthenticated()
+                    && resource.data.authorId == request.auth.uid;
+
+      allow delete: if isAuthenticated()
+                    && resource.data.authorId == request.auth.uid;
+    }
+
+    // ============================
+    // Default: Deny all
+    // ============================
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }

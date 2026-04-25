@@ -1,7 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../domain/entities/article.dart';
+import 'package:news_app_clean_architecture/core/utils/date_formatter.dart';
+
+import '../../../../core/constants/colors.dart';
+import '../../../../shared/article/domain/entities/article.dart';
+import '../../../../shared/widgets/app_cached_image.dart';
 
 class ArticleWidget extends StatelessWidget {
   final ArticleEntity? article;
@@ -10,12 +12,12 @@ class ArticleWidget extends StatelessWidget {
   final void Function(ArticleEntity article)? onArticlePressed;
 
   const ArticleWidget({
-    Key? key,
+    super.key,
     this.article,
     this.onArticlePressed,
     this.isRemovable = false,
     this.onRemove,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +25,14 @@ class ArticleWidget extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: _onTap,
       child: Container(
-        padding: const EdgeInsetsDirectional.only(
-            start: 14, end: 14, bottom: 7, top: 7),
-        height: MediaQuery.of(context).size.width / 2.2,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.0),
+          color: AppColors.surface,
+        ),
+        padding: const EdgeInsetsDirectional.all(
+          7.0,
+        ),
+        height: MediaQuery.of(context).size.width / 3.3,
         child: Row(
           children: [
             _buildImage(context),
@@ -38,50 +45,18 @@ class ArticleWidget extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context) {
-    return CachedNetworkImage(
-        imageUrl: article!.urlToImage!,
-        imageBuilder: (context, imageProvider) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.08),
-                      image: DecorationImage(
-                          image: imageProvider, fit: BoxFit.cover)),
-                ),
-              ),
-            ),
-        progressIndicatorBuilder: (context, url, downloadProgress) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  child: CupertinoActivityIndicator(),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
-                  ),
-                ),
-              ),
-            ),
-        errorWidget: (context, url, error) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  child: Icon(Icons.error),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
-                  ),
-                ),
-              ),
-            ));
+    final double imageWidth = MediaQuery.of(context).size.width / 3.3;
+
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(end: 14),
+      child: AppCachedImage(
+        imageUrl: article!.urlToImage ?? '',
+        width: imageWidth,
+        height: double.maxFinite,
+        borderRadius: BorderRadius.circular(20.0),
+        heroTag: article!.heroTag,
+      ),
+    );
   }
 
   Widget _buildTitleAndDescription() {
@@ -89,44 +64,63 @@ class ArticleWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 7),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // Title
             Text(
               article!.title ?? '',
-              maxLines: 3,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontFamily: 'Butler',
                 fontWeight: FontWeight.w900,
                 fontSize: 18,
-                color: Colors.black87,
-              ),
-            ),
-
-            // Description
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  article!.description ?? '',
-                  maxLines: 2,
-                ),
+                color: AppColors.titleDark,
               ),
             ),
 
             // Datetime
             Row(
               children: [
-                const Icon(Icons.timeline_outlined, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  article!.publishedAt!,
-                  style: const TextStyle(
-                    fontSize: 12,
+                Expanded(
+                  child: Row(
+                    spacing: 6,
+                    children: [
+                      const Icon(Icons.calendar_month, size: 16),
+                      Expanded(
+                        child: Text(
+                          DateFormatter.format(
+                            article!.publishedAt!,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                if (article!.author != null && article!.author!.isNotEmpty)
+                  Expanded(
+                      child: Row(
+                    spacing: 6,
+                    children: [
+                      const Icon(Icons.person, size: 16),
+                      Expanded(
+                        child: Text(
+                          article!.author ?? 'Unknown Author',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
               ],
             ),
           ],
@@ -141,7 +135,7 @@ class ArticleWidget extends StatelessWidget {
         onTap: _onRemove,
         child: const Padding(
           padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Icon(Icons.remove_circle_outline, color: Colors.red),
+          child: Icon(Icons.remove_circle_outline, color: AppColors.error),
         ),
       );
     }
