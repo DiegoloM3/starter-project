@@ -37,14 +37,29 @@ dependencies:
 
   # Firebase
   firebase_core: ^2.24.0
+  firebase_auth: ^4.15.3
   cloud_firestore: ^4.13.3
   firebase_storage: ^11.5.5
 
+  #google sign in
+  google_sign_in: ^6.1.6
+
+  #responsive sizing
+  flutter_screenutil: ^5.9.0
+
+  #image picker
+  image_picker: ^1.0.4
+
+  #env vars
+  flutter_dotenv: ^5.1.0
+
+  #fonts
+  google_fonts: ^6.1.0
 
   #Hooks
   flutter_hooks: ^0.18.3
 
-  #chached image 
+  #chached image
   cached_network_image: ^3.2.0
 
 dev_dependencies:
@@ -60,7 +75,9 @@ flutter:
 
   uses-material-design: true
 
- 
+  assets:
+    - .env
+
   fonts:
     - family: Muli
       fonts:
