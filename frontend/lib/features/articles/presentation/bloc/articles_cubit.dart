@@ -120,8 +120,7 @@ class ArticlesCubit extends Cubit<ArticlesState> {
       );
       if (result is DataSuccess) {
         final updated = current.where((a) => a.id != id).toList();
-        emit(ArticleMutationSuccess(
-            articles: updated, deletedArticleId: id));
+        emit(ArticleMutationSuccess(articles: updated, deletedArticleId: id));
       } else if (result is DataFailed) {
         emit(ArticleMutationError(
             articles: current, message: _messageFrom(result)));

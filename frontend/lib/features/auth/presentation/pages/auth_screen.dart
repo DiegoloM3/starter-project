@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
 
+import 'package:news_app_clean_architecture/config/routes/routes.dart';
+
 import 'package:news_app_clean_architecture/core/theme/app_colors.dart';
 import 'package:news_app_clean_architecture/core/theme/app_metrics.dart';
 import 'package:news_app_clean_architecture/core/theme/app_spacing.dart';
@@ -33,12 +35,16 @@ class _AuthBodyState extends State<_AuthBody> {
   final _signInEmailCtrl = TextEditingController();
   final _signInPasswordCtrl = TextEditingController();
   bool _signInPasswordVisible = false;
+  bool _signInAttempted = false;
 
   // Sign Up
   final _signUpNameCtrl = TextEditingController();
   final _signUpEmailCtrl = TextEditingController();
   final _signUpPasswordCtrl = TextEditingController();
   bool _signUpPasswordVisible = false;
+  bool _signUpAttempted = false;
+
+  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
   @override
   void dispose() {
@@ -50,9 +56,26 @@ class _AuthBodyState extends State<_AuthBody> {
     super.dispose();
   }
 
+  String? _validateEmail(String value) {
+    if (value.isEmpty) return 'Email is required';
+    if (!_emailRegex.hasMatch(value)) return 'Please enter a valid email';
+    return null;
+  }
+
+  String? _validatePassword(String value) {
+    if (value.isEmpty) return 'Password is required';
+    if (value.length < 6) return 'Password must be at least 6 characters';
+    return null;
+  }
+
+  String? _validateName(String value) {
+    if (value.isEmpty) return 'Name is required';
+    return null;
+  }
+
   void _handleState(BuildContext context, AuthState state) {
     if (state is AuthAuthenticated) {
-      Navigator.of(context).pushReplacementNamed('/');
+      Navigator.of(context).pushReplacementNamed(AppRoutes.home);
     } else if (state is AuthError) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
@@ -147,6 +170,19 @@ class _AuthBodyState extends State<_AuthBody> {
 
   // ── Sign In form ─────────────────────────────────────────────────────────
 
+  void _submitSignIn(BuildContext context) {
+    setState(() => _signInAttempted = true);
+
+    final email = _signInEmailCtrl.text.trim();
+    final password = _signInPasswordCtrl.text;
+
+    if (_validateEmail(email) != null || _validatePassword(password) != null) {
+      return;
+    }
+
+    context.read<AuthCubit>().signIn(email: email, password: password);
+  }
+
   Widget _buildSignInForm(BuildContext context, bool isLoading) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -157,6 +193,10 @@ class _AuthBodyState extends State<_AuthBody> {
           hint: 'you@example.com',
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
+          errorText: _signInAttempted
+              ? _validateEmail(_signInEmailCtrl.text.trim())
+              : null,
+          onChanged: (_) { if (_signInAttempted) setState(() {}); },
         ),
         SizedBox(height: AppSpacing.md),
         AppTextField(
@@ -165,6 +205,10 @@ class _AuthBodyState extends State<_AuthBody> {
           hint: '••••••••',
           obscureText: !_signInPasswordVisible,
           textInputAction: TextInputAction.done,
+          errorText: _signInAttempted
+              ? _validatePassword(_signInPasswordCtrl.text)
+              : null,
+          onChanged: (_) { if (_signInAttempted) setState(() {}); },
           suffixIcon: IconButton(
             icon: Icon(
               _signInPasswordVisible
@@ -182,7 +226,7 @@ class _AuthBodyState extends State<_AuthBody> {
           alignment: Alignment.centerRight,
           child: TextButton(
             onPressed: () =>
-                Navigator.of(context).pushNamed('/forgot-password'),
+                Navigator.of(context).pushNamed(AppRoutes.forgotPassword),
             style: TextButton.styleFrom(
               foregroundColor: AppColors.accent,
               padding: EdgeInsets.zero,
@@ -199,12 +243,7 @@ class _AuthBodyState extends State<_AuthBody> {
         AppButton(
           label: 'Sign In',
           isLoading: isLoading,
-          onPressed: isLoading
-              ? null
-              : () => context.read<AuthCubit>().signIn(
-                    email: _signInEmailCtrl.text.trim(),
-                    password: _signInPasswordCtrl.text,
-                  ),
+          onPressed: isLoading ? null : () => _submitSignIn(context),
         ),
         SizedBox(height: AppSpacing.lg),
         _buildDivider(),
@@ -214,13 +253,36 @@ class _AuthBodyState extends State<_AuthBody> {
         _buildBottomLink(
           question: "Don't have an account?",
           actionLabel: 'Sign up',
-          onTap: () => setState(() => _tabIndex = 1),
+          onTap: () => setState(() {
+            _tabIndex = 1;
+            _signInAttempted = false;
+          }),
         ),
       ],
     );
   }
 
   // ── Sign Up form ─────────────────────────────────────────────────────────
+
+  void _submitSignUp(BuildContext context) {
+    setState(() => _signUpAttempted = true);
+
+    final name = _signUpNameCtrl.text.trim();
+    final email = _signUpEmailCtrl.text.trim();
+    final password = _signUpPasswordCtrl.text;
+
+    if (_validateName(name) != null ||
+        _validateEmail(email) != null ||
+        _validatePassword(password) != null) {
+      return;
+    }
+
+    context.read<AuthCubit>().signUp(
+          email: email,
+          password: password,
+          displayName: name,
+        );
+  }
 
   Widget _buildSignUpForm(BuildContext context, bool isLoading) {
     return Column(
@@ -231,6 +293,10 @@ class _AuthBodyState extends State<_AuthBody> {
           label: 'Full Name',
           hint: 'John Doe',
           textInputAction: TextInputAction.next,
+          errorText: _signUpAttempted
+              ? _validateName(_signUpNameCtrl.text.trim())
+              : null,
+          onChanged: (_) { if (_signUpAttempted) setState(() {}); },
         ),
         SizedBox(height: AppSpacing.md),
         AppTextField(
@@ -239,6 +305,10 @@ class _AuthBodyState extends State<_AuthBody> {
           hint: 'you@example.com',
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
+          errorText: _signUpAttempted
+              ? _validateEmail(_signUpEmailCtrl.text.trim())
+              : null,
+          onChanged: (_) { if (_signUpAttempted) setState(() {}); },
         ),
         SizedBox(height: AppSpacing.md),
         AppTextField(
@@ -247,6 +317,10 @@ class _AuthBodyState extends State<_AuthBody> {
           hint: '••••••••',
           obscureText: !_signUpPasswordVisible,
           textInputAction: TextInputAction.done,
+          errorText: _signUpAttempted
+              ? _validatePassword(_signUpPasswordCtrl.text)
+              : null,
+          onChanged: (_) { if (_signUpAttempted) setState(() {}); },
           suffixIcon: IconButton(
             icon: Icon(
               _signUpPasswordVisible
@@ -263,13 +337,7 @@ class _AuthBodyState extends State<_AuthBody> {
         AppButton(
           label: 'Create Account',
           isLoading: isLoading,
-          onPressed: isLoading
-              ? null
-              : () => context.read<AuthCubit>().signUp(
-                    email: _signUpEmailCtrl.text.trim(),
-                    password: _signUpPasswordCtrl.text,
-                    displayName: _signUpNameCtrl.text.trim(),
-                  ),
+          onPressed: isLoading ? null : () => _submitSignUp(context),
         ),
         SizedBox(height: AppSpacing.lg),
         _buildDivider(),
@@ -279,7 +347,10 @@ class _AuthBodyState extends State<_AuthBody> {
         _buildBottomLink(
           question: 'Already have an account?',
           actionLabel: 'Sign in',
-          onTap: () => setState(() => _tabIndex = 0),
+          onTap: () => setState(() {
+            _tabIndex = 0;
+            _signUpAttempted = false;
+          }),
         ),
         SizedBox(height: AppSpacing.sm),
         Text(

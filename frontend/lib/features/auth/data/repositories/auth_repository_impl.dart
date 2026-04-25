@@ -85,6 +85,16 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  Future<DataState<UserEntity>> updateUserProfile(UserEntity user) async {
+    try {
+      final updated = await _remoteDataSource.updateUserProfile(user);
+      return DataSuccess(updated);
+    } catch (e) {
+      return DataFailed(_toDataError(e));
+    }
+  }
+
   DioError _toDataError(Object e) {
     final failure = e is FirebaseAuthException
         ? AuthFailure(_mapFirebaseAuthCode(e.code))

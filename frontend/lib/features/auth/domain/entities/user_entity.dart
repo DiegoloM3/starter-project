@@ -9,6 +9,7 @@ class UserEntity extends Equatable {
   final String role;
   final List<String> preferredCategories;
   final bool onboardingCompleted;
+  final int onboardingStep;
   final bool? notificationsEnabled;
   final bool? darkMode;
   final DateTime createdAt;
@@ -23,6 +24,7 @@ class UserEntity extends Equatable {
     required this.role,
     required this.preferredCategories,
     required this.onboardingCompleted,
+    this.onboardingStep = 0,
     this.notificationsEnabled,
     this.darkMode,
     required this.createdAt,
@@ -39,9 +41,42 @@ class UserEntity extends Equatable {
         role,
         preferredCategories,
         onboardingCompleted,
+        onboardingStep,
         notificationsEnabled,
         darkMode,
         createdAt,
         updatedAt,
       ];
+
+  UserEntity copyWith({
+    String? uid,
+    String? email,
+    String? displayName,
+    String? photoURL,
+    String? bio,
+    String? role,
+    List<String>? preferredCategories,
+    bool? onboardingCompleted,
+    int? onboardingStep,
+    bool? notificationsEnabled,
+    bool? darkMode,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return UserEntity(
+      uid: uid ?? this.uid,
+      email: email ?? this.email,
+      displayName: displayName ?? this.displayName,
+      photoURL: photoURL ?? this.photoURL,
+      bio: bio ?? this.bio,
+      role: role ?? this.role,
+      preferredCategories: preferredCategories ?? this.preferredCategories,
+      onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+      onboardingStep: onboardingStep ?? this.onboardingStep,
+      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
+      darkMode: darkMode ?? this.darkMode,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }

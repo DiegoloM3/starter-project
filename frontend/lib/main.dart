@@ -67,11 +67,32 @@ class _AuthGateState extends State<_AuthGate> {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          Navigator.of(context).pushReplacementNamed('/');
+          if (!state.user.onboardingCompleted) {
+            switch (state.user.onboardingStep) {
+              case 0:
+                Navigator.of(context)
+                    .pushReplacementNamed(AppRoutes.onboardingCategories);
+                break;
+              case 1:
+                Navigator.of(context)
+                    .pushReplacementNamed(AppRoutes.onboardingRole);
+                break;
+              case 2:
+                Navigator.of(context)
+                    .pushReplacementNamed(AppRoutes.onboardingProfile);
+                break;
+              default:
+                Navigator.of(context)
+                    .pushReplacementNamed(AppRoutes.onboardingCategories);
+                break;
+            }
+          } else {
+            Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+          }
         } else if (state is AuthUnauthenticated) {
-          Navigator.of(context).pushReplacementNamed('/auth');
+          Navigator.of(context).pushReplacementNamed(AppRoutes.auth);
         } else if (state is AuthError) {
-          Navigator.of(context).pushReplacementNamed('/auth');
+          Navigator.of(context).pushReplacementNamed(AppRoutes.auth);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message)),
           );

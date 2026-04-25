@@ -12,6 +12,7 @@ import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_i
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_in_with_google_use_case.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_out_use_case.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_up_use_case.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/usecases/update_user_profile_use_case.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_cubit.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/news_api_service.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/repository/article_repository_impl.dart';
@@ -76,7 +77,7 @@ Future<void> initializeDependencies() async {
 
   // Auth data sources
   sl.registerSingleton<AuthRemoteDataSource>(
-      AuthRemoteDataSourceImpl(sl(), sl(), sl()));
+      AuthRemoteDataSourceImpl(sl(), sl(), sl(), sl()));
 
   // Auth repository
   sl.registerSingleton<AuthRepository>(AuthRepositoryImpl(sl()));
@@ -88,10 +89,12 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<SignOutUseCase>(SignOutUseCase(sl()));
   sl.registerSingleton<GetCurrentUserUseCase>(GetCurrentUserUseCase(sl()));
   sl.registerSingleton<ForgotPasswordUseCase>(ForgotPasswordUseCase(sl()));
+  sl.registerSingleton<UpdateUserProfileUseCase>(
+      UpdateUserProfileUseCase(sl()));
 
   // Auth cubit
   sl.registerFactory<AuthCubit>(
-      () => AuthCubit(sl(), sl(), sl(), sl(), sl(), sl()));
+      () => AuthCubit(sl(), sl(), sl(), sl(), sl(), sl(), sl()));
 
   // Articles data source
   sl.registerSingleton<art_ds.ArticleRemoteDataSource>(

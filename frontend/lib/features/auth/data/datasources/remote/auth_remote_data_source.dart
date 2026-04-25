@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:news_app_clean_architecture/features/auth/data/models/user_model.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/entities/user_entity.dart';
 
 abstract class AuthRemoteDataSource {
   Future<UserModel> signInWithEmailAndPassword({
@@ -22,16 +26,20 @@ abstract class AuthRemoteDataSource {
   Future<UserModel?> getCurrentUser();
 
   Future<void> sendPasswordResetEmail({required String email});
+
+  Future<UserModel> updateUserProfile(UserEntity user);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firestore;
+  final FirebaseStorage _storage;
   final GoogleSignIn _googleSignIn;
 
   AuthRemoteDataSourceImpl(
     this._firebaseAuth,
     this._firestore,
+    this._storage,
     this._googleSignIn,
   );
 
@@ -137,6 +145,35 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> sendPasswordResetEmail({required String email}) {
     return _firebaseAuth.sendPasswordResetEmail(email: email);
+  }
+
+  @override
+  Future<UserModel> updateUserProfile(UserEntity user) async {
+    var photoURL = user.photoURL;
+    if (photoURL != null && photoURL.startsWith('/')) {
+      photoURL = await _uploadAvatar(user.uid, File(photoURL));
+    }
+
+    final updates = <String, dynamic>{
+      'displayName': user.displayName,
+      'photoURL': photoURL,
+      'bio': user.bio,
+      'role': user.role,
+      'preferredCategories': user.preferredCategories,
+      'onboardingCompleted': user.onboardingCompleted,
+      'notificationsEnabled': user.notificationsEnabled,
+      'darkMode': user.darkMode,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }..removeWhere((_, value) => value == null);
+
+    await _firestore.collection('users').doc(user.uid).update(updates);
+    return _fetchUserModel(user.uid);
+  }
+
+  Future<String> _uploadAvatar(String uid, File file) async {
+    final ref = _storage.ref('media/avatars/$uid');
+    await ref.putFile(file);
+    return ref.getDownloadURL();
   }
 
   Future<UserModel> _fetchUserModel(String uid) async {

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/entities/user_entity.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/failures/auth_failure.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/forgot_password_use_case.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/get_current_user_use_case.dart';
@@ -7,6 +8,7 @@ import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_i
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_in_with_google_use_case.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_out_use_case.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_up_use_case.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/usecases/update_user_profile_use_case.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -16,6 +18,7 @@ class AuthCubit extends Cubit<AuthState> {
   final SignOutUseCase _signOutUseCase;
   final GetCurrentUserUseCase _getCurrentUserUseCase;
   final ForgotPasswordUseCase _forgotPasswordUseCase;
+  final UpdateUserProfileUseCase _updateUserProfileUseCase;
 
   AuthCubit(
     this._signInUseCase,
@@ -24,6 +27,7 @@ class AuthCubit extends Cubit<AuthState> {
     this._signOutUseCase,
     this._getCurrentUserUseCase,
     this._forgotPasswordUseCase,
+    this._updateUserProfileUseCase,
   ) : super(const AuthInitial());
 
   Future<void> checkAuthStatus() async {
@@ -120,6 +124,22 @@ class AuthCubit extends Cubit<AuthState> {
       );
       if (result is DataSuccess) {
         emit(const AuthPasswordResetSent());
+      } else if (result is DataFailed) {
+        emit(AuthError(_messageFrom(result)));
+      }
+    } catch (_) {
+      emit(const AuthError('Something went wrong. Please try again.'));
+    }
+  }
+
+  Future<void> updateUserProfile(UserEntity user) async {
+    emit(const AuthLoading());
+    try {
+      final result = await _updateUserProfileUseCase(
+        params: UpdateUserProfileParams(user: user),
+      );
+      if (result is DataSuccess) {
+        emit(AuthAuthenticated(result.data!));
       } else if (result is DataFailed) {
         emit(AuthError(_messageFrom(result)));
       }
