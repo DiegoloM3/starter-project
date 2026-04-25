@@ -2,6 +2,69 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    // ─── Helper functions ───────────────────────────────────────────────────
+
+    // Returns true if the request comes from a signed-in user
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Returns true if the signed-in user owns the document
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Fetches the current user's role from their user document
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    // Returns true if the signed-in user has the writer role
+    function isWriter() {
+      return isAuthenticated() && getUserRole() == "writer";
+    }
+
+    // ─── Users ──────────────────────────────────────────────────────────────
+
+    match /users/{userId} {
+      // Users can only read and write their own profile
+      allow read, write: if isAuthenticated() && isOwner(userId);
+
+      // ─── Saved Articles (subcollection) ───────────────────────────────────
+
+      match /savedArticles/{articleId} {
+        // Users can only read and write their own saved articles
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+    }
+
+    // ─── Articles ───────────────────────────────────────────────────────────
+
+    match /articles/{articleId} {
+      // Anyone can read published articles (including unauthenticated users)
+      allow read: if resource.data.status == "published";
+
+      // Authenticated users can read their own drafts
+      allow read: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+
+      // Only writers can create articles
+      allow create: if isWriter()
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.body is string
+        && request.resource.data.body.size() > 0
+        && request.resource.data.status in ["published", "draft"];
+
+      // Only the author can update their own articles
+      allow update: if isWriter()
+        && resource.data.authorId == request.auth.uid
+        && request.resource.data.authorId == request.auth.uid;
+
+      // Only the author can delete their own articles
+      allow delete: if isAuthenticated()
+        && resource.data.authorId == request.auth.uid;
+    }
   }
 }
