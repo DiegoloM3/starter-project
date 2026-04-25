@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.newsAppCleanArchitecture</string>
+	<string>com.symmetry.antonio.arista</string>
 	<key>PROJECT_ID</key>
 	<string>symmetry-applicant-showc-55a7c</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:981395939120:ios:9f964950a685e35aa772f5</string>
+	<string>1:981395939120:ios:a8b73dc1c385fc13a772f5</string>
 </dict>
 </plist>

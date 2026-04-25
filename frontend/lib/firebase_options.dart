@@ -59,10 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAnGQbUdtUT1-AWkn2TTNFfyOOAarLyiIs',
-    appId: '1:981395939120:ios:9f964950a685e35aa772f5',
+    appId: '1:981395939120:ios:a8b73dc1c385fc13a772f5',
     messagingSenderId: '981395939120',
     projectId: 'symmetry-applicant-showc-55a7c',
     storageBucket: 'symmetry-applicant-showc-55a7c.firebasestorage.app',
-    iosBundleId: 'com.example.newsAppCleanArchitecture',
+    iosBundleId: 'com.symmetry.antonio.arista',
   );
+
 }
