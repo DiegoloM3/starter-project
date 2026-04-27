@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:news_app_clean_architecture/config/routes/routes.dart';
 import '../../../../../injection_container.dart';
 import '../../../domain/entities/article.dart';
 import '../../bloc/article/local/local_article_bloc.dart';
@@ -81,6 +82,6 @@ class SavedArticles extends HookWidget {
   }
 
   void _onArticlePressed(BuildContext context, ArticleEntity article) {
-    Navigator.pushNamed(context, '/ArticleDetails', arguments: article);
+    Navigator.pushNamed(context, AppRoutes.articleDetailsLegacy, arguments: article);
   }
 }

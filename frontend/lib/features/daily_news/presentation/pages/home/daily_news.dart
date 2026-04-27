@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app_clean_architecture/config/routes/routes.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_state.dart';
 
@@ -79,10 +80,10 @@ class DailyNews extends StatelessWidget {
   }
 
   void _onArticlePressed(BuildContext context, ArticleEntity article) {
-    Navigator.pushNamed(context, '/ArticleDetails', arguments: article);
+    Navigator.pushNamed(context, AppRoutes.articleDetailsLegacy, arguments: article);
   }
 
   void _onShowSavedArticlesViewTapped(BuildContext context) {
-    Navigator.pushNamed(context, '/SavedArticles');
+    Navigator.pushNamed(context, AppRoutes.savedArticlesLegacy);
   }
 }

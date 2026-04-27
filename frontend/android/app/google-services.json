@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "81916559642",
+    "project_id": "pulse-news-7a316",
+    "storage_bucket": "pulse-news-7a316.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81916559642:android:e26a32d2c00914a419eca3",
+        "android_client_info": {
+          "package_name": "com.example.news_app_clean_architecture"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "81916559642-47iquic5nt7loll8cj2vb47vjs6pjbmn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOjMbQSTEOIBKDgqRa3rn1ziFVDdhsMMo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "81916559642-47iquic5nt7loll8cj2vb47vjs6pjbmn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "81916559642-runu7c6h2cubc88el2hs4g646348lrdq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.pulsenews.app"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81916559642:android:3cb93b337978555d19eca3",
+        "android_client_info": {
+          "package_name": "com.pulsenews.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "81916559642-47iquic5nt7loll8cj2vb47vjs6pjbmn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOjMbQSTEOIBKDgqRa3rn1ziFVDdhsMMo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "81916559642-47iquic5nt7loll8cj2vb47vjs6pjbmn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "81916559642-runu7c6h2cubc88el2hs4g646348lrdq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.pulsenews.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
