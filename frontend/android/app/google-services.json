@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "352005476571",
+    "project_id": "symmetry-news-test",
+    "storage_bucket": "symmetry-news-test.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352005476571:android:a6a83d6434fa079771bcfe",
+        "android_client_info": {
+          "package_name": "club.symmetry.news"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352005476571-u56e5aaalb6ob8kssn0frtabml7rppcb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCulrnQXoxa-Vi8fhl8lEjToDiyO1tI9tQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352005476571-u56e5aaalb6ob8kssn0frtabml7rppcb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "352005476571-dh348jut2tsjnb7jocjrif4qm4754mk7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.newsAppCleanArchitecture"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

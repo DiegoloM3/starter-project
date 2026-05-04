@@ -1,7 +1,108 @@
 rules_version = '2';
 
+// Symmetry News — Firestore security rules
+// Project: symmetry-news-test (us-central1 / nam5)
+// Last updated: 2026-05-02
+// Summary: article CRUD with schema validation, favorites mirror, views append-only, user profiles, username ledger.
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function isValidNewArticle(data) {
+      return data.title is string &&
+             data.title.size() >= 5 && data.title.size() <= 200 &&
+             data.description is string &&
+             data.description.size() >= 20 && data.description.size() <= 500 &&
+             data.content is string &&
+             data.content.size() >= 50 &&
+             data.urlToImage is string &&
+             data.urlToImage.size() > 0 &&
+             data.category in ['fitness', 'news', 'lifestyle', 'tech', 'other'] &&
+             data.source == 'journalist' &&
+             data.userId == request.auth.uid &&
+             data.status in ['publishing', 'published'] &&
+             data.isDeleted == false;
+    }
+
+    function isValidArticleUpdate(before, after) {
+      // userId and source are immutable across any update.
+      // urlToImage may transition from sentinel to real URL during publishing.
+      return after.userId == before.userId &&
+             after.source == before.source &&
+             after.title is string &&
+             after.title.size() >= 5 && after.title.size() <= 200 &&
+             after.description is string &&
+             after.description.size() >= 20 && after.description.size() <= 500 &&
+             after.content is string &&
+             after.content.size() >= 50 &&
+             after.category in ['fitness', 'news', 'lifestyle', 'tech', 'other'] &&
+             after.status in ['publishing', 'published', 'upload_failed'];
+    }
+
+    // Users — public read for any authenticated user (required for author attribution).
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isOwner(userId);
+      allow delete: if false;
+
+      match /favorites/{articleId} {
+        allow read: if isOwner(userId);
+        allow create, delete: if isOwner(userId);
+        allow update: if false;
+      }
+
+      // Saved articles — bookmarks of NewsAPI (or community) articles, owned
+      // by the user. Schema is intentionally permissive on optional string
+      // fields (NewsAPI articles can have empty author/description), but
+      // requires the canonical identity fields and forbids cross-user writes.
+      match /savedArticles/{articleId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+                              && request.resource.data.url is string
+                              && request.resource.data.title is string
+                              && request.resource.data.source is string;
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // Articles — public read for any authenticated user.
+    match /articles/{articleId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidNewArticle(request.resource.data);
+      allow update: if isAuthenticated() && isOwner(resource.data.userId)
+                     && isValidArticleUpdate(resource.data, request.resource.data);
+      allow delete: if false;
+
+      // Favorites mirror — keyed by uid.
+      match /favorites/{userId} {
+        allow read: if isAuthenticated();
+        allow create, delete: if isOwner(userId);
+        allow update: if false;
+      }
+
+      // Views — append-only by any authenticated user.
+      match /views/{viewId} {
+        allow read: if isAuthenticated() && isOwner(resource.data.userId);
+        allow create: if isAuthenticated()
+                      && request.resource.data.userId == request.auth.uid
+                      && request.resource.data.keys().hasOnly(['userId', 'createdAt']);
+        allow update, delete: if false;
+      }
+    }
+
+    // Username uniqueness shadow collection (created by signup; uniqueness enforced via transaction).
+    match /usernames/{username} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
   }
 }

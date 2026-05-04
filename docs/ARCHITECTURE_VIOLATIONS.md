@@ -16,7 +16,7 @@ This is a document with the specific architecture violations to be avoided in ou
         - 1.3.2 Contain a `EntityClass toEntity()` function for conversion to entities
         - 1.3.3 Contain a `fromRawData` factory for conversion from external API data to model.
     - **1.4 repository**
-        - 1.4.1 Name repository implementation classes as {Repository Interface Name}Impl
+        - 1.4.1 Name repository implementation classes as `{RepositoryInterfaceName}Impl` (PascalCase, no spaces)
         - 1.4.2 Contains ONLY repository implementations of abstract classes in the `domain/repository`
         - 1.4.3 ALWAYS RETURN an ```DataState<Type>``` when requesting data from an API
         - 1.4.4 **ONLY PLACE TO IMPORT data_providers from**

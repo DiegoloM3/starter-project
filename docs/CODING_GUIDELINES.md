@@ -20,15 +20,15 @@ This is a requirement of our jobs as software engineers in Symmetry. It is not a
 2. Use Meaningful names  
     - 2.1 Follow Set Conventions
     Follow the already set convention for naming in "typical" files (eg: use_cases, repositoryImpls, Entities, ...). This "typical" files MUST follow the same conventions and the classes inside them as well.
-    - 2.1 Use Intention-Revealing Names  
+    - 2.2 Use Intention-Revealing Names  
     Use names that reveal the intention of variables, classes, or functions.  
-    - 2.2 Avoid Disinformation  
+    - 2.3 Avoid Disinformation  
     ALWAYS **avoid leaving false clues that obscure the meaning of code**.   
     You should avoid words whose entrenched meanings vary from our intended meaning.  
-    - 2.3 Use Pronauncable Names  
+    - 2.4 Use Pronounceable Names  
     Use names which you can say out loud so that you can talk about them with your peers ie: make it easy to refer to variables/functions/classes in natural language  
-    - 2.4 Class Names are nouns  
-    - 2.5 Function names are verbs  
+    - 2.5 Class Names are nouns  
+    - 2.6 Function names are verbs  
 
 3. Keep functions as simple as possible and as small as possible  
     - 3.1 Make functions SMALL  
@@ -55,7 +55,7 @@ We ALWAYS follow the 3 laws of TDD at Symmetry:
 -  First Law: You may not write production code until you have written a failing
 unit test.  
 - Second Law: You may not write more of a unit tests than is sufficient to fail,
-and not comipling is failing.  
+and not compiling is failing.  
 - Third Law: You may not write more production code than is sufficient to pass
 the currently failing tests.  
 Our testing process is inspired by [this tutorial](https://www.youtube.com/watch?v=g2Mup12MccU)  
@@ -72,5 +72,5 @@ Our testing process is inspired by [this tutorial](https://www.youtube.com/watch
 6. Use Abstract Classes to Isolate from Change  
     - 6.1 Use abstract classes  
         Needs will change, therefore code will change. A client class depending upon concrete details is at
-        risk when those details change. We can introduce intefaces and abstract classes to
+        risk when those details change. We can introduce interfaces and abstract classes to
         help isolate the impact of those details

@@ -1,0 +1,7 @@
+node_modules/
+lib/
+*.log
+.runtimeconfig.json
+.env
+.env.*
+coverage/

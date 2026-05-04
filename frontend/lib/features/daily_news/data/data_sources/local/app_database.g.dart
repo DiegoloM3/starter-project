@@ -63,10 +63,12 @@ class _$AppDatabase extends AppDatabase {
 
   ArticleDao? _articleDAOInstance;
 
+  DraftDao? _draftDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 1,
+      version: 2,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -84,6 +86,9 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `article` (`id` INTEGER, `author` TEXT, `title` TEXT, `description` TEXT, `url` TEXT, `urlToImage` TEXT, `publishedAt` TEXT, `content` TEXT, PRIMARY KEY (`id`))');
 
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `draft_articles` (`draftId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `content` TEXT NOT NULL, `localImagePath` TEXT, `categoryRaw` TEXT, `tagsRaw` TEXT NOT NULL, `language` TEXT NOT NULL, `locationLat` REAL, `locationLng` REAL, `locationPlaceName` TEXT, `lastSavedAtMillis` INTEGER NOT NULL)');
+
         await callback?.onCreate?.call(database, version);
       },
     );
@@ -93,6 +98,11 @@ class _$AppDatabase extends AppDatabase {
   @override
   ArticleDao get articleDAO {
     return _articleDAOInstance ??= _$ArticleDao(database, changeListener);
+  }
+
+  @override
+  DraftDao get draftDao {
+    return _draftDaoInstance ??= _$DraftDao(database, changeListener);
   }
 }
 
@@ -160,5 +170,88 @@ class _$ArticleDao extends ArticleDao {
   @override
   Future<void> deleteArticle(ArticleModel articleModel) async {
     await _articleModelDeletionAdapter.delete(articleModel);
+  }
+}
+
+class _$DraftDao extends DraftDao {
+  _$DraftDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _draftArticleModelInsertionAdapter = InsertionAdapter(
+            database,
+            'draft_articles',
+            (DraftArticleModel item) => <String, Object?>{
+                  'draftId': item.draftId,
+                  'title': item.title,
+                  'description': item.description,
+                  'content': item.content,
+                  'localImagePath': item.localImagePath,
+                  'categoryRaw': item.categoryRaw,
+                  'tagsRaw': item.tagsRaw,
+                  'language': item.language,
+                  'locationLat': item.locationLat,
+                  'locationLng': item.locationLng,
+                  'locationPlaceName': item.locationPlaceName,
+                  'lastSavedAtMillis': item.lastSavedAtMillis,
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<DraftArticleModel> _draftArticleModelInsertionAdapter;
+
+  DraftArticleModel _draftRowMapper(Map<String, Object?> row) {
+    return DraftArticleModel(
+      draftId: row['draftId'] as int?,
+      title: row['title'] as String,
+      description: row['description'] as String,
+      content: row['content'] as String,
+      localImagePath: row['localImagePath'] as String?,
+      categoryRaw: row['categoryRaw'] as String?,
+      tagsRaw: row['tagsRaw'] as String,
+      language: row['language'] as String,
+      locationLat: row['locationLat'] as double?,
+      locationLng: row['locationLng'] as double?,
+      locationPlaceName: row['locationPlaceName'] as String?,
+      lastSavedAtMillis: row['lastSavedAtMillis'] as int,
+    );
+  }
+
+  @override
+  Stream<List<DraftArticleModel>> watchDrafts() {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM draft_articles ORDER BY lastSavedAtMillis DESC',
+        mapper: _draftRowMapper,
+        queryableName: 'draft_articles',
+        isView: false);
+  }
+
+  @override
+  Future<DraftArticleModel?> getDraft(int id) async {
+    return _queryAdapter.query(
+        'SELECT * FROM draft_articles WHERE draftId = ?1',
+        mapper: _draftRowMapper,
+        arguments: [id]);
+  }
+
+  @override
+  Future<int> upsertDraft(DraftArticleModel draft) {
+    return _draftArticleModelInsertionAdapter.insertAndReturnId(
+        draft, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> deleteDraft(int id) async {
+    await _queryAdapter.queryNoReturn(
+        'DELETE FROM draft_articles WHERE draftId = ?1',
+        arguments: [id]);
+  }
+
+  @override
+  Future<void> deleteAllDrafts() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM draft_articles');
   }
 }

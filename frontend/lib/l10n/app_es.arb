@@ -1,0 +1,87 @@
+{
+  "@@locale": "es",
+
+  "appTitle": "App de Noticias",
+
+  "navHome": "Inicio",
+  "navSettings": "Ajustes",
+
+  "homeTitle": "Noticias del día",
+
+  "filterAll": "Todo",
+  "filterForYou": "Para ti",
+  "filterForYouEmpty": "Guarda algunos artículos y te recomendaremos más como esos.",
+  "filterForYouLoading": "Buscando recomendaciones…",
+  "filterHealth": "Salud",
+  "filterNews": "Noticias",
+  "filterCommunity": "Comunidad",
+
+  "searchHint": "Buscar artículos…",
+  "feedEmpty": "No se encontraron artículos.",
+  "semanticSearchUnavailable": "Búsqueda semántica no disponible — mostrando coincidencias por palabra clave.",
+
+  "myArticlesTitle": "Mis artículos",
+  "savedArticlesTitle": "Artículos guardados",
+  "articleNewsApiTitle": "Artículo de NewsAPI",
+  "articleCommunityTitle": "Artículo de la comunidad",
+  "savedArticlesEmpty": "Aún no hay artículos guardados.",
+  "removeAction": "Quitar",
+  "articleDetailNotFound": "Artículo no encontrado.",
+  "articleDetailLoadError": "No se pudo cargar el artículo. Regresa e inténtalo de nuevo.",
+  "articleSavedSuccess": "Artículo guardado correctamente.",
+
+  "newArticleTitle": "Nuevo artículo",
+  "editArticleTitle": "Editar artículo",
+  "saveDraftAction": "Guardar borrador",
+  "publishedSnack": "Publicado",
+  "savedSnack": "Guardado",
+  "publishingOverlay": "Publicando tu artículo…",
+
+  "deleteArticleTitle": "¿Eliminar artículo?",
+  "deleteArticleConfirm": "¿Seguro que quieres eliminar \"{title}\"?",
+  "deleteDraftTitle": "¿Eliminar borrador?",
+  "actionCancel": "Cancelar",
+  "actionDelete": "Eliminar",
+  "draftBadge": "Borrador",
+
+  "thumbnailPickerTitle": "Elige una miniatura",
+  "thumbnailFromGallery": "Desde galería",
+  "thumbnailFromCamera": "Desde cámara",
+
+  "fieldCategory": "Categoría",
+  "fieldTags": "Etiquetas",
+  "languageEnglish": "Inglés",
+  "languageSpanish": "Español",
+
+  "menuMyArticles": "Mis artículos",
+  "menuSignOut": "Cerrar sesión",
+
+  "authSignInTitle": "Iniciar sesión",
+  "authSignInAction": "Entrar",
+  "authSignUpTitle": "Crear cuenta",
+  "authSignUpAction": "Crear cuenta",
+  "authEmailLabel": "Correo",
+  "authPasswordLabel": "Contraseña",
+  "authDisplayNameLabel": "Nombre de usuario",
+  "authForgotPassword": "¿Olvidaste tu contraseña?",
+  "authResetPasswordTitle": "Restablecer contraseña",
+  "authResetPasswordSend": "Enviar correo",
+  "authResetPasswordSent": "Correo de restablecimiento enviado",
+  "authNoAccount": "¿No tienes cuenta?",
+  "authHaveAccount": "¿Ya tienes cuenta?",
+  "authGoogleSignIn": "Iniciar sesión con Google",
+
+  "settingsTitle": "Ajustes",
+  "settingsLanguageSection": "Idioma",
+  "settingsLanguageSystem": "Predeterminado del sistema",
+  "settingsLanguageSystemSubtitle": "Seguir el idioma del dispositivo",
+  "settingsPermissionsSection": "Permisos que usa la app",
+  "settingsPermissionsHelp": "Estos permisos se solicitan solo cuando una función específica los necesita.",
+
+  "permissionCameraTitle": "Cámara",
+  "permissionCameraReason": "Tomar una foto para usarla como miniatura de tu artículo.",
+  "permissionPhotosTitle": "Galería",
+  "permissionPhotosReason": "Elegir una foto existente como miniatura de tu artículo.",
+  "permissionInternetTitle": "Internet",
+  "permissionInternetReason": "Obtener noticias, sincronizar tus artículos y realizar búsqueda semántica."
+}

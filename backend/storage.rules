@@ -1,7 +1,31 @@
 rules_version = '2';
 
+// Symmetry News — Cloud Storage security rules
+// Project: symmetry-news-test
+// Last updated: 2026-05-02
+// Summary: article thumbnails owner-only write with Firestore cross-check; user avatars owner-only write.
+
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+
+    // Article thumbnails — public read, owner-only write.
+    // Write requires the Firestore article doc to exist with matching userId.
+    match /media/articles/{articleId}/{file=**} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && firestore.exists(/databases/(default)/documents/articles/$(articleId))
+                   && firestore.get(/databases/(default)/documents/articles/$(articleId)).data.userId == request.auth.uid
+                   && request.resource.size < 1 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+      allow delete: if request.auth != null
+                    && firestore.exists(/databases/(default)/documents/articles/$(articleId))
+                    && firestore.get(/databases/(default)/documents/articles/$(articleId)).data.userId == request.auth.uid;
     }
+
+    // User avatars — public read, owner-only write.
+    match /media/users/{userId}/{file=**} {
+      allow read: if true;
+      allow write, delete: if request.auth != null && request.auth.uid == userId;
+    }
+  }
 }

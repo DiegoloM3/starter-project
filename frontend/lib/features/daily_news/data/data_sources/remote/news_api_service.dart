@@ -13,5 +13,17 @@ abstract class NewsApiService {
     @Query("apiKey") String ? apiKey,
     @Query("country") String ? country,
     @Query("category") String ? category,
+    @Query("page") int ? page,
+    @Query("pageSize") int ? pageSize,
+  });
+
+  @GET('/everything')
+  Future<HttpResponse<List<ArticleModel>>> searchEverything({
+    @Query("apiKey") String ? apiKey,
+    @Query("q") String ? q,
+    @Query("language") String ? language,
+    @Query("sortBy") String ? sortBy,
+    @Query("page") int ? page,
+    @Query("pageSize") int ? pageSize,
   });
 }

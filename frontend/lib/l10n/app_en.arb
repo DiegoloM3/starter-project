@@ -1,0 +1,96 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "News App",
+  "@appTitle": { "description": "Application name shown in OS task switcher." },
+
+  "navHome": "Home",
+  "@navHome": { "description": "Bottom navigation label for the main feed tab." },
+
+  "navSettings": "Settings",
+  "@navSettings": { "description": "Bottom navigation label for the settings tab." },
+
+  "homeTitle": "Daily News",
+  "@homeTitle": { "description": "App bar title on the home feed." },
+
+  "filterAll": "All",
+  "filterForYou": "For You",
+  "filterForYouEmpty": "Save a few articles and we'll find more like them.",
+  "filterForYouLoading": "Tailoring picks for you…",
+  "filterHealth": "Health",
+  "@filterHealth": { "description": "Filter chip covering NewsAPI health & wellness articles (fitness/workout/nutrition/wellness/exercise/health keyword search)." },
+  "filterNews": "News",
+  "filterCommunity": "Community",
+
+  "searchHint": "Search articles…",
+  "feedEmpty": "No articles found.",
+  "semanticSearchUnavailable": "Semantic search unavailable — showing keyword matches.",
+
+  "myArticlesTitle": "My Articles",
+  "savedArticlesTitle": "Saved Articles",
+  "articleNewsApiTitle": "NewsAPI Article",
+  "articleCommunityTitle": "Community Article",
+  "savedArticlesEmpty": "No saved articles yet.",
+  "removeAction": "Remove",
+  "articleDetailNotFound": "Article not found.",
+  "articleDetailLoadError": "Couldn't load article. Pull back and retry.",
+  "articleSavedSuccess": "Article saved successfully.",
+
+  "newArticleTitle": "New Article",
+  "editArticleTitle": "Edit Article",
+  "saveDraftAction": "Save Draft",
+  "publishedSnack": "Published",
+  "savedSnack": "Saved",
+  "publishingOverlay": "Publishing your article…",
+
+  "deleteArticleTitle": "Delete article?",
+  "deleteArticleConfirm": "Are you sure you want to delete \"{title}\"?",
+  "@deleteArticleConfirm": {
+    "placeholders": { "title": { "type": "String" } }
+  },
+  "deleteDraftTitle": "Delete draft?",
+  "actionCancel": "Cancel",
+  "actionDelete": "Delete",
+  "draftBadge": "Draft",
+
+  "thumbnailPickerTitle": "Pick a thumbnail",
+  "thumbnailFromGallery": "From Gallery",
+  "thumbnailFromCamera": "From Camera",
+
+  "fieldCategory": "Category",
+  "fieldTags": "Tags",
+  "languageEnglish": "English",
+  "languageSpanish": "Spanish",
+
+  "menuMyArticles": "My Articles",
+  "menuSignOut": "Sign out",
+
+  "authSignInTitle": "Sign in",
+  "authSignInAction": "Sign in",
+  "authSignUpTitle": "Create account",
+  "authSignUpAction": "Create account",
+  "authEmailLabel": "Email",
+  "authPasswordLabel": "Password",
+  "authDisplayNameLabel": "Display name",
+  "authForgotPassword": "Forgot password?",
+  "authResetPasswordTitle": "Reset password",
+  "authResetPasswordSend": "Send reset email",
+  "authResetPasswordSent": "Reset email sent",
+  "authNoAccount": "Don't have an account?",
+  "authHaveAccount": "Already have an account?",
+  "authGoogleSignIn": "Sign in with Google",
+
+  "settingsTitle": "Settings",
+  "settingsLanguageSection": "Language",
+  "settingsLanguageSystem": "System default",
+  "settingsLanguageSystemSubtitle": "Follow the device language",
+  "settingsPermissionsSection": "Permissions used by this app",
+  "settingsPermissionsHelp": "These permissions are requested only when needed for a specific feature.",
+
+  "permissionCameraTitle": "Camera",
+  "permissionCameraReason": "Take a photo to use as your article thumbnail.",
+  "permissionPhotosTitle": "Photo Library",
+  "permissionPhotosReason": "Choose an existing photo as your article thumbnail.",
+  "permissionInternetTitle": "Internet",
+  "permissionInternetReason": "Fetch news, sync your articles and run semantic search."
+}
