@@ -1,0 +1,16 @@
+{
+  "name": "symmetry-news-app-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Firebase rules and testing for Symmetry News App",
+  "scripts": {
+    "test": "firebase emulators:exec --only firestore,storage 'npx mocha --timeout 10000 test/*.test.js'",
+    "test:firestore": "firebase emulators:exec --only firestore 'npx mocha --timeout 10000 test/firestore.rules.test.js'",
+    "test:storage": "firebase emulators:exec --only storage 'npx mocha --timeout 10000 test/storage.rules.test.js'"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^3.0.0",
+    "firebase-admin": "^12.0.0",
+    "mocha": "^10.2.0"
+  }
+}

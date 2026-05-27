@@ -2,6 +2,196 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    // ===== ARTICLES =====
+    match /articles/{articleId} {
+
+      // --- Auth helpers ---
+      function isAuthenticated() {
+        return request.auth != null;
+      }
+
+      function isOwner() {
+        return resource.data.authorId == request.auth.uid;
+      }
+
+      function isNewOwner() {
+        return request.resource.data.authorId == request.auth.uid;
+      }
+
+      // --- Field presence validation ---
+      function hasRequiredArticleFields() {
+        let requiredFields = [
+          'id', 'title', 'description', 'content',
+          'authorId', 'authorName',
+          'thumbnailUrl', 'thumbnailPath',
+          'publishedAt', 'createdAt', 'updatedAt',
+          'status', 'isDeleted', 'readingTimeMinutes'
+        ];
+        return request.resource.data.keys().hasAll(requiredFields)
+            && request.resource.data.keys().hasOnly(requiredFields);
+      }
+
+      // --- Type validation ---
+      function articleFieldTypesValid() {
+        let d = request.resource.data;
+        return d.id is string
+            && d.title is string
+            && d.description is string
+            && d.content is string
+            && d.authorId is string
+            && d.authorName is string
+            && d.thumbnailUrl is string
+            && d.thumbnailPath is string
+            && d.status is string
+            && d.isDeleted is bool
+            && d.readingTimeMinutes is int
+            && d.createdAt is timestamp
+            && d.updatedAt is timestamp
+            && (d.publishedAt == null || d.publishedAt is timestamp);
+      }
+
+      // --- Size / value constraints ---
+      function articleFieldSizesValid() {
+        let d = request.resource.data;
+        return d.title.size() >= 1 && d.title.size() <= 200
+            && d.description.size() >= 1 && d.description.size() <= 500
+            && d.content.size() >= 1 && d.content.size() <= 50000
+            && d.readingTimeMinutes >= 1;
+      }
+
+      // --- Status must be a known value ---
+      function statusIsValid() {
+        return request.resource.data.status in ['draft', 'published', 'archived'];
+      }
+
+      // --- Status transition enforcement ---
+      function statusTransitionIsValid() {
+        let current = resource.data.status;
+        let next = request.resource.data.status;
+        return statusIsValid()
+            && (current == next
+                || (current == 'draft' && next == 'published')
+                || (current == 'published' && next == 'archived'));
+      }
+
+      // --- Immutable fields on update ---
+      function immutableFieldsUnchanged() {
+        return request.resource.data.id == resource.data.id
+            && request.resource.data.authorId == resource.data.authorId
+            && request.resource.data.createdAt == resource.data.createdAt;
+      }
+
+      // --- Read ---
+      allow read: if isAuthenticated();
+
+      // --- Create ---
+      allow create: if isAuthenticated()
+                    && isNewOwner()
+                    && hasRequiredArticleFields()
+                    && articleFieldTypesValid()
+                    && articleFieldSizesValid()
+                    && request.resource.data.status == 'draft'
+                    && request.resource.data.isDeleted == false
+                    && request.resource.data.createdAt == request.time
+                    && request.resource.data.updatedAt == request.time
+                    && request.resource.data.publishedAt == null
+                    && request.resource.data.id == articleId;
+
+      // --- Update ---
+      allow update: if isAuthenticated()
+                    && isOwner()
+                    && hasRequiredArticleFields()
+                    && articleFieldTypesValid()
+                    && articleFieldSizesValid()
+                    && immutableFieldsUnchanged()
+                    && statusTransitionIsValid()
+                    && request.resource.data.updatedAt == request.time;
+
+      // --- Delete (hard delete always denied) ---
+      allow delete: if false;
+
+      // ===== COMMENTS (subcollection) =====
+      match /comments/{commentId} {
+
+        function hasRequiredCommentFields() {
+          let requiredFields = [
+            'id', 'articleId', 'authorId', 'authorName',
+            'content', 'createdAt', 'isDeleted'
+          ];
+          return request.resource.data.keys().hasAll(requiredFields)
+              && request.resource.data.keys().hasOnly(requiredFields);
+        }
+
+        function commentFieldTypesValid() {
+          let d = request.resource.data;
+          return d.id is string
+              && d.articleId is string
+              && d.authorId is string
+              && d.authorName is string
+              && d.content is string
+              && d.createdAt is timestamp
+              && d.isDeleted is bool;
+        }
+
+        function isCommentOwner() {
+          return resource.data.authorId == request.auth.uid;
+        }
+
+        function isSoftDeleteOnly() {
+          let d = request.resource.data;
+          let r = resource.data;
+          return d.isDeleted == true
+              && r.isDeleted == false
+              && d.id == r.id
+              && d.articleId == r.articleId
+              && d.authorId == r.authorId
+              && d.authorName == r.authorName
+              && d.content == r.content
+              && d.createdAt == r.createdAt;
+        }
+
+        allow read: if request.auth != null;
+
+        allow create: if request.auth != null
+                      && hasRequiredCommentFields()
+                      && commentFieldTypesValid()
+                      && request.resource.data.authorId == request.auth.uid
+                      && request.resource.data.id == commentId
+                      && request.resource.data.articleId == articleId
+                      && request.resource.data.content.size() >= 1
+                      && request.resource.data.content.size() <= 2000
+                      && request.resource.data.isDeleted == false
+                      && request.resource.data.createdAt == request.time;
+
+        allow update: if request.auth != null
+                      && isCommentOwner()
+                      && hasRequiredCommentFields()
+                      && commentFieldTypesValid()
+                      && isSoftDeleteOnly();
+
+        allow delete: if false;
+      }
+    }
+
+    // ===== SAVED ARTICLES =====
+    match /users/{uid}/savedArticles/{articleId} {
+
+      function isDocOwner() {
+        return request.auth != null && request.auth.uid == uid;
+      }
+
+      allow read: if isDocOwner();
+
+      allow create: if isDocOwner()
+                    && request.resource.data.keys().hasAll(['articleId', 'savedAt'])
+                    && request.resource.data.keys().hasOnly(['articleId', 'savedAt'])
+                    && request.resource.data.articleId is string
+                    && request.resource.data.savedAt == request.time;
+
+      allow delete: if isDocOwner();
+
+      allow update: if false;
+    }
   }
 }
