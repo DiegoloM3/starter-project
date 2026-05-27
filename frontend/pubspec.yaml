@@ -34,6 +34,7 @@ dependencies:
 
   # Firebase
   firebase_core: ^3.0.0
+  firebase_auth: ^5.0.0
   cloud_firestore: ^5.0.0
   firebase_storage: ^12.0.0
 
@@ -48,9 +49,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
-  retrofit_generator: 3.0.1+1
-  floor_generator: 1.2.0
-  build_runner: 2.1.2
+  retrofit_generator: ^4.0.0
+  floor_generator: ^1.4.0
+  build_runner: ^2.4.0
   
 
 flutter:
