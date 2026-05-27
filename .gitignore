@@ -21,3 +21,13 @@ env.json
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
+
+# Unused platform scaffolding (regenerate with flutter create .)
+frontend/android/app/build.gradle.kts
+frontend/android/build.gradle.kts
+frontend/android/settings.gradle.kts
+frontend/linux/
+frontend/macos/
+frontend/web/
+frontend/windows/
+frontend/test/widget_test.dart
