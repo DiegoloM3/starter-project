@@ -39,7 +39,7 @@ class ArticleWidget extends StatelessWidget {
 
   Widget _buildImage(BuildContext context) {
     return CachedNetworkImage(
-        imageUrl: article!.urlToImage!,
+        imageUrl: article!.thumbnailUrl!,
         imageBuilder: (context, imageProvider) => Padding(
               padding: const EdgeInsetsDirectional.only(end: 14),
               child: ClipRRect(
@@ -61,7 +61,7 @@ class ArticleWidget extends StatelessWidget {
                 child: Container(
                   width: MediaQuery.of(context).size.width / 3,
                   height: double.maxFinite,
-                  child: CupertinoActivityIndicator(),
+                  child: const CupertinoActivityIndicator(),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.08),
                   ),
@@ -75,7 +75,7 @@ class ArticleWidget extends StatelessWidget {
                 child: Container(
                   width: MediaQuery.of(context).size.width / 3,
                   height: double.maxFinite,
-                  child: Icon(Icons.error),
+                  child: const Icon(Icons.error),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.08),
                   ),
