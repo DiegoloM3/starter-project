@@ -1,0 +1,23 @@
+# Local Claude rules and planning (not part of submission)
+CLAUDE.md
+ROADMAP.md
+
+# AI tool artifacts
+.claude/
+.specify/
+
+# Firebase credentials (NEVER commit these)
+**/google-services.json
+**/GoogleService-Info.plist
+**/firebase_options.dart
+
+# Environment secrets
+env.json
+.env
+.env.*
+!.env.example
+
+# Firebase debug logs
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
