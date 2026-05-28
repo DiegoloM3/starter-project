@@ -35,6 +35,42 @@ class ArticleEntity extends Equatable {
     this.readingTimeMinutes,
   });
 
+  ArticleEntity copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? content,
+    String? authorId,
+    String? authorName,
+    String? thumbnailUrl,
+    String? thumbnailPath,
+    String? url,
+    String? publishedAt,
+    String? createdAt,
+    String? updatedAt,
+    String? status,
+    bool? isDeleted,
+    int? readingTimeMinutes,
+  }) {
+    return ArticleEntity(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      content: content ?? this.content,
+      authorId: authorId ?? this.authorId,
+      authorName: authorName ?? this.authorName,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      thumbnailPath: thumbnailPath ?? this.thumbnailPath,
+      url: url ?? this.url,
+      publishedAt: publishedAt ?? this.publishedAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      status: status ?? this.status,
+      isDeleted: isDeleted ?? this.isDeleted,
+      readingTimeMinutes: readingTimeMinutes ?? this.readingTimeMinutes,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id, title, description, content,
