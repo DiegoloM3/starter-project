@@ -26,8 +26,10 @@ class AppRoutes {
         return _materialRoute(const RegisterPage());
 
       case '/ArticleDetails':
-        return _materialRoute(
-            ArticleDetailsView(article: settings.arguments as ArticleEntity));
+        final article = settings.arguments is ArticleEntity
+            ? settings.arguments as ArticleEntity
+            : null;
+        return _materialRoute(ArticleDetailsView(article: article));
 
       case '/SavedArticles':
         return _materialRoute(const SavedArticles());
@@ -38,6 +40,9 @@ class AppRoutes {
         ));
 
       case '/ArticlePreview':
+        if (settings.arguments is! CreateArticleState) {
+          return _materialRoute(const DailyNews());
+        }
         return _materialRoute(ArticlePreviewPage(
           articleState: settings.arguments as CreateArticleState,
         ));
