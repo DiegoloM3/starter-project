@@ -1,5 +1,3 @@
-import 'package:news_app_clean_architecture/core/resources/data_state.dart';
-
 import '../../../../domain/entities/article.dart';
 
 abstract class SearchArticlesEvent {
@@ -12,8 +10,8 @@ class SearchQueryChanged extends SearchArticlesEvent {
   const SearchQueryChanged(this.query);
 }
 
-class SearchArticlesUpdated extends SearchArticlesEvent {
-  final DataState<List<ArticleEntity>> dataState;
+class SearchFeedLoaded extends SearchArticlesEvent {
+  final List<ArticleEntity> articles;
 
-  const SearchArticlesUpdated(this.dataState);
+  const SearchFeedLoaded(this.articles);
 }
