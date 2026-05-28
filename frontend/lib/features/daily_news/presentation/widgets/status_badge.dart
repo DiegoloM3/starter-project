@@ -17,7 +17,6 @@ class StatusBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: config.bg,
         borderRadius: BorderRadius.circular(AppRadius.xs),
-        border: Border.all(color: config.borderColor),
       ),
       child: Text(
         config.label.toUpperCase(),
@@ -39,28 +38,24 @@ class StatusBadge extends StatelessWidget {
           label: l10n.draft,
           fg: AppColors.draftFg,
           bg: AppColors.draftBg,
-          borderColor: AppColors.draftBorder,
         );
       case ArticleStatus.published:
         return _StatusConfig(
           label: l10n.published,
           fg: AppColors.publishedFg,
           bg: AppColors.publishedBg,
-          borderColor: AppColors.publishedBorder,
         );
       case ArticleStatus.archived:
         return _StatusConfig(
           label: l10n.archived,
           fg: AppColors.archivedFg,
           bg: AppColors.archivedBg,
-          borderColor: AppColors.archivedBorder,
         );
       default:
         return _StatusConfig(
           label: status,
           fg: AppColors.archivedFg,
           bg: AppColors.archivedBg,
-          borderColor: AppColors.archivedBorder,
         );
     }
   }
@@ -70,12 +65,10 @@ class _StatusConfig {
   final String label;
   final Color fg;
   final Color bg;
-  final Color borderColor;
 
   const _StatusConfig({
     required this.label,
     required this.fg,
     required this.bg,
-    required this.borderColor,
   });
 }

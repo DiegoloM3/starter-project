@@ -128,9 +128,14 @@ class ArticleWidget extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 5),
       child: Row(
         children: [
-          if (showStatus && article?.status != null)
-            StatusBadge(status: article!.status!),
-          const Spacer(),
+          Expanded(
+            child: (showStatus && article?.status != null)
+                ? Align(
+                    alignment: Alignment.centerLeft,
+                    child: StatusBadge(status: article!.status!),
+                  )
+                : const SizedBox.shrink(),
+          ),
           if (showActions) ...[
             _buildActionButton(
               icon: Icons.edit_outlined,
@@ -179,52 +184,52 @@ class ArticleWidget extends StatelessWidget {
   }
 
   Widget _buildMetaRow(BuildContext context) {
-    final parts = <Widget>[];
+    final children = <Widget>[];
 
     if (showReadingTime && article?.readingTimeMinutes != null) {
-      parts.add(ReadingTimeBadge(minutes: article!.readingTimeMinutes!));
+      children.add(
+        Flexible(child: ReadingTimeBadge(minutes: article!.readingTimeMinutes!)),
+      );
     }
 
     if (article?.publishedAt != null && article!.publishedAt!.isNotEmpty) {
-      if (parts.isNotEmpty) {
-        parts.add(_dot());
-      }
-      parts.add(
-        Text(
-          article!.publishedAt!,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: AppTypography.sans(
-            fontSize: 11,
-            color: AppColors.t3,
+      if (children.isNotEmpty) children.add(_dot());
+      children.add(
+        Flexible(
+          child: Text(
+            article!.publishedAt!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.sans(
+              fontSize: 11,
+              color: AppColors.t3,
+            ),
           ),
         ),
       );
     }
 
     if (article?.authorName != null && article!.authorName!.isNotEmpty) {
-      if (parts.isNotEmpty) {
-        parts.add(_dot());
-      }
-      parts.add(
-        Text(
-          article!.authorName!,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: AppTypography.sans(
-            fontSize: 11,
-            color: AppColors.t2,
-            fontWeight: FontWeight.w600,
+      if (children.isNotEmpty) children.add(_dot());
+      children.add(
+        Flexible(
+          child: Text(
+            article!.authorName!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.sans(
+              fontSize: 11,
+              color: AppColors.t2,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       );
     }
 
-    if (parts.isEmpty) return const SizedBox.shrink();
+    if (children.isEmpty) return const SizedBox.shrink();
 
-    return Row(
-      children: parts.map((w) => Flexible(child: w)).toList(),
-    );
+    return Row(children: children);
   }
 
   Widget _dot() {

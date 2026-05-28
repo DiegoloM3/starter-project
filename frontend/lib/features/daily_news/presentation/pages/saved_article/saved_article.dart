@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 import '../../../../../config/theme/app_themes.dart';
@@ -13,7 +12,7 @@ import '../../widgets/article_tile.dart';
 import '../../widgets/empty_state_widget.dart';
 import '../../widgets/skeleton_article_tile.dart';
 
-class SavedArticles extends HookWidget {
+class SavedArticles extends StatelessWidget {
   /// When `true`, hides the back button (used inside bottom nav shell).
   final bool embedded;
 

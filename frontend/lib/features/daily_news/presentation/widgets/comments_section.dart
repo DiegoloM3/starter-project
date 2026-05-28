@@ -219,22 +219,19 @@ class CommentsSection extends HookWidget {
               ),
             );
           }
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: comments.length,
-            itemBuilder: (context, index) {
-              final comment = comments[index];
-              final isOwner =
-                  currentUserId != null && comment.authorId == currentUserId;
-              return CommentTile(
-                comment: comment,
-                isOwner: isOwner,
-                onDelete: isOwner
-                    ? () => _onDeleteComment(context, comment)
-                    : null,
-              );
-            },
+          return Column(
+            children: [
+              for (final comment in comments)
+                CommentTile(
+                  comment: comment,
+                  isOwner: currentUserId != null &&
+                      comment.authorId == currentUserId,
+                  onDelete: currentUserId != null &&
+                          comment.authorId == currentUserId
+                      ? () => _onDeleteComment(context, comment)
+                      : null,
+                ),
+            ],
           );
         }
         return const SizedBox.shrink();
