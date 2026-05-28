@@ -16,10 +16,12 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/save_article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/update_article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/search_articles.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_feed_articles.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/upload_thumbnail.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/create/create_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/drafts/drafts_list_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/feed/feed_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/published/published_articles_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/action/article_action_cubit.dart';
@@ -53,6 +55,7 @@ void registerArticleModule(GetIt sl) {
   sl.registerSingleton<GetDraftArticlesUseCase>(GetDraftArticlesUseCase(sl()));
   sl.registerSingleton<UploadThumbnailUseCase>(UploadThumbnailUseCase(sl()));
   sl.registerSingleton<SearchArticlesUseCase>(SearchArticlesUseCase(sl()));
+  sl.registerSingleton<GetFeedArticlesUseCase>(GetFeedArticlesUseCase(sl()));
 
   // BLoCs
   sl.registerFactory<RemoteArticlesBloc>(() => RemoteArticlesBloc(sl()));
@@ -71,8 +74,9 @@ void registerArticleModule(GetIt sl) {
   sl.registerFactory<DraftsListBloc>(() => DraftsListBloc(sl(), sl()));
   sl.registerFactory<PublishedArticlesBloc>(
       () => PublishedArticlesBloc(sl()));
+  sl.registerFactory<FeedBloc>(() => FeedBloc(sl()));
   sl.registerFactory<SearchArticlesBloc>(
-      () => SearchArticlesBloc(sl()));
+      () => SearchArticlesBloc(sl<GetFeedArticlesUseCase>()));
   sl.registerFactory<UserArticlesBloc>(
       () => UserArticlesBloc(sl(), sl()));
   sl.registerFactory<ArticleActionCubit>(

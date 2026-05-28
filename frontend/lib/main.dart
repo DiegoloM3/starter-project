@@ -5,7 +5,7 @@ import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 import 'package:news_app_clean_architecture/config/routes/routes.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/pages/auth_gate.dart';
-import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/published/published_articles_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/feed/feed_bloc.dart';
 import 'config/theme/app_themes.dart';
 import 'firebase_options.dart';
 import 'injection_container.dart';
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(create: (_) => sl()),
-        BlocProvider<PublishedArticlesBloc>(create: (_) => sl()),
+        BlocProvider<FeedBloc>(create: (_) => sl()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
