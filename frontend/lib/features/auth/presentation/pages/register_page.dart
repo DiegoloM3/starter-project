@@ -29,8 +29,13 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
-        listenWhen: (prev, curr) => curr is AuthFailure,
+        listenWhen: (prev, curr) =>
+            curr is AuthFailure || curr is AuthAuthenticated,
         listener: (context, state) {
+          if (state is AuthAuthenticated) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+            return;
+          }
           if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -78,6 +83,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         if (value == null || value.trim().isEmpty) {
                           return 'Please enter your email';
                         }
+                        final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+                        if (!emailRegex.test(value.trim())) {
+                          return 'Please enter a valid email address';
+                        }
                         return null;
                       },
                     ),
@@ -121,7 +130,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       buildWhen: (prev, curr) =>
                           curr is AuthLoading ||
                           curr is AuthFailure ||
-                          curr is AuthUnauthenticated,
+                          curr is AuthUnauthenticated ||
+                          curr is AuthAuthenticated,
                       builder: (context, state) {
                         final isLoading = state is AuthLoading;
                         return ElevatedButton(
