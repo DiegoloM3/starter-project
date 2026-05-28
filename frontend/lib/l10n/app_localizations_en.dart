@@ -163,4 +163,75 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get archived => 'Archived';
+
+  @override
+  String get searchTitle => 'Search';
+
+  @override
+  String get searchHint => 'Search articles...';
+
+  @override
+  String get typeToSearch => 'Type to search articles';
+
+  @override
+  String get noArticlesFound => 'No articles found';
+
+  @override
+  String get searchFailed => 'Search failed';
+
+  @override
+  String get myDrafts => 'My Drafts';
+
+  @override
+  String get noDraftsYet => 'No drafts yet';
+
+  @override
+  String get draftsEmptySubtitle =>
+      'Start writing and your drafts will appear here';
+
+  @override
+  String get failedToLoadDrafts => 'Failed to load drafts';
+
+  @override
+  String get deleteDraft => 'Delete Draft';
+
+  @override
+  String get deleteDraftConfirmation =>
+      'Are you sure you want to delete this draft? This cannot be undone.';
+
+  @override
+  String get keepEditing => 'Keep Editing';
+
+  @override
+  String get publish => 'Publish';
+
+  @override
+  String get untitled => 'Untitled';
+
+  @override
+  String get noContentYet => 'No content yet.';
+
+  @override
+  String get invalidEmail => 'Please enter a valid email address';
+
+  @override
+  String get emailRequired => 'Please enter your email';
+
+  @override
+  String get passwordRequired => 'Please enter your password';
+
+  @override
+  String get passwordMinLength => 'Password must be at least 6 characters';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get commentActionFailed => 'Could not complete comment action';
+
+  @override
+  String get loadArticlesFailed => 'Could not load articles';
+
+  @override
+  String get tapToRetry => 'Tap to retry';
 }

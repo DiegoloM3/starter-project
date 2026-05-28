@@ -403,6 +403,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Archived'**
   String get archived;
+
+  /// No description provided for @searchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchTitle;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search articles...'**
+  String get searchHint;
+
+  /// No description provided for @typeToSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Type to search articles'**
+  String get typeToSearch;
+
+  /// No description provided for @noArticlesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No articles found'**
+  String get noArticlesFound;
+
+  /// No description provided for @searchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Search failed'**
+  String get searchFailed;
+
+  /// No description provided for @myDrafts.
+  ///
+  /// In en, this message translates to:
+  /// **'My Drafts'**
+  String get myDrafts;
+
+  /// No description provided for @noDraftsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No drafts yet'**
+  String get noDraftsYet;
+
+  /// No description provided for @draftsEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start writing and your drafts will appear here'**
+  String get draftsEmptySubtitle;
+
+  /// No description provided for @failedToLoadDrafts.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load drafts'**
+  String get failedToLoadDrafts;
+
+  /// No description provided for @deleteDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Draft'**
+  String get deleteDraft;
+
+  /// No description provided for @deleteDraftConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this draft? This cannot be undone.'**
+  String get deleteDraftConfirmation;
+
+  /// No description provided for @keepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Editing'**
+  String get keepEditing;
+
+  /// No description provided for @publish.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish'**
+  String get publish;
+
+  /// No description provided for @untitled.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get untitled;
+
+  /// No description provided for @noContentYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No content yet.'**
+  String get noContentYet;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address'**
+  String get invalidEmail;
+
+  /// No description provided for @emailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get emailRequired;
+
+  /// No description provided for @passwordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your password'**
+  String get passwordRequired;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordMinLength;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @commentActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete comment action'**
+  String get commentActionFailed;
+
+  /// No description provided for @loadArticlesFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load articles'**
+  String get loadArticlesFailed;
+
+  /// No description provided for @tapToRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to retry'**
+  String get tapToRetry;
 }
 
 class _AppLocalizationsDelegate

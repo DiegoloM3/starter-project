@@ -167,4 +167,77 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get archived => 'Archivado';
+
+  @override
+  String get searchTitle => 'Buscar';
+
+  @override
+  String get searchHint => 'Buscar artículos...';
+
+  @override
+  String get typeToSearch => 'Escribí para buscar artículos';
+
+  @override
+  String get noArticlesFound => 'No se encontraron artículos';
+
+  @override
+  String get searchFailed => 'Error en la búsqueda';
+
+  @override
+  String get myDrafts => 'Mis Borradores';
+
+  @override
+  String get noDraftsYet => 'No hay borradores aún';
+
+  @override
+  String get draftsEmptySubtitle =>
+      'Empezá a escribir y tus borradores aparecerán acá';
+
+  @override
+  String get failedToLoadDrafts => 'Error al cargar borradores';
+
+  @override
+  String get deleteDraft => 'Eliminar Borrador';
+
+  @override
+  String get deleteDraftConfirmation =>
+      '¿Seguro que querés eliminar este borrador? No se puede deshacer.';
+
+  @override
+  String get keepEditing => 'Seguir Editando';
+
+  @override
+  String get publish => 'Publicar';
+
+  @override
+  String get untitled => 'Sin Título';
+
+  @override
+  String get noContentYet => 'Sin contenido aún.';
+
+  @override
+  String get invalidEmail => 'Ingresá un email válido';
+
+  @override
+  String get emailRequired => 'Ingresá tu email';
+
+  @override
+  String get passwordRequired => 'Ingresá tu contraseña';
+
+  @override
+  String get passwordMinLength =>
+      'La contraseña debe tener al menos 6 caracteres';
+
+  @override
+  String get passwordsDoNotMatch => 'Las contraseñas no coinciden';
+
+  @override
+  String get commentActionFailed =>
+      'No se pudo completar la acción del comentario';
+
+  @override
+  String get loadArticlesFailed => 'No se pudieron cargar los artículos';
+
+  @override
+  String get tapToRetry => 'Tocá para reintentar';
 }
