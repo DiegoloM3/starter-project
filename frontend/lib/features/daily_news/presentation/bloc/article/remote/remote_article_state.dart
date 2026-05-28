@@ -20,6 +20,6 @@ class RemoteArticlesDone extends RemoteArticlesState {
   const RemoteArticlesDone(List<ArticleEntity> article) : super(articles: article);
 }
 
-class RemoteArticlesError extends RemoteArticlesState {
-  const RemoteArticlesError(AppException error) : super(error: error);
+class RemoteArticlesFailure extends RemoteArticlesState {
+  const RemoteArticlesFailure(AppException error) : super(error: error);
 }

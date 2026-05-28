@@ -53,10 +53,10 @@ void main() {
       bloc.add(const GetArticles());
       await expectLater(
         bloc.stream,
-        emits(isA<RemoteArticlesError>()),
+        emits(isA<RemoteArticlesFailure>()),
       );
 
-      final state = bloc.state as RemoteArticlesError;
+      final state = bloc.state as RemoteArticlesFailure;
       expect(state.error, error);
       expect(state.error!.message, 'No internet');
       verify(() => mockUseCase()).called(1);
