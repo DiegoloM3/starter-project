@@ -1,17 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../config/theme/app_themes.dart';
 import '../../domain/entities/article.dart';
 import 'reading_time_badge.dart';
 import 'status_badge.dart';
 
 class ArticleWidget extends StatelessWidget {
   final ArticleEntity? article;
-  final bool? isRemovable;
+  final bool isRemovable;
   final bool showStatus;
   final bool showReadingTime;
+  final bool showActions;
+  final bool showDivider;
   final void Function(ArticleEntity article)? onRemove;
   final void Function(ArticleEntity article)? onArticlePressed;
+  final void Function(ArticleEntity article)? onEdit;
+  final void Function(ArticleEntity article)? onDelete;
 
   const ArticleWidget({
     Key? key,
@@ -20,180 +25,221 @@ class ArticleWidget extends StatelessWidget {
     this.isRemovable = false,
     this.showStatus = false,
     this.showReadingTime = false,
+    this.showActions = false,
+    this.showDivider = true,
     this.onRemove,
+    this.onEdit,
+    this.onDelete,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: _onTap,
-      child: Container(
-        padding: const EdgeInsetsDirectional.only(
-            start: 14, end: 14, bottom: 7, top: 7),
-        height: MediaQuery.of(context).size.width / 2.2,
-        child: Row(
-          children: [
-            _buildImage(context),
-            _buildTitleAndDescription(),
-            _buildRemovableArea(),
-          ],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: _onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildThumbnail(),
+                const SizedBox(width: 12),
+                Expanded(child: _buildContent(context)),
+              ],
+            ),
+          ),
+        ),
+        if (showDivider)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Divider(height: 1, color: AppColors.border),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildThumbnail() {
+    final imageUrl = article?.thumbnailUrl;
+    if (imageUrl == null || imageUrl.isEmpty) {
+      return Container(
+        width: 70,
+        height: 70,
+        decoration: BoxDecoration(
+          color: AppColors.ink.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
+        child: const Icon(Icons.image_outlined, color: AppColors.t3, size: 24),
+      );
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        width: 70,
+        height: 70,
+        fit: BoxFit.cover,
+        placeholder: (_, __) => Container(
+          width: 70,
+          height: 70,
+          color: AppColors.ink.withValues(alpha: 0.08),
+        ),
+        errorWidget: (_, __, ___) => Container(
+          width: 70,
+          height: 70,
+          color: AppColors.ink.withValues(alpha: 0.08),
+          child: const Icon(Icons.broken_image_outlined,
+              color: AppColors.t3, size: 20),
         ),
       ),
     );
   }
 
-  Widget _buildImage(BuildContext context) {
-    final imageUrl = article?.thumbnailUrl;
-    if (imageUrl == null || imageUrl.isEmpty) {
-      return Padding(
-        padding: const EdgeInsetsDirectional.only(end: 14),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20.0),
-          child: Container(
-            width: MediaQuery.of(context).size.width / 3,
-            height: double.maxFinite,
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.08),
+  Widget _buildContent(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Row 1: status badge + actions
+        if (showStatus || showActions) _buildTopRow(context),
+        // Title
+        Text(
+          article?.title ?? '',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: AppTypography.serif(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: AppColors.t1,
+            height: 1.3,
+          ),
+        ),
+        const SizedBox(height: 5),
+        // Meta row
+        _buildMetaRow(context),
+      ],
+    );
+  }
+
+  Widget _buildTopRow(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5),
+      child: Row(
+        children: [
+          if (showStatus && article?.status != null)
+            StatusBadge(status: article!.status!),
+          const Spacer(),
+          if (showActions) ...[
+            _buildActionButton(
+              icon: Icons.edit_outlined,
+              color: AppColors.t2,
+              onTap: () {
+                if (onEdit != null) onEdit!(article!);
+              },
             ),
-            child: const Icon(Icons.image_outlined, color: Colors.grey),
+            _buildActionButton(
+              icon: Icons.delete_outline,
+              color: AppColors.error.withValues(alpha: 0.6),
+              onTap: () {
+                if (onDelete != null) onDelete!(article!);
+              },
+            ),
+          ],
+          if (isRemovable)
+            _buildActionButton(
+              icon: Icons.remove_circle_outline,
+              color: AppColors.error,
+              onTap: () {
+                if (onRemove != null) onRemove!(article!);
+              },
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 4),
+        child: SizedBox(
+          width: 30,
+          height: 30,
+          child: Icon(icon, size: 15, color: color),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMetaRow(BuildContext context) {
+    final parts = <Widget>[];
+
+    if (showReadingTime && article?.readingTimeMinutes != null) {
+      parts.add(ReadingTimeBadge(minutes: article!.readingTimeMinutes!));
+    }
+
+    if (article?.publishedAt != null && article!.publishedAt!.isNotEmpty) {
+      if (parts.isNotEmpty) {
+        parts.add(_dot());
+      }
+      parts.add(
+        Text(
+          article!.publishedAt!,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTypography.sans(
+            fontSize: 11,
+            color: AppColors.t3,
           ),
         ),
       );
     }
-    return CachedNetworkImage(
-        imageUrl: imageUrl,
-        imageBuilder: (context, imageProvider) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.08),
-                      image: DecorationImage(
-                          image: imageProvider, fit: BoxFit.cover)),
-                ),
-              ),
-            ),
-        progressIndicatorBuilder: (context, url, downloadProgress) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  child: const CupertinoActivityIndicator(),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
-                  ),
-                ),
-              ),
-            ),
-        errorWidget: (context, url, error) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  child: const Icon(Icons.error),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
-                  ),
-                ),
-              ),
-            ));
+
+    if (article?.authorName != null && article!.authorName!.isNotEmpty) {
+      if (parts.isNotEmpty) {
+        parts.add(_dot());
+      }
+      parts.add(
+        Text(
+          article!.authorName!,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTypography.sans(
+            fontSize: 11,
+            color: AppColors.t2,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
+    }
+
+    if (parts.isEmpty) return const SizedBox.shrink();
+
+    return Row(
+      children: parts.map((w) => Flexible(child: w)).toList(),
+    );
   }
 
-  Widget _buildTitleAndDescription() {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 7),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title
-            Text(
-              article!.title ?? '',
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: 'Butler',
-                fontWeight: FontWeight.w900,
-                fontSize: 18,
-                color: Colors.black87,
-              ),
-            ),
-
-            // Description
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  article!.description ?? '',
-                  maxLines: 2,
-                ),
-              ),
-            ),
-
-            // Metadata row
-            Row(
-              children: [
-                if (showStatus && article!.status != null) ...[
-                  StatusBadge(status: article!.status!),
-                  const SizedBox(width: 8),
-                ],
-                if (showReadingTime &&
-                    article!.readingTimeMinutes != null) ...[
-                  ReadingTimeBadge(minutes: article!.readingTimeMinutes!),
-                  const SizedBox(width: 8),
-                ],
-                if (article!.publishedAt != null &&
-                    article!.publishedAt!.isNotEmpty) ...[
-                  const Icon(Icons.timeline_outlined, size: 16),
-                  const SizedBox(width: 4),
-                  Flexible(
-                    child: Text(
-                      article!.publishedAt!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ],
-        ),
+  Widget _dot() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Text(
+        '·',
+        style: AppTypography.sans(fontSize: 11, color: AppColors.t3),
       ),
     );
   }
 
-  Widget _buildRemovableArea() {
-    if (isRemovable!) {
-      return GestureDetector(
-        onTap: _onRemove,
-        child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Icon(Icons.remove_circle_outline, color: Colors.red),
-        ),
-      );
-    }
-    return Container();
-  }
-
   void _onTap() {
-    if (onArticlePressed != null) {
+    if (onArticlePressed != null && article != null) {
       onArticlePressed!(article!);
-    }
-  }
-
-  void _onRemove() {
-    if (onRemove != null) {
-      onRemove!(article!);
     }
   }
 }

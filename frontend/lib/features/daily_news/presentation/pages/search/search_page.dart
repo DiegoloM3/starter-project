@@ -2,22 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
+import '../../../../../config/theme/app_themes.dart';
 import '../../../../../injection_container.dart';
 import '../../../domain/entities/article.dart';
 import '../../bloc/article/search/search_articles_bloc.dart';
 import '../../bloc/article/search/search_articles_event.dart';
 import '../../bloc/article/search/search_articles_state.dart';
 import '../../widgets/article_tile.dart';
+import '../../widgets/empty_state_widget.dart';
 import '../../widgets/skeleton_article_tile.dart';
 
 class SearchPage extends StatelessWidget {
-  const SearchPage({Key? key}) : super(key: key);
+  /// When `true`, hides the back button (used inside bottom nav shell).
+  final bool embedded;
+
+  const SearchPage({Key? key, this.embedded = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<SearchArticlesBloc>(
       create: (_) => sl<SearchArticlesBloc>(),
       child: Scaffold(
+        backgroundColor: AppColors.bg,
         appBar: _buildAppBar(context),
         body: const Column(
           children: [
@@ -31,45 +37,65 @@ class SearchPage extends StatelessWidget {
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      leading: Builder(
-        builder: (context) => GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => Navigator.pop(context),
-          child: const Icon(Icons.chevron_left, color: Colors.black),
+      backgroundColor: AppColors.surface,
+      elevation: 0,
+      automaticallyImplyLeading: false,
+      leading: embedded
+          ? null
+          : IconButton(
+              icon: const Icon(Icons.chevron_left,
+                  color: AppColors.t1, size: 24),
+              onPressed: () => Navigator.pop(context),
+            ),
+      title: Text(
+        AppLocalizations.of(context)!.searchTitle,
+        style: AppTypography.serif(
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+          color: AppColors.t1,
+          letterSpacing: -0.2,
         ),
       ),
-      title: Text(AppLocalizations.of(context)!.searchTitle,
-          style: const TextStyle(color: Colors.black)),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Container(height: 1, color: AppColors.border),
+      ),
     );
   }
 }
 
 class _SearchField extends StatelessWidget {
-  const _SearchField({Key? key}) : super(key: key);
+  const _SearchField();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(14),
+    final l10n = AppLocalizations.of(context)!;
+
+    return Container(
+      color: AppColors.surface,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       child: TextField(
-        autofocus: true,
+        autofocus: false,
+        style: AppTypography.sans(fontSize: 14, color: AppColors.t1),
         decoration: InputDecoration(
-          hintText: AppLocalizations.of(context)!.searchHint,
-          hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
-          prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+          hintText: l10n.searchHint,
+          hintStyle: AppTypography.sans(fontSize: 14, color: AppColors.t3),
+          prefixIcon: const Icon(Icons.search, color: AppColors.t3, size: 20),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          filled: true,
+          fillColor: AppColors.bg,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderSide: const BorderSide(color: AppColors.border),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderSide: const BorderSide(color: AppColors.border),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(color: Color(0xFFCE93D8)),
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderSide: const BorderSide(color: AppColors.red, width: 1.5),
           ),
         ),
         onChanged: (query) {
@@ -81,50 +107,49 @@ class _SearchField extends StatelessWidget {
 }
 
 class _SearchResults extends StatelessWidget {
-  const _SearchResults({Key? key}) : super(key: key);
+  const _SearchResults();
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocBuilder<SearchArticlesBloc, SearchArticlesState>(
       builder: (context, state) {
         if (state is SearchArticlesInitial) {
-          return Center(
-            child: Text(
-              AppLocalizations.of(context)!.typeToSearch,
-              style: TextStyle(color: Colors.grey[400], fontSize: 16),
-            ),
+          return EmptyStateWidget(
+            icon: Icons.search,
+            title: l10n.searchPrompt,
+            subtitle: l10n.searchPromptSubtitle,
           );
         }
+
         if (state is SearchArticlesLoading) {
           return ListView.builder(
             itemCount: 5,
-            itemBuilder: (context, index) => const SkeletonArticleTile(),
+            itemBuilder: (_, i) => SkeletonArticleTile(showDivider: i < 4),
           );
         }
+
         if (state is SearchArticlesFailure) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.error_outline, size: 48, color: Colors.grey),
-                const SizedBox(height: 8),
-                Text(
-                  state.error?.message ??
-                      AppLocalizations.of(context)!.searchFailed,
-                  style: TextStyle(color: Colors.grey[500]),
-                ),
-              ],
-            ),
+          return EmptyStateWidget(
+            icon: Icons.error_outline,
+            title: l10n.somethingWentWrong,
+            subtitle: state.error?.message ?? l10n.searchFailed,
+            actionLabel: l10n.tryAgain,
+            onAction: () {
+              // Retry not directly possible without the query — user can
+              // re-type in the field.
+            },
           );
         }
+
         if (state is SearchArticlesDone) {
           final articles = state.articles ?? [];
           if (articles.isEmpty) {
-            return Center(
-              child: Text(
-                AppLocalizations.of(context)!.noArticlesFound,
-                style: TextStyle(color: Colors.grey[400], fontSize: 16),
-              ),
+            return EmptyStateWidget(
+              icon: Icons.search_off,
+              title: l10n.noArticlesFound,
+              subtitle: l10n.tryDifferentKeywords,
             );
           }
           return ListView.builder(
@@ -132,13 +157,15 @@ class _SearchResults extends StatelessWidget {
             itemBuilder: (context, index) {
               return ArticleWidget(
                 article: articles[index],
-                onArticlePressed: (article) => _onArticlePressed(
-                    context, article),
+                showDivider: index < articles.length - 1,
+                onArticlePressed: (article) =>
+                    _onArticlePressed(context, article),
               );
             },
           );
         }
-        return const SizedBox();
+
+        return const SizedBox.shrink();
       },
     );
   }

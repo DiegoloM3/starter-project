@@ -1,83 +1,104 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../config/theme/app_themes.dart';
+
 class SkeletonArticleTile extends StatelessWidget {
-  const SkeletonArticleTile({Key? key}) : super(key: key);
+  final bool showDivider;
+
+  const SkeletonArticleTile({Key? key, this.showDivider = true})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[200]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-        padding: const EdgeInsetsDirectional.only(
-            start: 14, end: 14, bottom: 7, top: 7),
-        height: screenWidth / 2.2,
-        child: Row(
-          children: [
-            // Image placeholder
-            Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: screenWidth / 3,
-                  height: double.maxFinite,
-                  color: Colors.white,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Shimmer.fromColors(
+          baseColor: AppColors.border,
+          highlightColor: AppColors.surface,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
                 ),
-              ),
-            ),
-            // Text placeholders
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 7),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title line 1
-                    Container(
-                      height: 16,
-                      width: double.infinity,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(height: 6),
-                    // Title line 2
-                    Container(
-                      height: 16,
-                      width: screenWidth * 0.45,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(height: 12),
-                    // Description line 1
-                    Container(
-                      height: 12,
-                      width: double.infinity,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(height: 5),
-                    // Description line 2
-                    Container(
-                      height: 12,
-                      width: screenWidth * 0.35,
-                      color: Colors.white,
-                    ),
-                    const Spacer(),
-                    // Date placeholder
-                    Container(
-                      height: 10,
-                      width: 100,
-                      color: Colors.white,
-                    ),
-                  ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 62,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(AppRadius.xs),
+                        ),
+                      ),
+                      const SizedBox(height: 7),
+                      Container(
+                        width: double.infinity,
+                        height: 13,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      FractionallySizedBox(
+                        widthFactor: 0.6,
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          height: 13,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 7),
+                      Row(
+                        children: [
+                          Container(
+                            width: 56,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Container(
+                            width: 40,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+        if (showDivider)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Divider(height: 1, color: AppColors.border),
+          ),
+      ],
     );
   }
 }

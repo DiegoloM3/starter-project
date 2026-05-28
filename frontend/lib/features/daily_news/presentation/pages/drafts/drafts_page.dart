@@ -7,7 +7,10 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/article_tile.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
+import '../../../../../config/theme/app_themes.dart';
 import '../../../../../injection_container.dart';
+import '../../widgets/empty_state_widget.dart';
+import '../../widgets/skeleton_article_tile.dart';
 
 class DraftsPage extends StatelessWidget {
   const DraftsPage({Key? key}) : super(key: key);
@@ -20,122 +23,141 @@ class DraftsPage extends StatelessWidget {
       create: (_) =>
           sl<DraftsListBloc>()..add(DraftsSubscriptionRequested(userId)),
       child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          leading: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.chevron_left,
-                color: Colors.black, size: 30),
-          ),
-          backgroundColor: Colors.white,
-          elevation: 0,
-          title: Text(
-            AppLocalizations.of(context)!.myDrafts,
-            style: TextStyle(
-              color: Colors.black87,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        body: BlocBuilder<DraftsListBloc, DraftsListState>(
-          builder: (context, state) {
-            if (state is DraftsListLoading) {
-              return const Center(
-                child: CircularProgressIndicator(color: Color(0xFFCE93D8)),
-              );
-            }
+        backgroundColor: AppColors.bg,
+        appBar: _buildAppBar(context),
+        body: const _DraftsBody(),
+      ),
+    );
+  }
 
-            if (state is DraftsListFailure) {
-              return Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.error_outline,
-                        size: 48, color: Colors.red[300]),
-                    const SizedBox(height: 12),
-                    Text(
-                      state.error?.message ??
-                          AppLocalizations.of(context)!.failedToLoadDrafts,
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                  ],
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: AppColors.surface,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.chevron_left, color: AppColors.t1, size: 24),
+        onPressed: () => Navigator.pop(context),
+      ),
+      title: Text(
+        AppLocalizations.of(context)!.myDrafts,
+        style: AppTypography.serif(
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+          color: AppColors.t1,
+          letterSpacing: -0.2,
+        ),
+      ),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Container(height: 1, color: AppColors.border),
+      ),
+    );
+  }
+}
+
+class _DraftsBody extends StatelessWidget {
+  const _DraftsBody();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return BlocBuilder<DraftsListBloc, DraftsListState>(
+      builder: (context, state) {
+        if (state is DraftsListLoading) {
+          return ListView.builder(
+            itemCount: 5,
+            itemBuilder: (_, i) => SkeletonArticleTile(showDivider: i < 4),
+          );
+        }
+
+        if (state is DraftsListFailure) {
+          return EmptyStateWidget(
+            icon: Icons.error_outline,
+            title: l10n.somethingWentWrong,
+            subtitle:
+                state.error?.message ?? l10n.failedToLoadDrafts,
+            actionLabel: l10n.tryAgain,
+            onAction: () {
+              final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+              context
+                  .read<DraftsListBloc>()
+                  .add(DraftsSubscriptionRequested(uid));
+            },
+          );
+        }
+
+        if (state is DraftsListDone) {
+          final articles = state.articles ?? [];
+
+          if (articles.isEmpty) {
+            return EmptyStateWidget(
+              icon: Icons.edit_note,
+              title: l10n.noDraftsTitle,
+              subtitle: l10n.noDraftsSubtitle,
+              actionLabel: l10n.writeAnArticle,
+              onAction: () =>
+                  Navigator.pushNamed(context, '/CreateArticle'),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: articles.length,
+            itemBuilder: (context, index) {
+              final article = articles[index];
+              return Dismissible(
+                key: ValueKey(article.id),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20),
+                  color: AppColors.error,
+                  child: const Icon(Icons.delete_outline,
+                      color: Colors.white, size: 22),
+                ),
+                confirmDismiss: (_) => _confirmDelete(context),
+                onDismissed: (_) => _onDismissed(context, article),
+                child: ArticleWidget(
+                  article: article,
+                  showStatus: true,
+                  showReadingTime: true,
+                  showDivider: index < articles.length - 1,
+                  onArticlePressed: (a) {
+                    Navigator.pushNamed(
+                      context,
+                      '/CreateArticle',
+                      arguments: a,
+                    );
+                  },
                 ),
               );
-            }
+            },
+          );
+        }
 
-            if (state is DraftsListDone) {
-              final articles = state.articles ?? [];
+        return const SizedBox.shrink();
+      },
+    );
+  }
 
-              if (articles.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.drafts_outlined,
-                          size: 48, color: Colors.grey[400]),
-                      const SizedBox(height: 12),
-                      Text(
-                        AppLocalizations.of(context)!.noDraftsYet,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        AppLocalizations.of(context)!.draftsEmptySubtitle,
-                        style: TextStyle(
-                          color: Colors.grey[400],
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              return ListView.builder(
-                itemCount: articles.length,
-                itemBuilder: (context, index) {
-                  final article = articles[index];
-                  return Dismissible(
-                    key: ValueKey(article.id),
-                    direction: DismissDirection.endToStart,
-                    background: Container(
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.only(right: 20),
-                      color: Colors.red[400],
-                      child: const Icon(Icons.delete_outline,
-                          color: Colors.white),
-                    ),
-                    confirmDismiss: (_) => _confirmDelete(context),
-                    onDismissed: (_) {
-                      if (article.id != null) {
-                        context
-                            .read<DraftsListBloc>()
-                            .add(DraftDeleted(article.id!));
-                      }
-                    },
-                    child: ArticleWidget(
-                      article: article,
-                      showStatus: true,
-                      showReadingTime: true,
-                      onArticlePressed: (a) {
-                        Navigator.pushNamed(
-                          context,
-                          '/CreateArticle',
-                          arguments: a,
-                        );
-                      },
-                    ),
-                  );
-                },
-              );
-            }
-
-            return const SizedBox.shrink();
+  void _onDismissed(BuildContext context, dynamic article) {
+    if (article.id != null) {
+      context.read<DraftsListBloc>().add(DraftDeleted(article.id!));
+    }
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.draftDeleted),
+        action: SnackBarAction(
+          label: l10n.undo,
+          textColor: AppColors.red,
+          onPressed: () {
+            // Re-subscribe to refresh the list (undo is approximate —
+            // the draft was already deleted server-side).
+            final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+            context
+                .read<DraftsListBloc>()
+                .add(DraftsSubscriptionRequested(uid));
           },
         ),
       ),
@@ -143,23 +165,44 @@ class DraftsPage extends StatelessWidget {
   }
 
   Future<bool> _confirmDelete(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     return await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text(AppLocalizations.of(context)!.deleteDraft),
+            title: Text(
+              l10n.deleteDraft,
+              style: AppTypography.serif(fontSize: 18),
+            ),
             content: Text(
-                AppLocalizations.of(context)!.deleteDraftConfirmation),
+              l10n.deleteDraftConfirmation,
+              style: AppTypography.sans(
+                fontSize: 13,
+                color: AppColors.t2,
+                height: 1.55,
+              ),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: Text(AppLocalizations.of(context)!.cancel),
+                child: Text(
+                  l10n.cancel,
+                  style: AppTypography.sans(color: AppColors.t2),
+                ),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[400]),
-                child: Text(AppLocalizations.of(context)!.delete,
-                    style: const TextStyle(color: Colors.white)),
+                  backgroundColor: AppColors.error,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                ),
+                child: Text(
+                  l10n.delete,
+                  style: AppTypography.sans(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ],
           ),

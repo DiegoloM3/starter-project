@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article_status.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
+import '../../../../config/theme/app_themes.dart';
+
 class StatusBadge extends StatelessWidget {
   final String status;
 
@@ -11,17 +13,19 @@ class StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final config = _configForStatus(status, context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
-        color: config.color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(4),
+        color: config.bg,
+        borderRadius: BorderRadius.circular(AppRadius.xs),
+        border: Border.all(color: config.borderColor),
       ),
       child: Text(
-        config.label,
-        style: TextStyle(
-          color: config.color,
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
+        config.label.toUpperCase(),
+        style: AppTypography.sans(
+          fontSize: 8.5,
+          fontWeight: FontWeight.w800,
+          color: config.fg,
+          letterSpacing: 1.2,
         ),
       ),
     );
@@ -31,20 +35,47 @@ class StatusBadge extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     switch (status) {
       case ArticleStatus.draft:
-        return _StatusConfig(label: l10n.draft, color: Colors.blue);
+        return _StatusConfig(
+          label: l10n.draft,
+          fg: AppColors.draftFg,
+          bg: AppColors.draftBg,
+          borderColor: AppColors.draftBorder,
+        );
       case ArticleStatus.published:
-        return _StatusConfig(label: l10n.published, color: Colors.green);
+        return _StatusConfig(
+          label: l10n.published,
+          fg: AppColors.publishedFg,
+          bg: AppColors.publishedBg,
+          borderColor: AppColors.publishedBorder,
+        );
       case ArticleStatus.archived:
-        return _StatusConfig(label: l10n.archived, color: Colors.grey);
+        return _StatusConfig(
+          label: l10n.archived,
+          fg: AppColors.archivedFg,
+          bg: AppColors.archivedBg,
+          borderColor: AppColors.archivedBorder,
+        );
       default:
-        return _StatusConfig(label: status, color: Colors.grey);
+        return _StatusConfig(
+          label: status,
+          fg: AppColors.archivedFg,
+          bg: AppColors.archivedBg,
+          borderColor: AppColors.archivedBorder,
+        );
     }
   }
 }
 
 class _StatusConfig {
   final String label;
-  final Color color;
+  final Color fg;
+  final Color bg;
+  final Color borderColor;
 
-  const _StatusConfig({required this.label, required this.color});
+  const _StatusConfig({
+    required this.label,
+    required this.fg,
+    required this.bg,
+    required this.borderColor,
+  });
 }

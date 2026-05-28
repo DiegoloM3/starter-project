@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
+import '../../../../config/theme/app_themes.dart';
 import '../../domain/entities/comment.dart';
 import '../bloc/comment/comment_bloc.dart';
 import '../bloc/comment/comment_event.dart';
@@ -35,7 +36,6 @@ class CommentsSection extends HookWidget {
                 state.error?.message ??
                     AppLocalizations.of(context)!.commentActionFailed,
               ),
-              backgroundColor: Colors.red[700],
             ),
           );
         }
@@ -43,20 +43,55 @@ class CommentsSection extends HookWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Divider(height: 32),
+          // Section divider
+          Container(height: 2, color: AppColors.ink),
+          // Header
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: Text(
-              AppLocalizations.of(context)!.commentsHeader,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 14),
+            child: Row(
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.commentsHeader,
+                  style: AppTypography.serif(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.t1,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                BlocBuilder<CommentBloc, CommentState>(
+                  builder: (context, state) {
+                    if (state is CommentsDone) {
+                      final count = state.comments?.length ?? 0;
+                      if (count > 0) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.ink,
+                            borderRadius: BorderRadius.circular(99),
+                          ),
+                          child: Text(
+                            '$count',
+                            style: AppTypography.sans(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        );
+                      }
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
+          // Comment input
           _buildCommentInput(context, commentController),
-          const SizedBox(height: 12),
+          const SizedBox(height: 4),
+          // Comments list
           _buildCommentsList(),
         ],
       ),
@@ -71,42 +106,55 @@ class CommentsSection extends HookWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14),
       child: Row(
         children: [
+          // User avatar
+          Container(
+            width: 28,
+            height: 28,
+            decoration: const BoxDecoration(
+              color: AppColors.red,
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              'Y',
+              style: AppTypography.sans(
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          // Input field
           Expanded(
-            child: TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.addCommentHint,
-                hintStyle: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 14,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 10),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.bg,
+                border: Border.all(color: AppColors.border, width: 1.5),
+                borderRadius: BorderRadius.circular(AppRadius.xl),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              child: TextField(
+                controller: controller,
+                style: AppTypography.sans(fontSize: 13.5, color: AppColors.t1),
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.addCommentHint,
+                  hintStyle:
+                      AppTypography.sans(fontSize: 13.5, color: AppColors.t3),
+                  border: InputBorder.none,
+                  isDense: true,
+                  contentPadding: EdgeInsets.zero,
                 ),
               ),
             ),
           ),
           const SizedBox(width: 8),
+          // Send button
           GestureDetector(
             onTap: () => _onSendComment(context, controller),
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: const Color(0xFFCE93D8),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Icon(
-                Icons.send,
-                size: 20,
-                color: Colors.white,
-              ),
+            child: const Padding(
+              padding: EdgeInsets.all(4),
+              child: Icon(Icons.send, size: 20, color: AppColors.red),
             ),
           ),
         ],
@@ -118,22 +166,30 @@ class CommentsSection extends HookWidget {
     return BlocBuilder<CommentBloc, CommentState>(
       builder: (context, state) {
         if (state is CommentsLoading) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: Column(
-              children: List.generate(
-                  3, (_) => const SkeletonCommentTile()),
-            ),
+          return Column(
+            children:
+                List.generate(3, (_) => const SkeletonCommentTile()),
           );
         }
         if (state is CommentsFailure) {
           return Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             child: Center(
-              child: Text(
-                state.error?.message ??
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.warning_amber_rounded,
+                      size: 36, color: AppColors.error),
+                  const SizedBox(height: 12),
+                  Text(
                     AppLocalizations.of(context)!.failedToLoadComments,
-                style: TextStyle(color: Colors.grey[500]),
+                    style: AppTypography.serif(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.t1,
+                    ),
+                  ),
+                ],
               ),
             ),
           );
@@ -142,11 +198,23 @@ class CommentsSection extends HookWidget {
           final comments = state.comments ?? [];
           if (comments.isEmpty) {
             return Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
               child: Center(
-                child: Text(
-                  AppLocalizations.of(context)!.noCommentsYet,
-                  style: TextStyle(color: Colors.grey[400]),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.chat_bubble_outline,
+                        size: 36, color: AppColors.t3),
+                    const SizedBox(height: 12),
+                    Text(
+                      AppLocalizations.of(context)!.noCommentsYet,
+                      style: AppTypography.serif(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.t1,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -154,13 +222,11 @@ class CommentsSection extends HookWidget {
           return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 14),
             itemCount: comments.length,
             itemBuilder: (context, index) {
               final comment = comments[index];
               final isOwner =
-                  currentUserId != null &&
-                  comment.authorId == currentUserId;
+                  currentUserId != null && comment.authorId == currentUserId;
               return CommentTile(
                 comment: comment,
                 isOwner: isOwner,
@@ -171,7 +237,7 @@ class CommentsSection extends HookWidget {
             },
           );
         }
-        return const SizedBox();
+        return const SizedBox.shrink();
       },
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../config/theme/app_themes.dart';
+
 class ReadingTimeBadge extends StatelessWidget {
   final int minutes;
 
@@ -10,18 +12,11 @@ class ReadingTimeBadge extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          Icons.schedule,
-          size: 14,
-          color: Colors.grey[600],
-        ),
+        const Icon(Icons.schedule, size: 12, color: AppColors.t3),
         const SizedBox(width: 3),
         Text(
           '$minutes min read',
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
+          style: AppTypography.sans(fontSize: 11, color: AppColors.t3),
         ),
       ],
     );

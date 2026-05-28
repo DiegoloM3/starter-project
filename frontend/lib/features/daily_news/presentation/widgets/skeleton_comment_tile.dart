@@ -1,51 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../config/theme/app_themes.dart';
+
 class SkeletonCommentTile extends StatelessWidget {
   const SkeletonCommentTile({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[200]!,
-      highlightColor: Colors.grey[100]!,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+      baseColor: AppColors.border,
+      highlightColor: AppColors.surface,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+        decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: AppColors.border)),
+        ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Avatar placeholder
-            const CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.white,
-            ),
+            const CircleAvatar(radius: 16, backgroundColor: Colors.white),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Author name + timestamp row
                   Row(
                     children: [
                       Container(
-                        height: 12,
+                        height: 11,
                         width: 80,
-                        color: Colors.white,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                        ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 6),
                       Container(
-                        height: 10,
-                        width: 50,
-                        color: Colors.white,
+                        height: 11,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
-                  // Content line
                   Container(
-                    height: 14,
+                    height: 11,
                     width: double.infinity,
-                    color: Colors.white,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  FractionallySizedBox(
+                    widthFactor: 0.7,
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      height: 11,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                      ),
+                    ),
                   ),
                 ],
               ),

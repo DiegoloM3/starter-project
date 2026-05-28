@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/create/create_article_state.dart';
-import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/reading_time_badge.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/status_change_dialog.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
+
+import '../../../../../config/theme/app_themes.dart';
 
 class ArticlePreviewPage extends StatelessWidget {
   final CreateArticleState articleState;
@@ -15,200 +16,323 @@ class ArticlePreviewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        leading: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => Navigator.pop(context, false),
-          child: const Icon(Icons.chevron_left, color: Colors.black, size: 30),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.preview,
-          style: TextStyle(
-            color: Colors.black87,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+      backgroundColor: AppColors.surface,
+      body: CustomScrollView(
+        slivers: [
+          _buildSliverAppBar(context),
+          SliverToBoxAdapter(child: _buildPreviewBanner()),
+          SliverToBoxAdapter(child: _buildArticleContent(context)),
+          const SliverToBoxAdapter(child: SizedBox(height: 140)),
+        ],
+      ),
+      bottomNavigationBar: _buildBottomBar(context),
+    );
+  }
+
+  Widget _buildSliverAppBar(BuildContext context) {
+    return SliverAppBar(
+      expandedHeight: 220,
+      pinned: true,
+      backgroundColor: AppColors.surface,
+      leading: IconButton(
+        icon: const Icon(Icons.chevron_left),
+        onPressed: () => Navigator.pop(context, false),
+      ),
+      iconTheme: const IconThemeData(color: Colors.white),
+      actions: [
+        Container(
+          margin: const EdgeInsets.only(right: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: AppColors.red.withValues(alpha: 0.07),
+            border: Border.all(color: AppColors.red.withValues(alpha: 0.15)),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+          ),
+          child: Text(
+            'PREVIEW',
+            style: AppTypography.sans(
+              fontSize: 9,
+              fontWeight: FontWeight.w800,
+              color: AppColors.red,
+              letterSpacing: 1.8,
+            ),
           ),
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 8),
-            _buildThumbnail(),
-            const SizedBox(height: 16),
-            _buildTitle(context),
-            const SizedBox(height: 12),
-            _buildMetadata(),
-            const SizedBox(height: 16),
-            _buildDescription(),
-            const SizedBox(height: 20),
-            const Divider(),
-            const SizedBox(height: 16),
-            _buildContent(context),
-            const SizedBox(height: 40),
-          ],
-        ),
-      ),
-      bottomNavigationBar: _buildPublishBar(context),
-    );
-  }
-
-  Widget _buildThumbnail() {
-    if (articleState.selectedImagePath != null) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.file(
-          File(articleState.selectedImagePath!),
-          width: double.infinity,
-          height: 220,
-          fit: BoxFit.cover,
-        ),
-      );
-    }
-
-    if (articleState.thumbnailUrl != null &&
-        articleState.thumbnailUrl!.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.network(
-          articleState.thumbnailUrl!,
-          width: double.infinity,
-          height: 220,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _buildPlaceholderImage(),
-        ),
-      );
-    }
-
-    return _buildPlaceholderImage();
-  }
-
-  Widget _buildPlaceholderImage() {
-    return Container(
-      width: double.infinity,
-      height: 220,
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Icon(Icons.image_outlined, size: 48, color: Colors.grey[400]),
-    );
-  }
-
-  Widget _buildTitle(BuildContext context) {
-    return Text(
-      articleState.title.isNotEmpty
-          ? articleState.title
-          : AppLocalizations.of(context)!.untitled,
-      style: const TextStyle(
-        fontFamily: 'Butler',
-        fontWeight: FontWeight.w900,
-        fontSize: 24,
-        color: Colors.black87,
-        height: 1.3,
+      ],
+      flexibleSpace: FlexibleSpaceBar(
+        background: _buildHeroImage(),
       ),
     );
   }
 
-  Widget _buildMetadata() {
-    return Row(
+  Widget _buildHeroImage() {
+    return Stack(
+      fit: StackFit.expand,
       children: [
-        ReadingTimeBadge(minutes: articleState.readingTimeMinutes),
-        const SizedBox(width: 16),
-        Icon(Icons.circle, size: 4, color: Colors.grey[400]),
-        const SizedBox(width: 8),
-        Text(
-          _formatDate(DateTime.now()),
-          style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+        if (articleState.selectedImagePath != null)
+          Image.file(
+            File(articleState.selectedImagePath!),
+            fit: BoxFit.cover,
+          )
+        else if (articleState.thumbnailUrl != null &&
+            articleState.thumbnailUrl!.isNotEmpty)
+          Image.network(
+            articleState.thumbnailUrl!,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => _buildGradientPlaceholder(),
+          )
+        else
+          _buildGradientPlaceholder(),
+        const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0x40000000), Colors.transparent],
+              stops: [0.0, 0.55],
+            ),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildDescription() {
-    if (articleState.description.isEmpty) return const SizedBox.shrink();
-
-    return Text(
-      articleState.description,
-      style: TextStyle(
-        fontSize: 16,
-        color: Colors.grey[700],
-        fontStyle: FontStyle.italic,
-        height: 1.5,
-      ),
-    );
-  }
-
-  Widget _buildContent(BuildContext context) {
-    return Text(
-      articleState.content.isNotEmpty
-          ? articleState.content
-          : AppLocalizations.of(context)!.noContentYet,
-      style: const TextStyle(
-        fontSize: 16,
-        color: Colors.black87,
-        height: 1.7,
-      ),
-    );
-  }
-
-  Widget _buildPublishBar(BuildContext context) {
+  Widget _buildGradientPlaceholder() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment(-0.6, -0.8),
+          end: Alignment(0.6, 0.8),
+          colors: [Color(0xFF1E3A5F), Color(0xFF2D6A9F)],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreviewBanner() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
+        color: AppColors.red.withValues(alpha: 0.04),
+        border: Border(
+          bottom: BorderSide(color: AppColors.red.withValues(alpha: 0.1)),
+        ),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(
-            child: OutlinedButton(
-              onPressed: () => Navigator.pop(context, false),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.black87,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                side: BorderSide(color: Colors.grey[300]!),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-              ),
-              child: Text(AppLocalizations.of(context)!.keepEditing),
+          Container(
+            width: 6,
+            height: 6,
+            decoration: const BoxDecoration(
+              color: AppColors.red,
+              shape: BoxShape.circle,
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: () => _onPublish(context),
-              icon: const Icon(Icons.publish, color: Colors.white, size: 20),
-              label: Text(
-                AppLocalizations.of(context)!.publish,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
+          const SizedBox(width: 8),
+          Text(
+            'Preview — this article is not yet published',
+            style: AppTypography.sans(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+              color: AppColors.red,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildArticleContent(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Title
+          Text(
+            articleState.title.isNotEmpty ? articleState.title : l10n.untitled,
+            style: AppTypography.serif(
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+              color: AppColors.t1,
+              height: 1.2,
+              letterSpacing: -0.3,
+            ),
+          ),
+          const SizedBox(height: 14),
+          // Author + meta
+          Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: const BoxDecoration(
+                  color: AppColors.red,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'A',
+                  style: AppTypography.sans(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.preview,
+                    style: AppTypography.sans(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.t1,
+                    ),
+                  ),
+                  Text(
+                    'Draft · ${articleState.readingTimeMinutes} min read',
+                    style: AppTypography.sans(fontSize: 10.5, color: AppColors.t3),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Decorative rule
+          Row(
+            children: [
+              const Expanded(child: Divider(height: 1, color: AppColors.border)),
+              Container(
+                width: 14,
+                height: 3,
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.red,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const Expanded(child: Divider(height: 1, color: AppColors.border)),
+            ],
+          ),
+          const SizedBox(height: 18),
+          // Description (italic standfirst)
+          if (articleState.description.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Text(
+                articleState.description,
+                style: AppTypography.serif(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.italic,
+                  color: AppColors.t2,
+                  height: 1.65,
+                ),
+              ),
+            ),
+          // Content
+          Text(
+            articleState.content.isNotEmpty
+                ? articleState.content
+                : l10n.noContentYet,
+            style: AppTypography.serif(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              color: articleState.content.isNotEmpty ? AppColors.t1 : AppColors.t3,
+              height: 1.82,
+            ),
+          ),
+          // End ornament
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 28),
+            child: Center(
+              child: Text(
+                '— ◆ —',
+                style: AppTypography.serif(
+                  fontSize: 18,
+                  color: AppColors.t3,
+                  letterSpacing: 8,
                 ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBottomBar(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.border)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Publish — primary CTA
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: () => _onPublish(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.red,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                ),
+                child: Text(
+                  '→  ${l10n.publishArticle}',
+                  style: AppTypography.sans(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            // Keep Editing — secondary
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () => Navigator.pop(context, false),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.t2,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  side: const BorderSide(color: AppColors.border, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                ),
+                child: Text(
+                  '← ${l10n.keepEditing}',
+                  style: AppTypography.sans(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.t2,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -219,13 +343,5 @@ class ArticlePreviewPage extends StatelessWidget {
     if (confirmed && context.mounted) {
       Navigator.pop(context, true);
     }
-  }
-
-  String _formatDate(DateTime date) {
-    final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 }

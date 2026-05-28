@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article_status.dart';
 
+import '../../../../config/theme/app_themes.dart';
+
 class StatusChangeDialog {
   static Future<bool> showPublishConfirmation(BuildContext context) async {
     return await _showDialog(
@@ -9,7 +11,7 @@ class StatusChangeDialog {
           message:
               'Are you sure you want to publish this article? It will be visible to all users.',
           confirmLabel: 'Publish',
-          confirmColor: Colors.green,
+          confirmColor: AppColors.red,
         ) ??
         false;
   }
@@ -21,7 +23,7 @@ class StatusChangeDialog {
           message:
               'Are you sure you want to archive this article? This cannot be undone.',
           confirmLabel: 'Archive',
-          confirmColor: Colors.orange,
+          confirmColor: AppColors.warning,
         ) ??
         false;
   }
@@ -50,19 +52,34 @@ class StatusChangeDialog {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
+        title: Text(title, style: AppTypography.serif(fontSize: 18)),
+        content: Text(
+          message,
+          style: AppTypography.sans(fontSize: 13.5, color: AppColors.t2, height: 1.55),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: AppTypography.sans(color: AppColors.t2),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: confirmColor),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: confirmColor,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
+            ),
             child: Text(
               confirmLabel,
-              style: const TextStyle(color: Colors.white),
+              style: AppTypography.sans(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
