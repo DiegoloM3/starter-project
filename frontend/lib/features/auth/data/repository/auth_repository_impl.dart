@@ -123,6 +123,21 @@ class AuthRepositoryImpl implements AuthRepository {
           message: 'Too many attempts. Please try again later',
           code: 'too-many-requests',
         );
+      case 'user-disabled':
+        return const AuthException(
+          message: 'This account has been disabled',
+          code: 'user-disabled',
+        );
+      case 'operation-not-allowed':
+        return const AuthException(
+          message: 'This sign-in method is not allowed',
+          code: 'operation-not-allowed',
+        );
+      case 'network-request-failed':
+        return const AuthException(
+          message: 'Network error. Check your connection',
+          code: 'network-request-failed',
+        );
       default:
         return AuthException(
           message: e.message ?? 'Authentication failed',
