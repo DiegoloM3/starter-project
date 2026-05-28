@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_event.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/feed/feed_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/feed/feed_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/feed/feed_state.dart';
@@ -65,21 +65,17 @@ class _BottomNav extends StatelessWidget {
 
   const _BottomNav({required this.activeIndex, required this.onTap});
 
-  static const _tabs = [
-    _TabDef(icon: Icons.home_outlined, activeIcon: Icons.home, label: 'Feed'),
-    _TabDef(icon: Icons.search, activeIcon: Icons.search, label: 'Search'),
-    _TabDef(
-        icon: Icons.bookmark_border,
-        activeIcon: Icons.bookmark,
-        label: 'Saved'),
-    _TabDef(
-        icon: Icons.person_outline,
-        activeIcon: Icons.person,
-        label: 'Profile'),
+  static const _icons = [
+    _TabDef(icon: Icons.home_outlined, activeIcon: Icons.home, label: ''),
+    _TabDef(icon: Icons.search, activeIcon: Icons.search, label: ''),
+    _TabDef(icon: Icons.bookmark_border, activeIcon: Icons.bookmark, label: ''),
+    _TabDef(icon: Icons.person_outline, activeIcon: Icons.person, label: ''),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final labels = [l10n.tabFeed, l10n.tabSearch, l10n.tabSaved, l10n.tabProfile];
     return Container(
       height: 58 + MediaQuery.of(context).padding.bottom,
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
@@ -88,8 +84,8 @@ class _BottomNav extends StatelessWidget {
         border: Border(top: BorderSide(color: AppColors.border)),
       ),
       child: Row(
-        children: List.generate(_tabs.length, (i) {
-          final tab = _tabs[i];
+        children: List.generate(_icons.length, (i) {
+          final tab = _icons[i];
           final isActive = i == activeIndex;
           return Expanded(
             child: GestureDetector(
@@ -105,7 +101,7 @@ class _BottomNav extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        tab.label,
+                        labels[i],
                         style: AppTypography.sans(
                           fontSize: 9.5,
                           fontWeight:
@@ -176,7 +172,7 @@ class _FeedTab extends StatelessWidget {
             ),
           ),
           Text(
-            'Simmetry',
+            AppLocalizations.of(context)!.appName,
             style: AppTypography.serif(
               fontSize: 19,
               fontWeight: FontWeight.w700,
@@ -296,7 +292,7 @@ class _FeedTab extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Text(
-            'LATEST',
+            l10n.sectionLatest,
             style: AppTypography.sans(
               fontSize: 9.5,
               fontWeight: FontWeight.w800,
@@ -323,8 +319,10 @@ class _ProfileTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final user = FirebaseAuth.instance.currentUser;
-    final displayName = user?.displayName ?? user?.email ?? '';
+    final authState = context.read<AuthBloc>().state;
+    final authUser =
+        authState is AuthAuthenticated ? authState.user : null;
+    final displayName = authUser?.displayName ?? authUser?.email ?? '';
     final initials = displayName.isNotEmpty
         ? displayName
             .split(' ')
@@ -349,7 +347,7 @@ class _ProfileTab extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               alignment: Alignment.centerLeft,
               child: Text(
-                'Profile',
+                l10n.tabProfile,
                 style: AppTypography.serif(
                   fontSize: 17,
                   fontWeight: FontWeight.w700,
@@ -418,7 +416,7 @@ class _ProfileTab extends StatelessWidget {
               const Divider(height: 1, color: AppColors.border),
               _ProfileMenuItem(
                 icon: Icons.logout,
-                label: 'Sign out',
+                label: l10n.signOut,
                 color: AppColors.error,
                 onTap: () => context
                     .read<AuthBloc>()

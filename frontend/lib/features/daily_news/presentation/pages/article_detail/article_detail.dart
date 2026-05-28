@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_state.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 import '../../../../../config/theme/app_themes.dart';
@@ -18,14 +18,16 @@ import '../../widgets/comments_section.dart';
 import '../../widgets/delete_confirmation_dialog.dart';
 import '../../widgets/status_badge.dart';
 
-class ArticleDetailsView extends HookWidget {
+class ArticleDetailsView extends StatelessWidget {
   final ArticleEntity? article;
 
   const ArticleDetailsView({Key? key, this.article}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final authState = context.read<AuthBloc>().state;
+    final currentUserId =
+        authState is AuthAuthenticated ? authState.user!.uid : null;
     final hasFirestoreId = article?.id != null &&
         article!.id!.isNotEmpty &&
         article!.authorId != null;

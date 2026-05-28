@@ -1,6 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/drafts/drafts_list_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/drafts/drafts_list_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/drafts/drafts_list_state.dart';
@@ -9,6 +10,7 @@ import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 import '../../../../../config/theme/app_themes.dart';
 import '../../../../../injection_container.dart';
+import '../../../domain/entities/article.dart';
 import '../../widgets/empty_state_widget.dart';
 import '../../widgets/skeleton_article_tile.dart';
 
@@ -17,7 +19,9 @@ class DraftsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final authState = context.read<AuthBloc>().state;
+    final userId =
+        authState is AuthAuthenticated ? authState.user!.uid : '';
 
     return BlocProvider<DraftsListBloc>(
       create: (_) =>
@@ -79,7 +83,10 @@ class _DraftsBody extends StatelessWidget {
                 state.error?.message ?? l10n.failedToLoadDrafts,
             actionLabel: l10n.tryAgain,
             onAction: () {
-              final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+              final retryAuthState = context.read<AuthBloc>().state;
+              final uid = retryAuthState is AuthAuthenticated
+                  ? retryAuthState.user!.uid
+                  : '';
               context
                   .read<DraftsListBloc>()
                   .add(DraftsSubscriptionRequested(uid));
@@ -140,7 +147,7 @@ class _DraftsBody extends StatelessWidget {
     );
   }
 
-  void _onDismissed(BuildContext context, dynamic article) {
+  void _onDismissed(BuildContext context, ArticleEntity article) {
     if (article.id != null) {
       context.read<DraftsListBloc>().add(DraftDeleted(article.id!));
     }
@@ -154,7 +161,10 @@ class _DraftsBody extends StatelessWidget {
           onPressed: () {
             // Re-subscribe to refresh the list (undo is approximate —
             // the draft was already deleted server-side).
-            final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+            final retryAuthState = context.read<AuthBloc>().state;
+            final uid = retryAuthState is AuthAuthenticated
+                ? retryAuthState.user!.uid
+                : '';
             context
                 .read<DraftsListBloc>()
                 .add(DraftsSubscriptionRequested(uid));
