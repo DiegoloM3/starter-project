@@ -44,8 +44,25 @@ class ArticleWidget extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context) {
+    final imageUrl = article?.thumbnailUrl;
+    if (imageUrl == null || imageUrl.isEmpty) {
+      return Padding(
+        padding: const EdgeInsetsDirectional.only(end: 14),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20.0),
+          child: Container(
+            width: MediaQuery.of(context).size.width / 3,
+            height: double.maxFinite,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.08),
+            ),
+            child: const Icon(Icons.image_outlined, color: Colors.grey),
+          ),
+        ),
+      );
+    }
     return CachedNetworkImage(
-        imageUrl: article!.thumbnailUrl!,
+        imageUrl: imageUrl,
         imageBuilder: (context, imageProvider) => Padding(
               padding: const EdgeInsetsDirectional.only(end: 14),
               child: ClipRRect(

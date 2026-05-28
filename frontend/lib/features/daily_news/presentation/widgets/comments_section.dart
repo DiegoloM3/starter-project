@@ -24,25 +24,42 @@ class CommentsSection extends HookWidget {
   Widget build(BuildContext context) {
     final commentController = useTextEditingController();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Divider(height: 32),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Text(
-            AppLocalizations.of(context)!.commentsHeader,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
+    return BlocListener<CommentBloc, CommentState>(
+      listenWhen: (prev, curr) =>
+          curr is CommentsFailure && prev is! CommentsLoading,
+      listener: (context, state) {
+        if (state is CommentsFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                state.error?.message ??
+                    AppLocalizations.of(context)!.commentActionFailed,
+              ),
+              backgroundColor: Colors.red[700],
+            ),
+          );
+        }
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Divider(height: 32),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Text(
+              AppLocalizations.of(context)!.commentsHeader,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 12),
-        _buildCommentInput(context, commentController),
-        const SizedBox(height: 12),
-        _buildCommentsList(),
-      ],
+          const SizedBox(height: 12),
+          _buildCommentInput(context, commentController),
+          const SizedBox(height: 12),
+          _buildCommentsList(),
+        ],
+      ),
     );
   }
 
