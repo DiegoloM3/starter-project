@@ -11,6 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   cupertino_icons: ^1.0.2
 
@@ -24,7 +26,7 @@ dependencies:
   get_it: ^7.6.0
   
   #dateFormat
-  intl: ^0.18.1
+  intl: ^0.20.2
 
   #Database
   floor: any
@@ -42,8 +44,17 @@ dependencies:
   #Hooks
   flutter_hooks: ^0.18.3
 
-  #chached image 
+  #chached image
   cached_network_image: ^3.2.0
+
+  #image picker
+  image_picker: ^0.8.9
+
+  #skeleton loading
+  shimmer: ^3.0.0
+
+  #bloc event transformers
+  bloc_concurrency: ^0.2.2
 
 dev_dependencies:
   flutter_test:
@@ -55,7 +66,7 @@ dev_dependencies:
   
 
 flutter:
-
+  generate: true
   uses-material-design: true
 
  
