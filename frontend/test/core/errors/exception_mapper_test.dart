@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:news_app_clean_architecture/core/errors/app_exception.dart';
-import 'package:news_app_clean_architecture/core/errors/exception_mapper.dart';
+import 'package:news_app_clean_architecture/shared/data/errors/exception_mapper.dart';
 
 void main() {
   group('ExceptionMapper.fromFirebaseException', () {

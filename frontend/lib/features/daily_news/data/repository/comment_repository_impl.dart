@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:news_app_clean_architecture/core/errors/exception_mapper.dart';
+import 'package:news_app_clean_architecture/shared/data/errors/exception_mapper.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/firestore_comment_data_source.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/models/comment.dart';

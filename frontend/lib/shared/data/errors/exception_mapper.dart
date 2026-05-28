@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-import 'app_exception.dart';
+import 'package:news_app_clean_architecture/core/errors/app_exception.dart';
 
 class ExceptionMapper {
   ExceptionMapper._();

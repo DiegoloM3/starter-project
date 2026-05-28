@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:news_app_clean_architecture/core/constants/constants.dart';
 import 'package:news_app_clean_architecture/core/errors/app_exception.dart';
-import 'package:news_app_clean_architecture/core/errors/exception_mapper.dart';
+import 'package:news_app_clean_architecture/shared/data/errors/exception_mapper.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/app_database.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/firebase_storage_data_source.dart';
