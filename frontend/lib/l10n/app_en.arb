@@ -80,5 +80,35 @@
   "passwordsDoNotMatch": "Passwords do not match",
   "commentActionFailed": "Could not complete comment action",
   "loadArticlesFailed": "Could not load articles",
-  "tapToRetry": "Tap to retry"
+  "tapToRetry": "Tap to retry",
+  "deletePermanently": "Delete permanently",
+  "writeAnArticle": "Write an article",
+  "writeTheFirstArticle": "Write the first article",
+  "noArticlesTitle": "No articles yet",
+  "noArticlesSubtitle": "Your stories will appear here. Start writing something remarkable.",
+  "noDraftsTitle": "No drafts",
+  "noDraftsSubtitle": "Articles you're working on will be saved here automatically.",
+  "noPublishedTitle": "Nothing published yet",
+  "noPublishedSubtitle": "Share your work — publish an article to reach your readers.",
+  "noArchivedTitle": "No archived articles",
+  "noArchivedSubtitle": "Articles you archive will be stored here for reference.",
+  "noSavedTitle": "No saved articles",
+  "noSavedSubtitle": "Bookmark articles you'd like to read later — they'll appear here.",
+  "undo": "Undo",
+  "articleRemoved": "Article removed",
+  "draftDeleted": "Draft deleted",
+  "searchPrompt": "Search for articles",
+  "searchPromptSubtitle": "Find articles by title or description",
+  "noResultsFor": "No results for \"{query}\"",
+  "@noResultsFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "tryDifferentKeywords": "Try different keywords or check your spelling",
+  "somethingWentWrong": "Something went wrong",
+  "couldNotLoadArticles": "We couldn't load the articles. Check your connection and try again.",
+  "tryAgain": "Try again"
 }

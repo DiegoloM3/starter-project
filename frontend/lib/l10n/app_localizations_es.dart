@@ -240,4 +240,83 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tapToRetry => 'Tocá para reintentar';
+
+  @override
+  String get deletePermanently => 'Eliminar permanentemente';
+
+  @override
+  String get writeAnArticle => 'Escribir un artículo';
+
+  @override
+  String get writeTheFirstArticle => 'Escribir el primer artículo';
+
+  @override
+  String get noArticlesTitle => 'No hay artículos aún';
+
+  @override
+  String get noArticlesSubtitle =>
+      'Tus historias van a aparecer acá. Empezá a escribir algo increíble.';
+
+  @override
+  String get noDraftsTitle => 'No hay borradores';
+
+  @override
+  String get noDraftsSubtitle =>
+      'Los artículos en los que estés trabajando se guardan acá automáticamente.';
+
+  @override
+  String get noPublishedTitle => 'Nada publicado aún';
+
+  @override
+  String get noPublishedSubtitle =>
+      'Compartí tu trabajo — publicá un artículo para llegar a tus lectores.';
+
+  @override
+  String get noArchivedTitle => 'No hay artículos archivados';
+
+  @override
+  String get noArchivedSubtitle =>
+      'Los artículos que archives se guardan acá como referencia.';
+
+  @override
+  String get noSavedTitle => 'No hay artículos guardados';
+
+  @override
+  String get noSavedSubtitle =>
+      'Guardá artículos que quieras leer después — van a aparecer acá.';
+
+  @override
+  String get undo => 'Deshacer';
+
+  @override
+  String get articleRemoved => 'Artículo eliminado';
+
+  @override
+  String get draftDeleted => 'Borrador eliminado';
+
+  @override
+  String get searchPrompt => 'Buscá artículos';
+
+  @override
+  String get searchPromptSubtitle =>
+      'Encontrá artículos por título o descripción';
+
+  @override
+  String noResultsFor(String query) {
+    return 'Sin resultados para \"$query\"';
+  }
+
+  @override
+  String get tryDifferentKeywords =>
+      'Probá con otras palabras clave o revisá la ortografía';
+
+  @override
+  String get somethingWentWrong => 'Algo salió mal';
+
+  @override
+  String get couldNotLoadArticles =>
+      'No pudimos cargar los artículos. Revisá tu conexión e intentá de nuevo.';
+
+  @override
+  String get tryAgain => 'Intentar de nuevo';
 }

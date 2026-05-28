@@ -541,6 +541,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap to retry'**
   String get tapToRetry;
+
+  /// No description provided for @deletePermanently.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete permanently'**
+  String get deletePermanently;
+
+  /// No description provided for @writeAnArticle.
+  ///
+  /// In en, this message translates to:
+  /// **'Write an article'**
+  String get writeAnArticle;
+
+  /// No description provided for @writeTheFirstArticle.
+  ///
+  /// In en, this message translates to:
+  /// **'Write the first article'**
+  String get writeTheFirstArticle;
+
+  /// No description provided for @noArticlesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No articles yet'**
+  String get noArticlesTitle;
+
+  /// No description provided for @noArticlesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your stories will appear here. Start writing something remarkable.'**
+  String get noArticlesSubtitle;
+
+  /// No description provided for @noDraftsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No drafts'**
+  String get noDraftsTitle;
+
+  /// No description provided for @noDraftsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Articles you\'re working on will be saved here automatically.'**
+  String get noDraftsSubtitle;
+
+  /// No description provided for @noPublishedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing published yet'**
+  String get noPublishedTitle;
+
+  /// No description provided for @noPublishedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your work — publish an article to reach your readers.'**
+  String get noPublishedSubtitle;
+
+  /// No description provided for @noArchivedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No archived articles'**
+  String get noArchivedTitle;
+
+  /// No description provided for @noArchivedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Articles you archive will be stored here for reference.'**
+  String get noArchivedSubtitle;
+
+  /// No description provided for @noSavedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved articles'**
+  String get noSavedTitle;
+
+  /// No description provided for @noSavedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmark articles you\'d like to read later — they\'ll appear here.'**
+  String get noSavedSubtitle;
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
+  /// No description provided for @articleRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Article removed'**
+  String get articleRemoved;
+
+  /// No description provided for @draftDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft deleted'**
+  String get draftDeleted;
+
+  /// No description provided for @searchPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for articles'**
+  String get searchPrompt;
+
+  /// No description provided for @searchPromptSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find articles by title or description'**
+  String get searchPromptSubtitle;
+
+  /// No description provided for @noResultsFor.
+  ///
+  /// In en, this message translates to:
+  /// **'No results for \"{query}\"'**
+  String noResultsFor(String query);
+
+  /// No description provided for @tryDifferentKeywords.
+  ///
+  /// In en, this message translates to:
+  /// **'Try different keywords or check your spelling'**
+  String get tryDifferentKeywords;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get somethingWentWrong;
+
+  /// No description provided for @couldNotLoadArticles.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load the articles. Check your connection and try again.'**
+  String get couldNotLoadArticles;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgain;
 }
 
 class _AppLocalizationsDelegate

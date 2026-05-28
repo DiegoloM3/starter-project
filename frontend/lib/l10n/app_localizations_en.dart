@@ -234,4 +234,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tapToRetry => 'Tap to retry';
+
+  @override
+  String get deletePermanently => 'Delete permanently';
+
+  @override
+  String get writeAnArticle => 'Write an article';
+
+  @override
+  String get writeTheFirstArticle => 'Write the first article';
+
+  @override
+  String get noArticlesTitle => 'No articles yet';
+
+  @override
+  String get noArticlesSubtitle =>
+      'Your stories will appear here. Start writing something remarkable.';
+
+  @override
+  String get noDraftsTitle => 'No drafts';
+
+  @override
+  String get noDraftsSubtitle =>
+      'Articles you\'re working on will be saved here automatically.';
+
+  @override
+  String get noPublishedTitle => 'Nothing published yet';
+
+  @override
+  String get noPublishedSubtitle =>
+      'Share your work — publish an article to reach your readers.';
+
+  @override
+  String get noArchivedTitle => 'No archived articles';
+
+  @override
+  String get noArchivedSubtitle =>
+      'Articles you archive will be stored here for reference.';
+
+  @override
+  String get noSavedTitle => 'No saved articles';
+
+  @override
+  String get noSavedSubtitle =>
+      'Bookmark articles you\'d like to read later — they\'ll appear here.';
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String get articleRemoved => 'Article removed';
+
+  @override
+  String get draftDeleted => 'Draft deleted';
+
+  @override
+  String get searchPrompt => 'Search for articles';
+
+  @override
+  String get searchPromptSubtitle => 'Find articles by title or description';
+
+  @override
+  String noResultsFor(String query) {
+    return 'No results for \"$query\"';
+  }
+
+  @override
+  String get tryDifferentKeywords =>
+      'Try different keywords or check your spelling';
+
+  @override
+  String get somethingWentWrong => 'Something went wrong';
+
+  @override
+  String get couldNotLoadArticles =>
+      'We couldn\'t load the articles. Check your connection and try again.';
+
+  @override
+  String get tryAgain => 'Try again';
 }
