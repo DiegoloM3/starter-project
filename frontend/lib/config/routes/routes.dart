@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/daily_news/domain/entities/article.dart';
+import '../../features/daily_news/presentation/bloc/article/create/create_article_state.dart';
 import '../../features/daily_news/presentation/pages/article_detail/article_detail.dart';
+import '../../features/daily_news/presentation/pages/article_preview/article_preview_page.dart';
+import '../../features/daily_news/presentation/pages/create_article/create_article_page.dart';
+import '../../features/daily_news/presentation/pages/drafts/drafts_page.dart';
 import '../../features/daily_news/presentation/pages/home/daily_news.dart';
+import '../../features/daily_news/presentation/pages/my_articles/my_articles_page.dart';
 import '../../features/daily_news/presentation/pages/saved_article/saved_article.dart';
-
+import '../../features/daily_news/presentation/pages/search/search_page.dart';
 
 class AppRoutes {
   static Route onGenerateRoutes(RouteSettings settings) {
@@ -12,12 +19,43 @@ class AppRoutes {
       case '/':
         return _materialRoute(const DailyNews());
 
+      case '/Login':
+        return _materialRoute(const LoginPage());
+
+      case '/Register':
+        return _materialRoute(const RegisterPage());
+
       case '/ArticleDetails':
-        return _materialRoute(ArticleDetailsView(article: settings.arguments as ArticleEntity));
+        return _materialRoute(
+            ArticleDetailsView(article: settings.arguments as ArticleEntity));
 
       case '/SavedArticles':
         return _materialRoute(const SavedArticles());
-        
+
+      case '/CreateArticle':
+        return _materialRoute(CreateArticlePage(
+          draft: settings.arguments as ArticleEntity?,
+        ));
+
+      case '/ArticlePreview':
+        return _materialRoute(ArticlePreviewPage(
+          articleState: settings.arguments as CreateArticleState,
+        ));
+
+      case '/Drafts':
+        return _materialRoute(const DraftsPage());
+
+      case '/Search':
+        return _materialRoute(const SearchPage());
+
+      case '/MyArticles':
+        return _materialRoute(const MyArticlesPage());
+
+      case '/EditArticle':
+        return _materialRoute(CreateArticlePage(
+          draft: settings.arguments as ArticleEntity?,
+        ));
+
       default:
         return _materialRoute(const DailyNews());
     }

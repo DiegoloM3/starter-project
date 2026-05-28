@@ -2,10 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../domain/entities/article.dart';
+import 'reading_time_badge.dart';
+import 'status_badge.dart';
 
 class ArticleWidget extends StatelessWidget {
   final ArticleEntity? article;
   final bool? isRemovable;
+  final bool showStatus;
+  final bool showReadingTime;
   final void Function(ArticleEntity article)? onRemove;
   final void Function(ArticleEntity article)? onArticlePressed;
 
@@ -14,6 +18,8 @@ class ArticleWidget extends StatelessWidget {
     this.article,
     this.onArticlePressed,
     this.isRemovable = false,
+    this.showStatus = false,
+    this.showReadingTime = false,
     this.onRemove,
   }) : super(key: key);
 
@@ -116,17 +122,31 @@ class ArticleWidget extends StatelessWidget {
               ),
             ),
 
-            // Datetime
+            // Metadata row
             Row(
               children: [
-                const Icon(Icons.timeline_outlined, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  article!.publishedAt!,
-                  style: const TextStyle(
-                    fontSize: 12,
+                if (showStatus && article!.status != null) ...[
+                  StatusBadge(status: article!.status!),
+                  const SizedBox(width: 8),
+                ],
+                if (showReadingTime &&
+                    article!.readingTimeMinutes != null) ...[
+                  ReadingTimeBadge(minutes: article!.readingTimeMinutes!),
+                  const SizedBox(width: 8),
+                ],
+                if (article!.publishedAt != null &&
+                    article!.publishedAt!.isNotEmpty) ...[
+                  const Icon(Icons.timeline_outlined, size: 16),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      article!.publishedAt!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 12),
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ],

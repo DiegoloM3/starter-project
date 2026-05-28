@@ -1,78 +1,121 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
-import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_state.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_event.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/published/published_articles_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/published/published_articles_state.dart';
+import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 import '../../../domain/entities/article.dart';
 import '../../widgets/article_tile.dart';
+import '../../widgets/skeleton_article_tile.dart';
 
 class DailyNews extends StatelessWidget {
   const DailyNews({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return _buildPage();
-  }
-
-  _buildAppbar(BuildContext context) {
-    return AppBar(
-      title: const Text(
-        'Daily News',
-        style: TextStyle(color: Colors.black),
-      ),
-      actions: [
-        GestureDetector(
-          onTap: () => _onShowSavedArticlesViewTapped(context),
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14),
-            child: Icon(Icons.bookmark, color: Colors.black),
-          ),
-        ),
-      ],
-    );
-  }
-
-  _buildPage() {
-    return BlocBuilder<RemoteArticlesBloc, RemoteArticlesState>(
+    return BlocBuilder<PublishedArticlesBloc, PublishedArticlesState>(
       builder: (context, state) {
-        if (state is RemoteArticlesLoading) {
+        if (state is PublishedArticlesLoading) {
           return Scaffold(
-              appBar: _buildAppbar(context),
-              body: const Center(child: CupertinoActivityIndicator()));
+            appBar: _buildAppbar(context),
+            body: ListView.builder(
+              itemCount: 5,
+              itemBuilder: (context, index) => const SkeletonArticleTile(),
+            ),
+          );
         }
-        if (state is RemoteArticlesError) {
+        if (state is PublishedArticlesFailure) {
           return Scaffold(
-              appBar: _buildAppbar(context),
-              body: const Center(child: Icon(Icons.refresh)));
+            appBar: _buildAppbar(context),
+            body: const Center(child: Icon(Icons.refresh)),
+            floatingActionButton: _buildFab(context),
+          );
         }
-        if (state is RemoteArticlesDone) {
-          return _buildArticlesPage(context, state.articles!);
+        if (state is PublishedArticlesDone) {
+          return _buildArticlesPage(context, state.articles ?? []);
         }
         return const SizedBox();
       },
     );
   }
 
+  PreferredSizeWidget _buildAppbar(BuildContext context) {
+    return AppBar(
+      title: Text(
+        AppLocalizations.of(context)!.appTitle,
+        style: const TextStyle(color: Colors.black),
+      ),
+      actions: [
+        GestureDetector(
+          onTap: () => Navigator.pushNamed(context, '/Search'),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Icon(Icons.search, color: Colors.black),
+          ),
+        ),
+        GestureDetector(
+          onTap: () => Navigator.pushNamed(context, '/Drafts'),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Icon(Icons.drafts_outlined, color: Colors.black),
+          ),
+        ),
+        GestureDetector(
+          onTap: () => Navigator.pushNamed(context, '/MyArticles'),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Icon(Icons.person_outline, color: Colors.black),
+          ),
+        ),
+        GestureDetector(
+          onTap: () => _onShowSavedArticlesViewTapped(context),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Icon(Icons.bookmark, color: Colors.black),
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.logout, color: Colors.black),
+          onPressed: () => context
+              .read<AuthBloc>()
+              .add(const AuthSignOutRequested()),
+        ),
+      ],
+    );
+  }
+
   Widget _buildArticlesPage(
       BuildContext context, List<ArticleEntity> articles) {
-    List<Widget> articleWidgets = [];
-    for (var article in articles) {
-      articleWidgets.add(ArticleWidget(
-        article: article,
-        onArticlePressed: (article) => _onArticlePressed(context, article),
-      ));
-    }
-
     return Scaffold(
       appBar: _buildAppbar(context),
-      body: ListView(
-        children: articleWidgets,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
-      ),
+      body: articles.isEmpty
+          ? Center(
+              child: Text(
+                AppLocalizations.of(context)!.noArticlesYet,
+                style: TextStyle(color: Colors.grey[400], fontSize: 16),
+              ),
+            )
+          : ListView.builder(
+              itemCount: articles.length,
+              itemBuilder: (context, index) {
+                return ArticleWidget(
+                  article: articles[index],
+                  onArticlePressed: (article) =>
+                      _onArticlePressed(context, article),
+                );
+              },
+            ),
+      floatingActionButton: _buildFab(context),
+    );
+  }
+
+  Widget _buildFab(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () => Navigator.pushNamed(context, '/CreateArticle'),
+      backgroundColor: const Color(0xFFCE93D8),
+      child: const Icon(Icons.add, color: Colors.white),
     );
   }
 
