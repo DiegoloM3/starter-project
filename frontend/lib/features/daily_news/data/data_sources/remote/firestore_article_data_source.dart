@@ -9,8 +9,17 @@ class FirestoreArticleDataSource {
 
   CollectionReference<ArticleModel> get _articlesRef =>
       _firestore.collection('articles').withConverter<ArticleModel>(
-            fromFirestore: (snap, _) =>
-                ArticleModel.fromFirestore(snap.data()!),
+            fromFirestore: (snap, _) {
+              final data = snap.data();
+              if (data == null) {
+                throw FirebaseException(
+                  plugin: 'cloud_firestore',
+                  code: 'not-found',
+                  message: 'Article document data is null',
+                );
+              }
+              return ArticleModel.fromFirestore(data);
+            },
             toFirestore: (model, _) => model.toFirestoreMap(),
           );
 
@@ -33,7 +42,15 @@ class FirestoreArticleDataSource {
     );
     await docRef.set(articleWithId);
     final snap = await docRef.get();
-    return snap.data()!;
+    final article = snap.data();
+    if (article == null) {
+      throw FirebaseException(
+        plugin: 'cloud_firestore',
+        code: 'not-found',
+        message: 'Created article not found',
+      );
+    }
+    return article;
   }
 
   Future<ArticleModel> updateArticle(ArticleModel model) async {
@@ -44,7 +61,15 @@ class FirestoreArticleDataSource {
         .doc(model.id)
         .update(model.toFirestoreUpdateMap());
     final snap = await _articlesRef.doc(model.id).get();
-    return snap.data()!;
+    final article = snap.data();
+    if (article == null) {
+      throw FirebaseException(
+        plugin: 'cloud_firestore',
+        code: 'not-found',
+        message: 'Updated article not found',
+      );
+    }
+    return article;
   }
 
   Future<void> deleteArticle(String articleId) async {

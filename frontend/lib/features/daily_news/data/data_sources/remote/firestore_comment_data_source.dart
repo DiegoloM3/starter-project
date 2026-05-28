@@ -12,8 +12,17 @@ class FirestoreCommentDataSource {
           .doc(articleId)
           .collection('comments')
           .withConverter<CommentModel>(
-            fromFirestore: (snap, _) =>
-                CommentModel.fromFirestore(snap.data()!),
+            fromFirestore: (snap, _) {
+              final data = snap.data();
+              if (data == null) {
+                throw FirebaseException(
+                  plugin: 'cloud_firestore',
+                  code: 'not-found',
+                  message: 'Comment document data is null',
+                );
+              }
+              return CommentModel.fromFirestore(data);
+            },
             toFirestore: (model, _) => model.toFirestoreMap(),
           );
 
@@ -30,7 +39,15 @@ class FirestoreCommentDataSource {
     );
     await docRef.set(commentWithId);
     final snap = await docRef.get();
-    return snap.data()!;
+    final comment = snap.data();
+    if (comment == null) {
+      throw FirebaseException(
+        plugin: 'cloud_firestore',
+        code: 'not-found',
+        message: 'Created comment not found',
+      );
+    }
+    return comment;
   }
 
   Stream<List<CommentModel>> getComments(String articleId) {
