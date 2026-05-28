@@ -16,6 +16,7 @@ class CreateArticleBloc
   final UploadThumbnailUseCase _uploadThumbnailUseCase;
   final String authorId;
   final String authorName;
+  Future<bool>? _pendingCreate;
 
   CreateArticleBloc(
     this._createArticleUseCase,
@@ -240,6 +241,19 @@ class CreateArticleBloc
   }
 
   Future<bool> _createNewArticle(Emitter<CreateArticleState> emit) async {
+    if (state.articleId != null) return true;
+    if (_pendingCreate != null) {
+      return _pendingCreate!;
+    }
+    _pendingCreate = _doCreateNewArticle(emit);
+    try {
+      return await _pendingCreate!;
+    } finally {
+      _pendingCreate = null;
+    }
+  }
+
+  Future<bool> _doCreateNewArticle(Emitter<CreateArticleState> emit) async {
     final entity = state.toEntity(
       authorId: authorId,
       authorName: authorName,
