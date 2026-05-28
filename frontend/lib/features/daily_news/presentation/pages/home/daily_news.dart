@@ -29,7 +29,25 @@ class DailyNews extends StatelessWidget {
         if (state is PublishedArticlesFailure) {
           return Scaffold(
             appBar: _buildAppbar(context),
-            body: const Center(child: Icon(Icons.refresh)),
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.error_outline, size: 48, color: Colors.grey[400]),
+                  const SizedBox(height: 12),
+                  Text(
+                    state.error?.message ??
+                        AppLocalizations.of(context)!.loadArticlesFailed,
+                    style: TextStyle(color: Colors.grey[500]),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(context)!.tapToRetry,
+                    style: TextStyle(color: Colors.grey[400], fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
             floatingActionButton: _buildFab(context),
           );
         }

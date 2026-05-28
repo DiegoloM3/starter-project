@@ -50,6 +50,13 @@ class SavedArticles extends HookWidget {
           );
         } else if (state is LocalArticlesDone) {
           return _buildArticlesList(state.articles!);
+        } else if (state is LocalArticlesFailure) {
+          return Center(
+            child: Text(
+              state.error.message,
+              style: TextStyle(color: Colors.grey[500]),
+            ),
+          );
         }
         return Container();
       },

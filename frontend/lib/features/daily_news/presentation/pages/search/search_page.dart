@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 import '../../../../../injection_container.dart';
 import '../../../domain/entities/article.dart';
@@ -37,7 +38,8 @@ class SearchPage extends StatelessWidget {
           child: const Icon(Icons.chevron_left, color: Colors.black),
         ),
       ),
-      title: const Text('Search', style: TextStyle(color: Colors.black)),
+      title: Text(AppLocalizations.of(context)!.searchTitle,
+          style: const TextStyle(color: Colors.black)),
     );
   }
 }
@@ -52,7 +54,7 @@ class _SearchField extends StatelessWidget {
       child: TextField(
         autofocus: true,
         decoration: InputDecoration(
-          hintText: 'Search articles...',
+          hintText: AppLocalizations.of(context)!.searchHint,
           hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
           prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
           contentPadding:
@@ -88,7 +90,7 @@ class _SearchResults extends StatelessWidget {
         if (state is SearchArticlesInitial) {
           return Center(
             child: Text(
-              'Type to search articles',
+              AppLocalizations.of(context)!.typeToSearch,
               style: TextStyle(color: Colors.grey[400], fontSize: 16),
             ),
           );
@@ -107,7 +109,8 @@ class _SearchResults extends StatelessWidget {
                 const Icon(Icons.error_outline, size: 48, color: Colors.grey),
                 const SizedBox(height: 8),
                 Text(
-                  state.error?.message ?? 'Search failed',
+                  state.error?.message ??
+                      AppLocalizations.of(context)!.searchFailed,
                   style: TextStyle(color: Colors.grey[500]),
                 ),
               ],
@@ -119,7 +122,7 @@ class _SearchResults extends StatelessWidget {
           if (articles.isEmpty) {
             return Center(
               child: Text(
-                'No articles found',
+                AppLocalizations.of(context)!.noArticlesFound,
                 style: TextStyle(color: Colors.grey[400], fontSize: 16),
               ),
             );

@@ -5,6 +5,7 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/drafts/drafts_list_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/drafts/drafts_list_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/article_tile.dart';
+import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 import '../../../../../injection_container.dart';
 
@@ -29,8 +30,8 @@ class DraftsPage extends StatelessWidget {
           ),
           backgroundColor: Colors.white,
           elevation: 0,
-          title: const Text(
-            'My Drafts',
+          title: Text(
+            AppLocalizations.of(context)!.myDrafts,
             style: TextStyle(
               color: Colors.black87,
               fontSize: 18,
@@ -55,7 +56,8 @@ class DraftsPage extends StatelessWidget {
                         size: 48, color: Colors.red[300]),
                     const SizedBox(height: 12),
                     Text(
-                      state.error?.message ?? 'Failed to load drafts',
+                      state.error?.message ??
+                          AppLocalizations.of(context)!.failedToLoadDrafts,
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                   ],
@@ -75,7 +77,7 @@ class DraftsPage extends StatelessWidget {
                           size: 48, color: Colors.grey[400]),
                       const SizedBox(height: 12),
                       Text(
-                        'No drafts yet',
+                        AppLocalizations.of(context)!.noDraftsYet,
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 16,
@@ -83,7 +85,7 @@ class DraftsPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Start writing and your drafts will appear here',
+                        AppLocalizations.of(context)!.draftsEmptySubtitle,
                         style: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 14,
@@ -144,20 +146,20 @@ class DraftsPage extends StatelessWidget {
     return await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Delete Draft'),
-            content: const Text(
-                'Are you sure you want to delete this draft? This cannot be undone.'),
+            title: Text(AppLocalizations.of(context)!.deleteDraft),
+            content: Text(
+                AppLocalizations.of(context)!.deleteDraftConfirmation),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
+                child: Text(AppLocalizations.of(context)!.cancel),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red[400]),
-                child: const Text('Delete',
-                    style: TextStyle(color: Colors.white)),
+                child: Text(AppLocalizations.of(context)!.delete,
+                    style: const TextStyle(color: Colors.white)),
               ),
             ],
           ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/create/create_article_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/reading_time_badge.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/status_change_dialog.dart';
+import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 class ArticlePreviewPage extends StatelessWidget {
   final CreateArticleState articleState;
@@ -23,8 +24,8 @@ class ArticlePreviewPage extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Preview',
+        title: Text(
+          AppLocalizations.of(context)!.preview,
           style: TextStyle(
             color: Colors.black87,
             fontSize: 18,
@@ -40,7 +41,7 @@ class ArticlePreviewPage extends StatelessWidget {
             const SizedBox(height: 8),
             _buildThumbnail(),
             const SizedBox(height: 16),
-            _buildTitle(),
+            _buildTitle(context),
             const SizedBox(height: 12),
             _buildMetadata(),
             const SizedBox(height: 16),
@@ -48,7 +49,7 @@ class ArticlePreviewPage extends StatelessWidget {
             const SizedBox(height: 20),
             const Divider(),
             const SizedBox(height: 16),
-            _buildContent(),
+            _buildContent(context),
             const SizedBox(height: 40),
           ],
         ),
@@ -99,9 +100,11 @@ class ArticlePreviewPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(BuildContext context) {
     return Text(
-      articleState.title.isNotEmpty ? articleState.title : 'Untitled',
+      articleState.title.isNotEmpty
+          ? articleState.title
+          : AppLocalizations.of(context)!.untitled,
       style: const TextStyle(
         fontFamily: 'Butler',
         fontWeight: FontWeight.w900,
@@ -141,11 +144,11 @@ class ArticlePreviewPage extends StatelessWidget {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
     return Text(
       articleState.content.isNotEmpty
           ? articleState.content
-          : 'No content yet.',
+          : AppLocalizations.of(context)!.noContentYet,
       style: const TextStyle(
         fontSize: 16,
         color: Colors.black87,
@@ -180,7 +183,7 @@ class ArticlePreviewPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(25),
                 ),
               ),
-              child: const Text('Keep Editing'),
+              child: Text(AppLocalizations.of(context)!.keepEditing),
             ),
           ),
           const SizedBox(width: 12),
@@ -188,8 +191,8 @@ class ArticlePreviewPage extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: () => _onPublish(context),
               icon: const Icon(Icons.publish, color: Colors.white, size: 20),
-              label: const Text(
-                'Publish',
+              label: Text(
+                AppLocalizations.of(context)!.publish,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
