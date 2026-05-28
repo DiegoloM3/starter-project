@@ -18,7 +18,7 @@ void main() {
   late MockSignInUseCase mockSignIn;
   late MockSignUpUseCase mockSignUp;
   late MockSignOutUseCase mockSignOut;
-  late MockAuthRepository mockAuthRepository;
+  late MockGetAuthStateChangesUseCase mockGetAuthStateChanges;
   late StreamController<AuthUserEntity?> authStreamController;
 
   setUpAll(() => registerTestFallbackValues());
@@ -27,13 +27,13 @@ void main() {
     mockSignIn = MockSignInUseCase();
     mockSignUp = MockSignUpUseCase();
     mockSignOut = MockSignOutUseCase();
-    mockAuthRepository = MockAuthRepository();
+    mockGetAuthStateChanges = MockGetAuthStateChangesUseCase();
     authStreamController = StreamController<AuthUserEntity?>();
 
-    when(() => mockAuthRepository.authStateChanges)
+    when(() => mockGetAuthStateChanges())
         .thenAnswer((_) => authStreamController.stream);
 
-    bloc = AuthBloc(mockSignIn, mockSignUp, mockSignOut, mockAuthRepository);
+    bloc = AuthBloc(mockSignIn, mockSignUp, mockSignOut, mockGetAuthStateChanges);
   });
 
   tearDown(() async {

@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:news_app_clean_architecture/features/auth/data/data_sources/firebase_auth_data_source.dart';
 import 'package:news_app_clean_architecture/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/repository/auth_repository.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/usecases/get_auth_state_changes.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_in.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_out.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_up.dart';
@@ -23,6 +24,9 @@ void registerAuthModule(GetIt sl) {
   sl.registerSingleton<SignInUseCase>(SignInUseCase(sl()));
   sl.registerSingleton<SignUpUseCase>(SignUpUseCase(sl()));
   sl.registerSingleton<SignOutUseCase>(SignOutUseCase(sl()));
+  sl.registerSingleton<GetAuthStateChangesUseCase>(
+    GetAuthStateChangesUseCase(sl()),
+  );
 
   // BLoC
   sl.registerFactory<AuthBloc>(

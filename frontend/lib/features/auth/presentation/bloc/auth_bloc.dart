@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
-import 'package:news_app_clean_architecture/features/auth/domain/repository/auth_repository.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/usecases/get_auth_state_changes.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_in.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_out.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_up.dart';
@@ -19,14 +19,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this._signInUseCase,
     this._signUpUseCase,
     this._signOutUseCase,
-    AuthRepository authRepository,
+    GetAuthStateChangesUseCase getAuthStateChanges,
   ) : super(const AuthInitial()) {
     on<AuthSignInRequested>(_onSignInRequested);
     on<AuthSignUpRequested>(_onSignUpRequested);
     on<AuthSignOutRequested>(_onSignOutRequested);
     on<AuthStateChanged>(_onAuthStateChanged);
 
-    _authSubscription = authRepository.authStateChanges.listen(
+    _authSubscription = getAuthStateChanges().listen(
       (user) => add(AuthStateChanged(user: user)),
     );
   }

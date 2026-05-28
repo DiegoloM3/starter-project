@@ -19,6 +19,7 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/add_comment.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_comments.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/delete_comment.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/usecases/get_auth_state_changes.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_in.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_up.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_out.dart';
@@ -82,6 +83,9 @@ class MockSignInUseCase extends Mock implements SignInUseCase {}
 class MockSignUpUseCase extends Mock implements SignUpUseCase {}
 
 class MockSignOutUseCase extends Mock implements SignOutUseCase {}
+
+class MockGetAuthStateChangesUseCase extends Mock
+    implements GetAuthStateChangesUseCase {}
 
 // Data source mocks
 class MockNewsApiService extends Mock implements NewsApiService {}
