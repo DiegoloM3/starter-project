@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:news_app_clean_architecture/core/errors/app_exception.dart';
 
 import '../../../../domain/entities/article.dart';
 
@@ -17,4 +18,13 @@ class LocalArticlesLoading extends LocalArticlesState {
 
 class LocalArticlesDone extends LocalArticlesState {
   const LocalArticlesDone(List<ArticleEntity> articles) : super(articles: articles);
+}
+
+class LocalArticlesFailure extends LocalArticlesState {
+  final AppException error;
+
+  const LocalArticlesFailure(this.error);
+
+  @override
+  List<Object?> get props => [error];
 }
