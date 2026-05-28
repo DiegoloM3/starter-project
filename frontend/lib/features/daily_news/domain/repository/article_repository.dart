@@ -15,6 +15,9 @@ abstract class ArticleRepository {
   Future<DataState<ArticleEntity>> updateArticle(ArticleEntity article);
   Future<DataState<void>> deleteArticle(String articleId);
 
+  // Merged feed (News API + Firestore published)
+  Stream<DataState<List<ArticleEntity>>> getFeedArticles();
+
   // Firestore real-time queries
   Stream<DataState<List<ArticleEntity>>> getPublishedArticles();
   Stream<DataState<List<ArticleEntity>>> getUserArticles(String userId);

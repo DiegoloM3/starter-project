@@ -41,11 +41,13 @@ class ArticleModel extends ArticleEntity {
   );
 
   factory ArticleModel.fromJson(Map<String, dynamic> map) {
+    final url = map['url'] ?? '';
     return ArticleModel(
+      id: url.isNotEmpty ? url.hashCode.toString() : null,
       authorName: map['author'] ?? "",
       title: map['title'] ?? "",
       description: map['description'] ?? "",
-      url: map['url'] ?? "",
+      url: url,
       thumbnailUrl: map['urlToImage'] != null && map['urlToImage'] != ""
           ? map['urlToImage']
           : kDefaultImage,

@@ -120,6 +120,61 @@ class ArticleRepositoryImpl implements ArticleRepository {
     }
   }
 
+  // --- Merged feed (News API + Firestore) ---
+
+  @override
+  Stream<DataState<List<ArticleEntity>>> getFeedArticles() async* {
+    final apiArticles = await _fetchApiArticlesSafely();
+    yield* _firestoreDataSource.getPublishedArticles().transform(
+          StreamTransformer<List<ArticleModel>,
+              DataState<List<ArticleEntity>>>.fromHandlers(
+            handleData: (models, sink) {
+              final firestoreEntities =
+                  models.map((m) => m.toEntity()).toList();
+              sink.add(DataSuccess(
+                  _mergeSorted(apiArticles, firestoreEntities)));
+            },
+            handleError: (error, stackTrace, sink) {
+              if (apiArticles.isNotEmpty) {
+                sink.add(DataSuccess(apiArticles));
+                return;
+              }
+              sink.add(
+                  DataFailed(ExceptionMapper.fromException(error)));
+            },
+          ),
+        );
+  }
+
+  Future<List<ArticleEntity>> _fetchApiArticlesSafely() async {
+    try {
+      final result =
+          await getNewsArticles().timeout(const Duration(seconds: 10));
+      if (result is DataSuccess && result.data != null) {
+        return result.data!;
+      }
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  List<ArticleEntity> _mergeSorted(
+    List<ArticleEntity> apiArticles,
+    List<ArticleEntity> firestoreArticles,
+  ) {
+    final combined = [...firestoreArticles, ...apiArticles];
+    combined.sort((a, b) {
+      final aDate = DateTime.tryParse(a.publishedAt ?? '');
+      final bDate = DateTime.tryParse(b.publishedAt ?? '');
+      if (aDate == null && bDate == null) return 0;
+      if (aDate == null) return 1;
+      if (bDate == null) return -1;
+      return bDate.compareTo(aDate);
+    });
+    return combined;
+  }
+
   // --- Firestore real-time streams ---
 
   @override
