@@ -312,4 +312,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tryAgain => 'Try again';
+
+  @override
+  String get appName => 'Symmetry';
+
+  @override
+  String get tabFeed => 'Feed';
+
+  @override
+  String get tabSearch => 'Search';
+
+  @override
+  String get tabSaved => 'Saved';
+
+  @override
+  String get tabProfile => 'Profile';
+
+  @override
+  String get sectionLatest => 'LATEST';
+
+  @override
+  String get signOut => 'Sign out';
+
+  @override
+  String readingTime(int minutes) {
+    return '$minutes min read';
+  }
 }

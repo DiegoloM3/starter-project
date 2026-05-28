@@ -319,4 +319,30 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tryAgain => 'Intentar de nuevo';
+
+  @override
+  String get appName => 'Symmetry';
+
+  @override
+  String get tabFeed => 'Inicio';
+
+  @override
+  String get tabSearch => 'Buscar';
+
+  @override
+  String get tabSaved => 'Guardados';
+
+  @override
+  String get tabProfile => 'Perfil';
+
+  @override
+  String get sectionLatest => 'RECIENTES';
+
+  @override
+  String get signOut => 'Cerrar sesión';
+
+  @override
+  String readingTime(int minutes) {
+    return '$minutes min de lectura';
+  }
 }

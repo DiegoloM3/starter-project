@@ -103,5 +103,21 @@
   "tryDifferentKeywords": "Probá con otras palabras clave o revisá la ortografía",
   "somethingWentWrong": "Algo salió mal",
   "couldNotLoadArticles": "No pudimos cargar los artículos. Revisá tu conexión e intentá de nuevo.",
-  "tryAgain": "Intentar de nuevo"
+  "tryAgain": "Intentar de nuevo",
+  "appName": "Symmetry",
+  "tabFeed": "Inicio",
+  "tabSearch": "Buscar",
+  "tabSaved": "Guardados",
+  "tabProfile": "Perfil",
+  "sectionLatest": "RECIENTES",
+  "signOut": "Cerrar sesión",
+  "readingTime": "{minutes} min de lectura",
+  "@readingTime": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  }
 }

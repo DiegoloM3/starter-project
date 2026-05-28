@@ -679,6 +679,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try again'**
   String get tryAgain;
+
+  /// No description provided for @appName.
+  ///
+  /// In en, this message translates to:
+  /// **'Symmetry'**
+  String get appName;
+
+  /// No description provided for @tabFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Feed'**
+  String get tabFeed;
+
+  /// No description provided for @tabSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get tabSearch;
+
+  /// No description provided for @tabSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get tabSaved;
+
+  /// No description provided for @tabProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get tabProfile;
+
+  /// No description provided for @sectionLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'LATEST'**
+  String get sectionLatest;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get signOut;
+
+  /// No description provided for @readingTime.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min read'**
+  String readingTime(int minutes);
 }
 
 class _AppLocalizationsDelegate

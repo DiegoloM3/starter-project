@@ -110,5 +110,21 @@
   "tryDifferentKeywords": "Try different keywords or check your spelling",
   "somethingWentWrong": "Something went wrong",
   "couldNotLoadArticles": "We couldn't load the articles. Check your connection and try again.",
-  "tryAgain": "Try again"
+  "tryAgain": "Try again",
+  "appName": "Symmetry",
+  "tabFeed": "Feed",
+  "tabSearch": "Search",
+  "tabSaved": "Saved",
+  "tabProfile": "Profile",
+  "sectionLatest": "LATEST",
+  "signOut": "Sign out",
+  "readingTime": "{minutes} min read",
+  "@readingTime": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  }
 }
