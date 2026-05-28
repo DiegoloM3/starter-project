@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_state.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/pages/login_page.dart';
-import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/published/published_articles_bloc.dart';
-import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/published/published_articles_event.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/feed/feed_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/feed/feed_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/home/daily_news.dart';
 
 class AuthGate extends StatelessWidget {
@@ -17,8 +17,8 @@ class AuthGate extends StatelessWidget {
       listenWhen: (prev, curr) => curr is AuthAuthenticated,
       listener: (context, state) {
         context
-            .read<PublishedArticlesBloc>()
-            .add(const PublishedArticlesSubscriptionRequested());
+            .read<FeedBloc>()
+            .add(const FeedSubscriptionRequested());
       },
       builder: (context, state) {
         if (state is AuthAuthenticated) {
