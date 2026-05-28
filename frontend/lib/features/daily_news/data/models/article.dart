@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:floor/floor.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article_status.dart';
 import '../../../../core/constants/constants.dart';
 
 @Entity(tableName: 'article', primaryKeys: ['id'])
@@ -93,5 +95,74 @@ class ArticleModel extends ArticleEntity {
       isDeleted: isDeleted,
       readingTimeMinutes: readingTimeMinutes,
     );
+  }
+
+  factory ArticleModel.fromFirestore(Map<String, dynamic> data) {
+    return ArticleModel(
+      id: data['id'] as String?,
+      title: data['title'] as String?,
+      description: data['description'] as String?,
+      content: data['content'] as String?,
+      authorId: data['authorId'] as String?,
+      authorName: data['authorName'] as String?,
+      thumbnailUrl: data['thumbnailUrl'] as String?,
+      thumbnailPath: data['thumbnailPath'] as String?,
+      url: data['url'] as String?,
+      publishedAt: _timestampToString(data['publishedAt']),
+      createdAt: _timestampToString(data['createdAt']),
+      updatedAt: _timestampToString(data['updatedAt']),
+      status: data['status'] as String?,
+      isDeleted: data['isDeleted'] as bool?,
+      readingTimeMinutes: data['readingTimeMinutes'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toFirestoreMap() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'content': content,
+      'authorId': authorId,
+      'authorName': authorName,
+      'thumbnailUrl': thumbnailUrl ?? '',
+      'thumbnailPath': thumbnailPath ?? '',
+      'url': url,
+      'publishedAt': publishedAt != null
+          ? Timestamp.fromDate(DateTime.parse(publishedAt!))
+          : null,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+      'status': status ?? ArticleStatus.draft,
+      'isDeleted': isDeleted ?? false,
+      'readingTimeMinutes': readingTimeMinutes ?? 1,
+    };
+  }
+
+  /// For updates only — excludes immutable fields (id, authorId, createdAt).
+  Map<String, dynamic> toFirestoreUpdateMap() {
+    return {
+      'title': title,
+      'description': description,
+      'content': content,
+      'authorName': authorName,
+      'thumbnailUrl': thumbnailUrl ?? '',
+      'thumbnailPath': thumbnailPath ?? '',
+      'url': url,
+      'publishedAt': publishedAt != null
+          ? Timestamp.fromDate(DateTime.parse(publishedAt!))
+          : null,
+      'updatedAt': FieldValue.serverTimestamp(),
+      'status': status,
+      'isDeleted': isDeleted,
+      'readingTimeMinutes': readingTimeMinutes,
+    };
+  }
+
+  static String? _timestampToString(dynamic value) {
+    if (value == null) return null;
+    if (value is Timestamp) return value.toDate().toIso8601String();
+    if (value is String) return value;
+    return null;
   }
 }

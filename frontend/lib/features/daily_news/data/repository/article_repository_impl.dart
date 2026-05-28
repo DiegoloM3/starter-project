@@ -1,21 +1,36 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:news_app_clean_architecture/core/constants/constants.dart';
 import 'package:news_app_clean_architecture/core/errors/app_exception.dart';
-import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/app_database.dart';
-import 'package:news_app_clean_architecture/features/daily_news/data/models/article.dart';
+import 'package:news_app_clean_architecture/core/errors/exception_mapper.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/app_database.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/firebase_storage_data_source.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/firestore_article_data_source.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/news_api_service.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/models/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart';
-
-import '../data_sources/remote/news_api_service.dart';
 
 class ArticleRepositoryImpl implements ArticleRepository {
   final NewsApiService _newsApiService;
   final AppDatabase _appDatabase;
+  final FirestoreArticleDataSource _firestoreDataSource;
+  final FirebaseStorageDataSource _storageDataSource;
+  final FirebaseAuth _auth;
 
-  ArticleRepositoryImpl(this._newsApiService, this._appDatabase);
+  ArticleRepositoryImpl(
+    this._newsApiService,
+    this._appDatabase,
+    this._firestoreDataSource,
+    this._storageDataSource,
+    this._auth,
+  );
+
+  // --- News API ---
 
   @override
   Future<DataState<List<ArticleEntity>>> getNewsArticles() async {
@@ -27,7 +42,8 @@ class ArticleRepositoryImpl implements ArticleRepository {
       );
 
       if (httpResponse.response.statusCode == HttpStatus.ok) {
-        final entities = httpResponse.data.map((model) => model.toEntity()).toList();
+        final entities =
+            httpResponse.data.map((model) => model.toEntity()).toList();
         return DataSuccess(entities);
       } else {
         return DataFailed(
@@ -38,14 +54,11 @@ class ArticleRepositoryImpl implements ArticleRepository {
         );
       }
     } on DioError catch (e) {
-      return DataFailed(
-        AppException(
-          message: e.message ?? 'Network error',
-          code: e.type.name,
-        ),
-      );
+      return DataFailed(ExceptionMapper.fromDioError(e));
     }
   }
+
+  // --- Local database ---
 
   @override
   Future<List<ArticleEntity>> getSavedArticles() async {
@@ -55,49 +68,128 @@ class ArticleRepositoryImpl implements ArticleRepository {
 
   @override
   Future<void> removeArticle(ArticleEntity article) {
-    return _appDatabase.articleDAO.deleteArticle(ArticleModel.fromEntity(article));
+    return _appDatabase.articleDAO
+        .deleteArticle(ArticleModel.fromEntity(article));
   }
 
   @override
   Future<void> saveArticle(ArticleEntity article) {
-    return _appDatabase.articleDAO.insertArticle(ArticleModel.fromEntity(article));
+    return _appDatabase.articleDAO
+        .insertArticle(ArticleModel.fromEntity(article));
+  }
+
+  // --- Firestore CRUD ---
+
+  @override
+  Future<DataState<ArticleEntity>> createArticle(
+      ArticleEntity article) async {
+    try {
+      final model = ArticleModel.fromEntity(article);
+      final created = await _firestoreDataSource.createArticle(model);
+      return DataSuccess(created.toEntity());
+    } on FirebaseException catch (e) {
+      return DataFailed(ExceptionMapper.fromFirebaseException(e));
+    } catch (e) {
+      return DataFailed(ExceptionMapper.fromException(e));
+    }
   }
 
   @override
-  Future<DataState<ArticleEntity>> createArticle(ArticleEntity article) {
-    throw UnimplementedError('Firestore implementation pending — Phase 5');
+  Future<DataState<ArticleEntity>> updateArticle(
+      ArticleEntity article) async {
+    try {
+      final model = ArticleModel.fromEntity(article);
+      final updated = await _firestoreDataSource.updateArticle(model);
+      return DataSuccess(updated.toEntity());
+    } on FirebaseException catch (e) {
+      return DataFailed(ExceptionMapper.fromFirebaseException(e));
+    } catch (e) {
+      return DataFailed(ExceptionMapper.fromException(e));
+    }
   }
 
   @override
-  Future<DataState<ArticleEntity>> updateArticle(ArticleEntity article) {
-    throw UnimplementedError('Firestore implementation pending — Phase 5');
+  Future<DataState<void>> deleteArticle(String articleId) async {
+    try {
+      await _firestoreDataSource.deleteArticle(articleId);
+      return const DataSuccess(null);
+    } on FirebaseException catch (e) {
+      return DataFailed(ExceptionMapper.fromFirebaseException(e));
+    } catch (e) {
+      return DataFailed(ExceptionMapper.fromException(e));
+    }
   }
 
-  @override
-  Future<DataState<void>> deleteArticle(String articleId) {
-    throw UnimplementedError('Firestore implementation pending — Phase 5');
-  }
+  // --- Firestore real-time streams ---
 
   @override
   Stream<DataState<List<ArticleEntity>>> getPublishedArticles() {
-    throw UnimplementedError('Firestore implementation pending — Phase 5');
+    return _wrapArticleStream(
+        _firestoreDataSource.getPublishedArticles());
   }
 
   @override
   Stream<DataState<List<ArticleEntity>>> getUserArticles(String userId) {
-    throw UnimplementedError('Firestore implementation pending — Phase 5');
+    return _wrapArticleStream(
+        _firestoreDataSource.getUserArticles(userId));
   }
 
   @override
   Stream<DataState<List<ArticleEntity>>> getDraftArticles(String userId) {
-    throw UnimplementedError('Firestore implementation pending — Phase 5');
+    return _wrapArticleStream(
+        _firestoreDataSource.getDraftArticles(userId));
   }
+
+  @override
+  Stream<DataState<List<ArticleEntity>>> searchArticles(String query) {
+    return _wrapArticleStream(
+        _firestoreDataSource.searchPublishedArticles(query));
+  }
+
+  Stream<DataState<List<ArticleEntity>>> _wrapArticleStream(
+    Stream<List<ArticleModel>> source,
+  ) {
+    return source.transform(
+      StreamTransformer<List<ArticleModel>,
+          DataState<List<ArticleEntity>>>.fromHandlers(
+        handleData: (models, sink) {
+          sink.add(
+              DataSuccess(models.map((m) => m.toEntity()).toList()));
+        },
+        handleError: (error, stackTrace, sink) {
+          sink.add(DataFailed(ExceptionMapper.fromException(error)));
+        },
+      ),
+    );
+  }
+
+  // --- Storage ---
 
   @override
   Future<DataState<String>> uploadThumbnail({
     required String articleId,
     required String filePath,
-  }) {
-    throw UnimplementedError('Firestore implementation pending — Phase 5');
+  }) async {
+    try {
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) {
+        return const DataFailed(
+          AuthException(
+            message: 'User not authenticated',
+            code: 'unauthenticated',
+          ),
+        );
+      }
+      final downloadUrl = await _storageDataSource.uploadThumbnail(
+        uid: uid,
+        articleId: articleId,
+        filePath: filePath,
+      );
+      return DataSuccess(downloadUrl);
+    } on FirebaseException catch (e) {
+      return DataFailed(ExceptionMapper.fromFirebaseException(e));
+    } catch (e) {
+      return DataFailed(ExceptionMapper.fromException(e));
+    }
   }
 }
