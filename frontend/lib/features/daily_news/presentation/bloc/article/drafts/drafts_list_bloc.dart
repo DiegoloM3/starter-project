@@ -52,7 +52,10 @@ class DraftsListBloc extends Bloc<DraftsListEvent, DraftsListState> {
     DraftDeleted event,
     Emitter<DraftsListState> emit,
   ) async {
-    await _deleteArticleUseCase(params: event.articleId);
+    final result = await _deleteArticleUseCase(params: event.articleId);
+    if (result is DataFailed) {
+      emit(DraftsListFailure(result.error!));
+    }
   }
 
   @override
