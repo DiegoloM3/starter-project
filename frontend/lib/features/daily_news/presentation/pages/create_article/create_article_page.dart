@@ -32,7 +32,7 @@ class CreateArticlePage extends HookWidget {
       create: (_) {
         final bloc = sl<CreateArticleBloc>();
         if (draft != null) {
-          bloc.add(LoadExistingDraft(draft!));
+          bloc.add(ExistingDraftLoaded(draft!));
         }
         return bloc;
       },
@@ -677,7 +677,9 @@ class CreateArticlePage extends HookWidget {
               onPressed: isLoading
                   ? null
                   : () =>
-                      context.read<CreateArticleBloc>().add(const SaveDraft()),
+                      context
+                          .read<CreateArticleBloc>()
+                          .add(const DraftSaveRequested()),
               child: Text(
                 l10n.saveDraft,
                 style: tt.titleSmall?.copyWith(
@@ -706,7 +708,7 @@ class CreateArticlePage extends HookWidget {
     );
 
     if (result == true && context.mounted) {
-      context.read<CreateArticleBloc>().add(const PublishArticle());
+      context.read<CreateArticleBloc>().add(const PublishRequested());
     }
   }
 

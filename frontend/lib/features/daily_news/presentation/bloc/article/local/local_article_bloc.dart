@@ -18,13 +18,13 @@ class LocalArticleBloc extends Bloc<LocalArticlesEvent, LocalArticlesState> {
     this._saveArticleUseCase,
     this._removeArticleUseCase,
   ) : super(const LocalArticlesLoading()) {
-    on<GetSavedArticles>(onGetSavedArticles);
-    on<RemoveArticle>(onRemoveArticle);
-    on<SaveArticle>(onSaveArticle);
+    on<SavedArticlesRequested>(onGetSavedArticles);
+    on<ArticleRemoved>(onRemoveArticle);
+    on<ArticleSaved>(onSaveArticle);
   }
 
   Future<void> onGetSavedArticles(
-    GetSavedArticles event,
+    SavedArticlesRequested event,
     Emitter<LocalArticlesState> emit,
   ) async {
     final dataState = await _getSavedArticleUseCase();
@@ -32,7 +32,7 @@ class LocalArticleBloc extends Bloc<LocalArticlesEvent, LocalArticlesState> {
   }
 
   Future<void> onRemoveArticle(
-    RemoveArticle removeArticle,
+    ArticleRemoved removeArticle,
     Emitter<LocalArticlesState> emit,
   ) async {
     final dataState = await _removeArticleUseCase(params: removeArticle.article);
@@ -45,7 +45,7 @@ class LocalArticleBloc extends Bloc<LocalArticlesEvent, LocalArticlesState> {
   }
 
   Future<void> onSaveArticle(
-    SaveArticle saveArticle,
+    ArticleSaved saveArticle,
     Emitter<LocalArticlesState> emit,
   ) async {
     final dataState = await _saveArticleUseCase(params: saveArticle.article);

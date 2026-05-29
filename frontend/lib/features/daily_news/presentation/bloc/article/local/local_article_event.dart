@@ -11,14 +11,14 @@ abstract class LocalArticlesEvent extends Equatable {
   List<Object?> get props => [article];
 }
 
-class GetSavedArticles extends LocalArticlesEvent {
-  const GetSavedArticles();
+class SavedArticlesRequested extends LocalArticlesEvent {
+  const SavedArticlesRequested();
 }
 
-class RemoveArticle extends LocalArticlesEvent {
-  const RemoveArticle(ArticleEntity article) : super(article: article);
+class ArticleRemoved extends LocalArticlesEvent {
+  const ArticleRemoved(ArticleEntity article) : super(article: article);
 }
 
-class SaveArticle extends LocalArticlesEvent {
-  const SaveArticle(ArticleEntity article) : super(article: article);
+class ArticleSaved extends LocalArticlesEvent {
+  const ArticleSaved(ArticleEntity article) : super(article: article);
 }

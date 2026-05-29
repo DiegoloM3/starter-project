@@ -365,7 +365,7 @@ class ArticleDetailsView extends StatelessWidget {
 
   void _onBookmark(BuildContext context) {
     if (article == null) return;
-    BlocProvider.of<LocalArticleBloc>(context).add(SaveArticle(article!));
+    BlocProvider.of<LocalArticleBloc>(context).add(ArticleSaved(article!));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(AppLocalizations.of(context)!.articleSavedSuccessfully),

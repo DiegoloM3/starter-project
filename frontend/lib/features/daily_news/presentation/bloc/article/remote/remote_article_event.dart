@@ -2,6 +2,6 @@ abstract class RemoteArticlesEvent {
   const RemoteArticlesEvent();
 }
 
-class GetArticles extends RemoteArticlesEvent {
-  const GetArticles();
+class RemoteArticlesRequested extends RemoteArticlesEvent {
+  const RemoteArticlesRequested();
 }

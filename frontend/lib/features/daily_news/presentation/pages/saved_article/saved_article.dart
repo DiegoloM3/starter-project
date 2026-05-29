@@ -37,14 +37,14 @@ class _SavedArticlesState extends State<SavedArticles> {
   @override
   void initState() {
     super.initState();
-    _bloc = sl<LocalArticleBloc>()..add(const GetSavedArticles());
+    _bloc = sl<LocalArticleBloc>()..add(const SavedArticlesRequested());
   }
 
   @override
   void didUpdateWidget(covariant SavedArticles oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isActive && !oldWidget.isActive) {
-      _bloc.add(const GetSavedArticles());
+      _bloc.add(const SavedArticlesRequested());
     }
   }
 
@@ -122,7 +122,7 @@ class _SavedBody extends StatelessWidget {
             actionLabel: l10n.tryAgain,
             onAction: () => context
                 .read<LocalArticleBloc>()
-                .add(const GetSavedArticles()),
+                .add(const SavedArticlesRequested()),
           );
         }
 
@@ -171,7 +171,7 @@ class _SavedBody extends StatelessWidget {
   }
 
   void _onRemove(BuildContext context, ArticleEntity article) {
-    BlocProvider.of<LocalArticleBloc>(context).add(RemoveArticle(article));
+    BlocProvider.of<LocalArticleBloc>(context).add(ArticleRemoved(article));
     final l10n = AppLocalizations.of(context)!;
     final cs = Theme.of(context).colorScheme;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -182,7 +182,7 @@ class _SavedBody extends StatelessWidget {
           textColor: cs.primary,
           onPressed: () {
             BlocProvider.of<LocalArticleBloc>(context)
-                .add(SaveArticle(article));
+                .add(ArticleSaved(article));
           },
         ),
       ),

@@ -4,10 +4,10 @@ abstract class CreateArticleEvent {
   const CreateArticleEvent();
 }
 
-class LoadExistingDraft extends CreateArticleEvent {
+class ExistingDraftLoaded extends CreateArticleEvent {
   final ArticleEntity article;
 
-  const LoadExistingDraft(this.article);
+  const ExistingDraftLoaded(this.article);
 }
 
 class TitleChanged extends CreateArticleEvent {
@@ -42,14 +42,14 @@ class AutosaveRequested extends CreateArticleEvent {
   const AutosaveRequested();
 }
 
-class SaveDraft extends CreateArticleEvent {
-  const SaveDraft();
+class DraftSaveRequested extends CreateArticleEvent {
+  const DraftSaveRequested();
 }
 
-class PublishArticle extends CreateArticleEvent {
-  const PublishArticle();
+class PublishRequested extends CreateArticleEvent {
+  const PublishRequested();
 }
 
-class ArchiveArticle extends CreateArticleEvent {
-  const ArchiveArticle();
+class ArchiveRequested extends CreateArticleEvent {
+  const ArchiveRequested();
 }

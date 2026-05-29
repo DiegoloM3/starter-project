@@ -33,12 +33,12 @@ void main() {
     });
   });
 
-  group('GetSavedArticles', () {
+  group('SavedArticlesRequested', () {
     test('emits Done with articles on success', () async {
       final articles = testArticleList();
       when(() => mockGetSaved()).thenAnswer((_) async => DataSuccess(articles));
 
-      bloc.add(const GetSavedArticles());
+      bloc.add(const SavedArticlesRequested());
       await expectLater(
         bloc.stream,
         emits(isA<LocalArticlesDone>()),
@@ -53,7 +53,7 @@ void main() {
       when(() => mockGetSaved())
           .thenAnswer((_) async => const DataSuccess([]));
 
-      bloc.add(const GetSavedArticles());
+      bloc.add(const SavedArticlesRequested());
       await expectLater(
         bloc.stream,
         emits(isA<LocalArticlesDone>()),
@@ -68,7 +68,7 @@ void main() {
       when(() => mockGetSaved())
           .thenAnswer((_) async => const DataFailed(error));
 
-      bloc.add(const GetSavedArticles());
+      bloc.add(const SavedArticlesRequested());
       await expectLater(
         bloc.stream,
         emits(isA<LocalArticlesFailure>()),
@@ -80,7 +80,7 @@ void main() {
     });
   });
 
-  group('SaveArticle', () {
+  group('ArticleSaved', () {
     test('saves article then refreshes list', () async {
       final article = testArticle();
       when(() => mockSave(params: any(named: 'params')))
@@ -88,7 +88,7 @@ void main() {
       when(() => mockGetSaved())
           .thenAnswer((_) async => DataSuccess([article]));
 
-      bloc.add(SaveArticle(article));
+      bloc.add(ArticleSaved(article));
       await expectLater(
         bloc.stream,
         emits(isA<LocalArticlesDone>()),
@@ -104,7 +104,7 @@ void main() {
       when(() => mockSave(params: any(named: 'params')))
           .thenAnswer((_) async => const DataFailed(error));
 
-      bloc.add(SaveArticle(article));
+      bloc.add(ArticleSaved(article));
       await expectLater(
         bloc.stream,
         emits(isA<LocalArticlesFailure>()),
@@ -117,7 +117,7 @@ void main() {
     });
   });
 
-  group('RemoveArticle', () {
+  group('ArticleRemoved', () {
     test('removes article then refreshes list', () async {
       final article = testArticle();
       when(() => mockRemove(params: any(named: 'params')))
@@ -125,7 +125,7 @@ void main() {
       when(() => mockGetSaved())
           .thenAnswer((_) async => const DataSuccess([]));
 
-      bloc.add(RemoveArticle(article));
+      bloc.add(ArticleRemoved(article));
       await expectLater(
         bloc.stream,
         emits(isA<LocalArticlesDone>()),
@@ -143,7 +143,7 @@ void main() {
       when(() => mockRemove(params: any(named: 'params')))
           .thenAnswer((_) async => const DataFailed(error));
 
-      bloc.add(RemoveArticle(article));
+      bloc.add(ArticleRemoved(article));
       await expectLater(
         bloc.stream,
         emits(isA<LocalArticlesFailure>()),

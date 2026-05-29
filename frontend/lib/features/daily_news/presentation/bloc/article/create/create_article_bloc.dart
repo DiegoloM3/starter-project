@@ -34,7 +34,7 @@ class CreateArticleBloc
     required this.authorId,
     required this.authorName,
   }) : super(const CreateArticleState()) {
-    on<LoadExistingDraft>(_onLoadDraft);
+    on<ExistingDraftLoaded>(_onLoadDraft);
     on<TitleChanged>(_onTitleChanged);
     on<DescriptionChanged>(_onDescriptionChanged);
     on<ContentChanged>(_onContentChanged);
@@ -44,13 +44,13 @@ class CreateArticleBloc
       _onAutosave,
       transformer: debounceRestartable(const Duration(seconds: 2)),
     );
-    on<SaveDraft>(_onSaveDraft);
-    on<PublishArticle>(_onPublish);
-    on<ArchiveArticle>(_onArchive);
+    on<DraftSaveRequested>(_onSaveDraft);
+    on<PublishRequested>(_onPublish);
+    on<ArchiveRequested>(_onArchive);
   }
 
   void _onLoadDraft(
-    LoadExistingDraft event,
+    ExistingDraftLoaded event,
     Emitter<CreateArticleState> emit,
   ) {
     final article = event.article;
@@ -125,7 +125,7 @@ class CreateArticleBloc
   }
 
   Future<void> _onSaveDraft(
-    SaveDraft event,
+    DraftSaveRequested event,
     Emitter<CreateArticleState> emit,
   ) async {
     if (!state.hasContent) return;
@@ -172,7 +172,7 @@ class CreateArticleBloc
   }
 
   Future<void> _onPublish(
-    PublishArticle event,
+    PublishRequested event,
     Emitter<CreateArticleState> emit,
   ) async {
     if (!state.canPublish) return;
@@ -229,7 +229,7 @@ class CreateArticleBloc
   }
 
   Future<void> _onArchive(
-    ArchiveArticle event,
+    ArchiveRequested event,
     Emitter<CreateArticleState> emit,
   ) async {
     if (!state.canArchive) return;

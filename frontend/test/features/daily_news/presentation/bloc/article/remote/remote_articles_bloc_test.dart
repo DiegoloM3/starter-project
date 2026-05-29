@@ -26,13 +26,13 @@ void main() {
     });
   });
 
-  group('GetArticles', () {
+  group('RemoteArticlesRequested', () {
     test('emits [Done] with articles when use case returns DataSuccess',
         () async {
       final articles = testArticleList();
       when(() => mockUseCase()).thenAnswer((_) async => DataSuccess(articles));
 
-      bloc.add(const GetArticles());
+      bloc.add(const RemoteArticlesRequested());
       await expectLater(
         bloc.stream,
         emits(isA<RemoteArticlesDone>()),
@@ -50,7 +50,7 @@ void main() {
       when(() => mockUseCase())
           .thenAnswer((_) async => const DataFailed(error));
 
-      bloc.add(const GetArticles());
+      bloc.add(const RemoteArticlesRequested());
       await expectLater(
         bloc.stream,
         emits(isA<RemoteArticlesFailure>()),
@@ -66,7 +66,7 @@ void main() {
       when(() => mockUseCase())
           .thenAnswer((_) async => const DataSuccess([]));
 
-      bloc.add(const GetArticles());
+      bloc.add(const RemoteArticlesRequested());
       await expectLater(
         bloc.stream,
         emits(isA<RemoteArticlesDone>()),

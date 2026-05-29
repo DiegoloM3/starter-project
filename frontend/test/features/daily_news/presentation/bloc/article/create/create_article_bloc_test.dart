@@ -51,7 +51,7 @@ void main() {
     });
   });
 
-  group('LoadExistingDraft', () {
+  group('ExistingDraftLoaded', () {
     test('populates state from article entity', () async {
       final article = testArticle(
         title: 'Draft Title',
@@ -59,7 +59,7 @@ void main() {
         content: 'Draft Content',
       );
 
-      bloc.add(LoadExistingDraft(article));
+      bloc.add(ExistingDraftLoaded(article));
       await Future.delayed(const Duration(milliseconds: 50));
 
       expect(bloc.state.title, 'Draft Title');
@@ -126,7 +126,7 @@ void main() {
     });
   });
 
-  group('SaveDraft', () {
+  group('DraftSaveRequested', () {
     test('creates new article when articleId is null', () async {
       final createdArticle = testArticle(id: 'new-id');
       when(() => mockCreate(params: any(named: 'params')))
@@ -135,7 +135,7 @@ void main() {
       bloc.add(const TitleChanged('My Draft'));
       await Future.delayed(const Duration(milliseconds: 50));
 
-      bloc.add(const SaveDraft());
+      bloc.add(const DraftSaveRequested());
       await Future.delayed(const Duration(milliseconds: 100));
 
       expect(bloc.state.articleId, 'new-id');
@@ -151,10 +151,10 @@ void main() {
       when(() => mockUpdate(params: any(named: 'params')))
           .thenAnswer((_) async => DataSuccess(existingArticle));
 
-      bloc.add(LoadExistingDraft(existingArticle));
+      bloc.add(ExistingDraftLoaded(existingArticle));
       await Future.delayed(const Duration(milliseconds: 50));
 
-      bloc.add(const SaveDraft());
+      bloc.add(const DraftSaveRequested());
       await Future.delayed(const Duration(milliseconds: 100));
 
       verify(() => mockUpdate(params: any(named: 'params')))
@@ -163,7 +163,7 @@ void main() {
     });
 
     test('does nothing when content is empty', () async {
-      bloc.add(const SaveDraft());
+      bloc.add(const DraftSaveRequested());
       await Future.delayed(const Duration(milliseconds: 100));
 
       verifyNever(() => mockCreate(params: any(named: 'params')));
@@ -178,7 +178,7 @@ void main() {
       bloc.add(const TitleChanged('Title'));
       await Future.delayed(const Duration(milliseconds: 50));
 
-      bloc.add(const SaveDraft());
+      bloc.add(const DraftSaveRequested());
       await Future.delayed(const Duration(milliseconds: 100));
 
       expect(bloc.state.error, isNotNull);
@@ -186,7 +186,7 @@ void main() {
     });
   });
 
-  group('PublishArticle', () {
+  group('PublishRequested', () {
     test('creates, uploads thumbnail, and publishes', () async {
       final createdArticle = testArticle(id: 'pub-id');
       when(() => mockCreate(params: any(named: 'params')))
@@ -202,7 +202,7 @@ void main() {
       bloc.add(const ThumbnailSelected('/path/thumb.jpg'));
       await Future.delayed(const Duration(milliseconds: 100));
 
-      bloc.add(const PublishArticle());
+      bloc.add(const PublishRequested());
       await Future.delayed(const Duration(milliseconds: 300));
 
       expect(bloc.state.status, ArticleStatus.published);
@@ -220,7 +220,7 @@ void main() {
       bloc.add(const ContentChanged('Content body'));
       await Future.delayed(const Duration(milliseconds: 100));
 
-      bloc.add(const PublishArticle());
+      bloc.add(const PublishRequested());
       await Future.delayed(const Duration(milliseconds: 200));
 
       expect(bloc.state.error, isNotNull);
@@ -233,7 +233,7 @@ void main() {
       bloc.add(const TitleChanged('Title'));
       await Future.delayed(const Duration(milliseconds: 50));
 
-      bloc.add(const PublishArticle());
+      bloc.add(const PublishRequested());
       await Future.delayed(const Duration(milliseconds: 100));
 
       verifyNever(() => mockCreate(params: any(named: 'params')));
@@ -241,7 +241,7 @@ void main() {
     });
   });
 
-  group('ArchiveArticle', () {
+  group('ArchiveRequested', () {
     test('transitions published article to archived', () async {
       final publishedArticle = testArticle(
         id: 'arch-id',
@@ -250,10 +250,10 @@ void main() {
       when(() => mockUpdate(params: any(named: 'params')))
           .thenAnswer((_) async => DataSuccess(publishedArticle));
 
-      bloc.add(LoadExistingDraft(publishedArticle));
+      bloc.add(ExistingDraftLoaded(publishedArticle));
       await Future.delayed(const Duration(milliseconds: 50));
 
-      bloc.add(const ArchiveArticle());
+      bloc.add(const ArchiveRequested());
       await Future.delayed(const Duration(milliseconds: 100));
 
       expect(bloc.state.status, ArticleStatus.archived);
@@ -263,7 +263,7 @@ void main() {
       bloc.add(const TitleChanged('Draft'));
       await Future.delayed(const Duration(milliseconds: 50));
 
-      bloc.add(const ArchiveArticle());
+      bloc.add(const ArchiveRequested());
       await Future.delayed(const Duration(milliseconds: 50));
 
       expect(bloc.state.status, ArticleStatus.draft);
@@ -279,10 +279,10 @@ void main() {
       when(() => mockUpdate(params: any(named: 'params')))
           .thenAnswer((_) async => const DataFailed(error));
 
-      bloc.add(LoadExistingDraft(publishedArticle));
+      bloc.add(ExistingDraftLoaded(publishedArticle));
       await Future.delayed(const Duration(milliseconds: 50));
 
-      bloc.add(const ArchiveArticle());
+      bloc.add(const ArchiveRequested());
       await Future.delayed(const Duration(milliseconds: 100));
 
       expect(bloc.state.error, isNotNull);
