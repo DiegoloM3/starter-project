@@ -5,6 +5,8 @@ ROADMAP.md
 # AI tool artifacts
 .claude/
 .specify/
+.cursor/
+scheduled_tasks.lock
 
 # Firebase credentials (NEVER commit these)
 **/google-services.json
