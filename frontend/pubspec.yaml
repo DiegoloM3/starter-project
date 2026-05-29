@@ -56,6 +56,7 @@ dependencies:
   #bloc event transformers
   bloc_concurrency: ^0.2.2
   google_fonts: ^8.1.0
+  crypto: ^3.0.7
 
 dev_dependencies:
   flutter_test:
@@ -70,13 +71,4 @@ dev_dependencies:
 flutter:
   generate: true
   uses-material-design: true
-
- 
-  fonts:
-    - family: Muli
-      fonts:
-        - asset: assets/fonts/muli/Muli.ttf
-        - asset: assets/fonts/muli/Muli-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/muli/Muli-Light.ttf
-          weight: 300
+  # Fonts (Libre Baskerville + Mulish) are loaded at runtime via google_fonts.
