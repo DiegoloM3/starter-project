@@ -43,7 +43,7 @@ class AppRoutes {
 
       case '/ArticlePreview':
         if (settings.arguments is! CreateArticleState) {
-          return _materialRoute(const DailyNews());
+          return _materialRoute(RouteNotFoundPage(routeName: settings.name));
         }
         return _materialRoute(ArticlePreviewPage(
           articleState: settings.arguments as CreateArticleState,
