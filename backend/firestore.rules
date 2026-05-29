@@ -75,6 +75,28 @@ service cloud.firestore {
                 || (current == 'published' && next == 'archived'));
       }
 
+      // --- publishedAt integrity on update ---
+      // - draft -> published: publishedAt must be set to the server time.
+      // - already published/archived: publishedAt is immutable.
+      // - status == 'published' must never carry a null publishedAt.
+      function publishedAtIsValid() {
+        let current = resource.data.status;
+        let next = request.resource.data.status;
+        let nextPublishedAt = request.resource.data.publishedAt;
+        return (next == 'published' ? nextPublishedAt != null : true)
+            && (current == 'draft' && next == 'published'
+                ? nextPublishedAt == request.time
+                : nextPublishedAt == resource.data.publishedAt);
+      }
+
+      // --- Soft-delete is terminal ---
+      // A soft-deleted doc (resource.data.isDeleted == true) is immutable, so
+      // every update is rejected once it is set. This also blocks un-delete
+      // (true -> false), since the existing doc can never already be deleted.
+      function softDeleteIsTerminal() {
+        return resource.data.isDeleted == false;
+      }
+
       // --- Immutable fields on update ---
       function immutableFieldsUnchanged() {
         return request.resource.data.id == resource.data.id
@@ -106,6 +128,8 @@ service cloud.firestore {
                     && articleFieldSizesValid()
                     && immutableFieldsUnchanged()
                     && statusTransitionIsValid()
+                    && publishedAtIsValid()
+                    && softDeleteIsTerminal()
                     && request.resource.data.updatedAt == request.time;
 
       // --- Delete (hard delete always denied) ---

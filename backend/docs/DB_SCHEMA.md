@@ -26,11 +26,11 @@ Top-level collection storing all articles (drafts, published, archived).
 | `authorName` | `string` | Yes | No | Display name of the author |
 | `thumbnailUrl` | `string` | Yes | No | Download URL or empty string `""` |
 | `thumbnailPath` | `string` | Yes | No | Storage path or empty string `""` |
-| `publishedAt` | `timestamp \| null` | Yes | No | `null` for drafts; set when status becomes `published` |
+| `publishedAt` | `timestamp \| null` | Yes | No | `null` for drafts. On the `draft → published` transition it must equal the server timestamp (`request.time`); immutable on every later write |
 | `createdAt` | `timestamp` | Yes | Yes | Must equal server timestamp on create |
 | `updatedAt` | `timestamp` | Yes | No | Must equal server timestamp on every write |
 | `status` | `string` | Yes | No | One of: `draft`, `published`, `archived` |
-| `isDeleted` | `bool` | Yes | No | Must be `false` on create; soft-delete only |
+| `isDeleted` | `bool` | Yes | No | Must be `false` on create. Soft-delete only, and **terminal**: once `true` the document becomes immutable (no further edits, no un-delete) |
 | `readingTimeMinutes` | `int` | Yes | No | Minimum value: 1 |
 
 ### Status Transitions
@@ -53,7 +53,7 @@ All other transitions (e.g., `draft` → `archived`, `archived` → `published`)
 ### Write Rules Summary
 
 - **Create:** Auth required. `authorId` must match authenticated user. Status must be `draft`. `isDeleted` must be `false`. `publishedAt` must be `null`. Timestamps must be server-generated.
-- **Update:** Auth + ownership required. Immutable fields cannot change. Status transitions enforced. `updatedAt` must be server timestamp.
+- **Update:** Auth + ownership required. Immutable fields cannot change. Status transitions enforced. `updatedAt` must be server timestamp. On `draft → published`, `publishedAt` is set to the server time and is immutable thereafter. A soft-deleted document (`isDeleted == true`) is terminal and rejects all further writes.
 - **Delete:** Hard deletes are **always denied**. Use `isDeleted: true` for soft-delete.
 
 ---
@@ -100,12 +100,14 @@ Subcollection for bookmarked/saved articles per user. Each document represents o
 
 ## Composite Indexes
 
+These mirror `backend/firestore.indexes.json` exactly.
+
 | Collection | Fields | Query Scope | Purpose |
 |------------|--------|-------------|---------|
-| `articles` | `authorId` ASC, `publishedAt` DESC | Collection | User's published articles sorted by date |
-| `articles` | `status` ASC, `publishedAt` DESC | Collection | Feed: published articles by date |
-| `articles` | `authorId` ASC, `status` ASC, `createdAt` DESC | Collection | User's articles filtered by status |
-| `articles` | `isDeleted` ASC, `status` ASC, `publishedAt` DESC | Collection | Feed query excluding soft-deleted articles |
+| `articles` | `isDeleted` ASC, `status` ASC, `publishedAt` DESC | Collection | Feed: published, non-deleted articles ordered by publish date |
+| `articles` | `authorId` ASC, `isDeleted` ASC, `createdAt` DESC | Collection | A user's non-deleted articles ordered by creation date |
+| `articles` | `authorId` ASC, `status` ASC, `isDeleted` ASC, `createdAt` DESC | Collection | A user's articles filtered by status, excluding soft-deleted |
+| `comments` | `isDeleted` ASC, `createdAt` ASC | Collection | An article's non-deleted comments ordered oldest-first |
 
 ---
 

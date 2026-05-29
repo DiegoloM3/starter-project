@@ -170,6 +170,25 @@ describe('Storage — MIME Type Validation', () => {
       ref.put(createFile(1024), { contentType: 'text/plain' })
     );
   });
+
+  // Regression: an unanchored regex (image/(jpeg|png|webp)) matches any
+  // contentType that merely *contains* the pattern, e.g. 'image/jpeg-evil'.
+  // The rule must anchor with ^...$ so crafted suffixes are rejected.
+  it('denies crafted image/jpeg-evil (unanchored regex bypass)', async () => {
+    const storage = getStorage({ uid: 'user-1' });
+    const ref = storage.ref(THUMBNAIL_PATH);
+    await assertFails(
+      ref.put(createFile(1024), { contentType: 'image/jpeg-evil' })
+    );
+  });
+
+  it('allows valid image/png with anchored regex', async () => {
+    const storage = getStorage({ uid: 'user-1' });
+    const ref = storage.ref(THUMBNAIL_PATH);
+    await assertSucceeds(
+      ref.put(createFile(1024), { contentType: 'image/png' })
+    );
+  });
 });
 
 describe('Storage — Size Limits', () => {
@@ -194,6 +213,14 @@ describe('Storage — Size Limits', () => {
     const ref = storage.ref(THUMBNAIL_PATH);
     await assertFails(
       ref.put(createFile(6 * 1024 * 1024), { contentType: 'image/jpeg' })
+    );
+  });
+
+  it('denies a 0-byte upload (size > 0 required)', async () => {
+    const storage = getStorage({ uid: 'user-1' });
+    const ref = storage.ref(THUMBNAIL_PATH);
+    await assertFails(
+      ref.put(createFile(0), { contentType: 'image/jpeg' })
     );
   });
 });

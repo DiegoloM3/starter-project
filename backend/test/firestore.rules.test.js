@@ -207,6 +207,17 @@ describe('Articles — Create', () => {
     );
   });
 
+  // Regression: the Flutter client previously persisted a `url` key in
+  // toFirestoreMap()/toFirestoreUpdateMap(), which hasOnly(requiredFields)
+  // rejects, breaking every real create/update. The client map must mirror
+  // exactly the rules' allowlist (no `url`). This locks that contract.
+  it('denies create with the legacy url field', async () => {
+    const db = getFirestore({ uid: 'user-1' });
+    await assertFails(
+      articleRef(db).set(validArticleData({ url: 'https://example.com' }))
+    );
+  });
+
   it('denies create with numeric title (wrong type)', async () => {
     const db = getFirestore({ uid: 'user-1' });
     await assertFails(articleRef(db).set(validArticleData({ title: 123 })));
@@ -443,6 +454,67 @@ describe('Articles — Status Transitions', () => {
   });
 });
 
+describe('Articles — publishedAt Integrity', () => {
+  it('allows publish with publishedAt == request.time', async () => {
+    await seedArticle({ status: 'draft', publishedAt: null });
+    const db = getFirestore({ uid: 'user-1' });
+    await assertSucceeds(
+      articleRef(db).update({
+        status: 'published',
+        publishedAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      })
+    );
+  });
+
+  it('denies publish with a forged future publishedAt', async () => {
+    await seedArticle({ status: 'draft', publishedAt: null });
+    const db = getFirestore({ uid: 'user-1' });
+    const future = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await assertFails(
+      articleRef(db).update({
+        status: 'published',
+        publishedAt: future,
+        updatedAt: serverTimestamp(),
+      })
+    );
+  });
+
+  it('denies publish with null publishedAt', async () => {
+    await seedArticle({ status: 'draft', publishedAt: null });
+    const db = getFirestore({ uid: 'user-1' });
+    await assertFails(
+      articleRef(db).update({
+        status: 'published',
+        publishedAt: null,
+        updatedAt: serverTimestamp(),
+      })
+    );
+  });
+
+  it('denies mutating publishedAt once published', async () => {
+    await seedArticle({ status: 'published', publishedAt: new Date() });
+    const db = getFirestore({ uid: 'user-1' });
+    await assertFails(
+      articleRef(db).update({
+        publishedAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      })
+    );
+  });
+
+  it('denies mutating publishedAt once archived', async () => {
+    await seedArticle({ status: 'archived', publishedAt: new Date() });
+    const db = getFirestore({ uid: 'user-1' });
+    await assertFails(
+      articleRef(db).update({
+        publishedAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      })
+    );
+  });
+});
+
 describe('Articles — Soft Delete', () => {
   it('allows setting isDeleted to true (soft delete)', async () => {
     await seedArticle({});
@@ -459,6 +531,28 @@ describe('Articles — Soft Delete', () => {
     await seedArticle({});
     const db = getFirestore({ uid: 'user-1' });
     await assertFails(articleRef(db).delete());
+  });
+
+  it('denies un-delete (isDeleted true → false)', async () => {
+    await seedArticle({ isDeleted: true });
+    const db = getFirestore({ uid: 'user-1' });
+    await assertFails(
+      articleRef(db).update({
+        isDeleted: false,
+        updatedAt: serverTimestamp(),
+      })
+    );
+  });
+
+  it('denies editing a soft-deleted article', async () => {
+    await seedArticle({ isDeleted: true });
+    const db = getFirestore({ uid: 'user-1' });
+    await assertFails(
+      articleRef(db).update({
+        title: 'Editing after delete',
+        updatedAt: serverTimestamp(),
+      })
+    );
   });
 });
 
