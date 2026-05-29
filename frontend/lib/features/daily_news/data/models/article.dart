@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 import 'package:floor/floor.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article_status.dart';
@@ -43,7 +46,10 @@ class ArticleModel extends ArticleEntity {
   factory ArticleModel.fromJson(Map<String, dynamic> map) {
     final url = map['url'] ?? '';
     return ArticleModel(
-      id: url.isNotEmpty ? url.hashCode.toString() : null,
+      // Deterministic id from the article URL so the same API article maps to
+      // the same Firestore comment thread on every device (md5 is stable across
+      // SDK versions/platforms, unlike String.hashCode). Not used for security.
+      id: url.isNotEmpty ? md5.convert(utf8.encode(url)).toString() : null,
       authorName: map['author'] ?? "",
       title: map['title'] ?? "",
       description: map['description'] ?? "",
