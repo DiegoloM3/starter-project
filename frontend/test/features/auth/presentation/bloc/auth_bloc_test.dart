@@ -143,6 +143,7 @@ void main() {
       bloc.add(const AuthSignUpRequested(
         email: tEmail,
         password: tPassword,
+        displayName: tAuthorName,
       ));
       await Future.delayed(const Duration(milliseconds: 50));
 
@@ -169,6 +170,7 @@ void main() {
       bloc.add(const AuthSignUpRequested(
         email: tEmail,
         password: tPassword,
+        displayName: tAuthorName,
       ));
       await Future.delayed(const Duration(milliseconds: 50));
 

@@ -14,8 +14,13 @@ class AuthSignInRequested extends AuthEvent {
 class AuthSignUpRequested extends AuthEvent {
   final String email;
   final String password;
+  final String displayName;
 
-  const AuthSignUpRequested({required this.email, required this.password});
+  const AuthSignUpRequested({
+    required this.email,
+    required this.password,
+    required this.displayName,
+  });
 }
 
 class AuthSignOutRequested extends AuthEvent {

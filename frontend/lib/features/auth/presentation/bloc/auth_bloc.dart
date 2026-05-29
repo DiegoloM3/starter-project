@@ -50,7 +50,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthLoading());
     final result = await _signUpUseCase(
-      params: SignUpParams(email: event.email, password: event.password),
+      params: SignUpParams(
+        email: event.email,
+        password: event.password,
+        displayName: event.displayName,
+      ),
     );
     if (result is DataFailed) {
       emit(AuthFailure(result.error!));

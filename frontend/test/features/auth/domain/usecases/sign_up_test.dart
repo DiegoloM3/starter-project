@@ -21,10 +21,15 @@ void main() {
     when(() => mockRepository.signUp(
           email: any(named: 'email'),
           password: any(named: 'password'),
+          displayName: any(named: 'displayName'),
         )).thenAnswer((_) async => DataSuccess(user));
 
     final result = await useCase(
-      params: const SignUpParams(email: tEmail, password: tPassword),
+      params: const SignUpParams(
+        email: tEmail,
+        password: tPassword,
+        displayName: tAuthorName,
+      ),
     );
 
     expect(result, isA<DataSuccess>());
@@ -39,10 +44,15 @@ void main() {
     when(() => mockRepository.signUp(
           email: any(named: 'email'),
           password: any(named: 'password'),
+          displayName: any(named: 'displayName'),
         )).thenAnswer((_) async => const DataFailed(error));
 
     final result = await useCase(
-      params: const SignUpParams(email: tEmail, password: tPassword),
+      params: const SignUpParams(
+        email: tEmail,
+        password: tPassword,
+        displayName: tAuthorName,
+      ),
     );
 
     expect(result, isA<DataFailed>());

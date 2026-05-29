@@ -7,11 +7,16 @@ import 'package:news_app_clean_architecture/features/auth/domain/repository/auth
 class SignUpParams extends Equatable {
   final String email;
   final String password;
+  final String displayName;
 
-  const SignUpParams({required this.email, required this.password});
+  const SignUpParams({
+    required this.email,
+    required this.password,
+    required this.displayName,
+  });
 
   @override
-  List<Object?> get props => [email, password];
+  List<Object?> get props => [email, password, displayName];
 }
 
 class SignUpUseCase implements UseCase<DataState<AuthUserEntity>, SignUpParams> {
@@ -24,6 +29,7 @@ class SignUpUseCase implements UseCase<DataState<AuthUserEntity>, SignUpParams> 
     return _repository.signUp(
       email: params!.email,
       password: params.password,
+      displayName: params.displayName,
     );
   }
 }

@@ -104,11 +104,13 @@ void main() {
       when(() => mockDataSource.createUserWithEmailAndPassword(
             email: any(named: 'email'),
             password: any(named: 'password'),
+            displayName: any(named: 'displayName'),
           )).thenAnswer((_) async => mockUser);
 
       final result = await repository.signUp(
         email: tEmail,
         password: tPassword,
+        displayName: tAuthorName,
       );
 
       expect(result, isA<DataSuccess>());
@@ -119,6 +121,7 @@ void main() {
       when(() => mockDataSource.createUserWithEmailAndPassword(
             email: any(named: 'email'),
             password: any(named: 'password'),
+            displayName: any(named: 'displayName'),
           )).thenThrow(FirebaseAuthException(
         code: 'email-already-in-use',
         message: 'Exists',
@@ -127,6 +130,7 @@ void main() {
       final result = await repository.signUp(
         email: tEmail,
         password: tPassword,
+        displayName: tAuthorName,
       );
 
       expect(result, isA<DataFailed>());
@@ -137,6 +141,7 @@ void main() {
       when(() => mockDataSource.createUserWithEmailAndPassword(
             email: any(named: 'email'),
             password: any(named: 'password'),
+            displayName: any(named: 'displayName'),
           )).thenThrow(FirebaseAuthException(
         code: 'weak-password',
         message: 'Weak',
@@ -145,6 +150,7 @@ void main() {
       final result = await repository.signUp(
         email: tEmail,
         password: tPassword,
+        displayName: tAuthorName,
       );
 
       expect(result, isA<DataFailed>());

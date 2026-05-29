@@ -23,6 +23,6 @@ void registerTestFallbackValues() {
     const SignInParams(email: '', password: ''),
   );
   registerFallbackValue(
-    const SignUpParams(email: '', password: ''),
+    const SignUpParams(email: '', password: '', displayName: ''),
   );
 }

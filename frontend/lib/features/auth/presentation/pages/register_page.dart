@@ -15,6 +15,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -23,6 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -61,21 +63,22 @@ class _RegisterPageState extends State<RegisterPage> {
 
   /// Compact masthead with back button + S logo + Simmetry wordmark.
   Widget _buildCompactMasthead() {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + 12,
-        bottom: 16,
-        left: 12,
-        right: 20,
+        top: MediaQuery.of(context).padding.top + AppSpacing.md,
+        bottom: AppSpacing.lg,
+        left: AppSpacing.md,
+        right: AppSpacing.xl,
       ),
-      color: AppColors.ink,
+      color: cs.onSurface,
       child: Row(
         children: [
           // Back button
           GestureDetector(
-            onTap: () =>
-                Navigator.pushReplacementNamed(context, '/Login'),
+            onTap: () => Navigator.pop(context),
             child: Container(
               width: 36,
               height: 36,
@@ -91,19 +94,19 @@ class _RegisterPageState extends State<RegisterPage> {
                   color: Colors.white, size: 20),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.md),
           // S mark + wordmark
           Container(
             width: 26,
             height: 26,
             decoration: BoxDecoration(
-              color: AppColors.red,
+              color: cs.primary,
               borderRadius: BorderRadius.circular(3),
             ),
             alignment: Alignment.center,
             child: Text(
               'S',
-              style: AppTypography.serif(
+              style: tt.bodyLarge?.copyWith(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
@@ -113,8 +116,7 @@ class _RegisterPageState extends State<RegisterPage> {
           const SizedBox(width: 9),
           Text(
             'Simmetry',
-            style: AppTypography.serif(
-              fontSize: 18,
+            style: tt.headlineSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: Colors.white,
             ),
@@ -125,14 +127,16 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildFormCard(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 26, 24, 0),
+        padding: const EdgeInsets.fromLTRB(AppSpacing.xl2, 26, AppSpacing.xl2, 0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -141,22 +145,42 @@ class _RegisterPageState extends State<RegisterPage> {
               // Heading
               Text(
                 'Create account',
-                style: AppTypography.serif(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.t1,
+                style: tt.headlineMedium?.copyWith(
                   height: 1.2,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 'Start your reading journey today',
-                style: AppTypography.sans(
-                  fontSize: 13.5,
-                  color: AppColors.t2,
+                style: tt.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w400,
+                  letterSpacing: 0,
+                  color: cs.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 22),
+              // Full name
+              _buildFieldLabel('FULL NAME'),
+              const SizedBox(height: 6),
+              TextFormField(
+                controller: _nameController,
+                textCapitalization: TextCapitalization.words,
+                style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w400),
+                decoration: _fieldDecoration(
+                  hint: 'Jane Doe',
+                  prefixIcon: Icons.person_outline,
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Name is required';
+                  }
+                  if (value.trim().length > 50) {
+                    return 'Name must be 50 characters or fewer';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 14),
               // Email
               _buildFieldLabel('EMAIL'),
               const SizedBox(height: 6),
@@ -164,7 +188,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 autocorrect: false,
-                style: AppTypography.sans(fontSize: 15, color: AppColors.t1),
+                style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w400),
                 decoration: _fieldDecoration(
                   hint: 'you@example.com',
                   prefixIcon: Icons.email_outlined,
@@ -188,7 +212,7 @@ class _RegisterPageState extends State<RegisterPage> {
               TextFormField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
-                style: AppTypography.sans(fontSize: 15, color: AppColors.t1),
+                style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w400),
                 decoration: _fieldDecoration(
                   hint: 'Min. 6 characters',
                   prefixIcon: Icons.lock_outlined,
@@ -197,7 +221,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       _obscurePassword
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined,
-                      color: AppColors.t2,
+                      color: cs.onSurfaceVariant,
                       size: 20,
                     ),
                     onPressed: () => setState(
@@ -221,7 +245,7 @@ class _RegisterPageState extends State<RegisterPage> {
               TextFormField(
                 controller: _confirmPasswordController,
                 obscureText: _obscureConfirm,
-                style: AppTypography.sans(fontSize: 15, color: AppColors.t1),
+                style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w400),
                 decoration: _fieldDecoration(
                   hint: 'Repeat your password',
                   prefixIcon: Icons.lock_outlined,
@@ -230,7 +254,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       _obscureConfirm
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined,
-                      color: AppColors.t2,
+                      color: cs.onSurfaceVariant,
                       size: 20,
                     ),
                     onPressed: () => setState(
@@ -262,7 +286,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   );
                 },
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xl2),
               // Sign in link
               Center(
                 child: Row(
@@ -270,20 +294,19 @@ class _RegisterPageState extends State<RegisterPage> {
                   children: [
                     Text(
                       'Already have an account? ',
-                      style: AppTypography.sans(
-                        fontSize: 13.5,
-                        color: AppColors.t2,
+                      style: tt.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w400,
+                        letterSpacing: 0,
+                        color: cs.onSurfaceVariant,
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => Navigator.pushReplacementNamed(
-                          context, '/Login'),
+                      onTap: () => Navigator.pop(context),
                       child: Text(
                         'Sign in',
-                        style: AppTypography.sans(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.red,
+                        style: tt.labelLarge?.copyWith(
+                          letterSpacing: 0,
+                          color: cs.primary,
                         ),
                       ),
                     ),
@@ -299,13 +322,13 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildFieldLabel(String label) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Text(
       label,
-      style: AppTypography.sans(
-        fontSize: 10,
+      style: tt.labelSmall?.copyWith(
         fontWeight: FontWeight.w700,
-        color: AppColors.t2,
-        letterSpacing: 1.8,
+        color: cs.onSurfaceVariant,
       ),
     );
   }
@@ -315,10 +338,15 @@ class _RegisterPageState extends State<RegisterPage> {
     required IconData prefixIcon,
     Widget? suffixIcon,
   }) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return InputDecoration(
       hintText: hint,
-      hintStyle: AppTypography.sans(fontSize: 15, color: AppColors.t3),
-      prefixIcon: Icon(prefixIcon, color: AppColors.t2, size: 18),
+      hintStyle: tt.titleMedium?.copyWith(
+        fontWeight: FontWeight.w400,
+        color: cs.outlineVariant,
+      ),
+      prefixIcon: Icon(prefixIcon, color: cs.onSurfaceVariant, size: 18),
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.white,
@@ -326,28 +354,28 @@ class _RegisterPageState extends State<RegisterPage> {
           const EdgeInsets.symmetric(horizontal: 13, vertical: 13),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: const BorderSide(color: AppColors.border, width: 1.5),
+        borderSide: BorderSide(color: cs.outline, width: 1.5),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: const BorderSide(color: AppColors.border, width: 1.5),
+        borderSide: BorderSide(color: cs.outline, width: 1.5),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: const BorderSide(color: AppColors.red, width: 1.5),
+        borderSide: BorderSide(color: cs.primary, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+        borderSide: BorderSide(color: cs.error, width: 1.5),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+        borderSide: BorderSide(color: cs.error, width: 1.5),
       ),
-      errorStyle: AppTypography.sans(
-        fontSize: 11,
-        color: AppColors.error,
+      errorStyle: tt.labelMedium?.copyWith(
         fontWeight: FontWeight.w500,
+        letterSpacing: 0,
+        color: cs.error,
       ),
     );
   }
@@ -358,6 +386,7 @@ class _RegisterPageState extends State<RegisterPage> {
           AuthSignUpRequested(
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
+            displayName: _nameController.text.trim(),
           ),
         );
   }
@@ -378,6 +407,8 @@ class _PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return SizedBox(
       width: double.infinity,
       height: 52,
@@ -385,7 +416,7 @@ class _PrimaryButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor:
-              isLoading ? const Color(0xFF991818) : AppColors.red,
+              isLoading ? const Color(0xFF991818) : cs.primary,
           foregroundColor: Colors.white,
           disabledBackgroundColor: const Color(0xFF991818),
           disabledForegroundColor: Colors.white.withValues(alpha: 0.88),
@@ -393,7 +424,7 @@ class _PrimaryButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           elevation: isLoading ? 0 : 4,
-          shadowColor: AppColors.red.withValues(alpha: 0.21),
+          shadowColor: cs.primary.withValues(alpha: 0.21),
         ),
         child: isLoading
             ? Row(
@@ -410,8 +441,7 @@ class _PrimaryButton extends StatelessWidget {
                   const SizedBox(width: 10),
                   Text(
                     loadingLabel,
-                    style: AppTypography.sans(
-                      fontSize: 15,
+                    style: tt.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                       letterSpacing: 0.3,
@@ -421,8 +451,7 @@ class _PrimaryButton extends StatelessWidget {
               )
             : Text(
                 label,
-                style: AppTypography.sans(
-                  fontSize: 15,
+                style: tt.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
                   letterSpacing: 0.3,

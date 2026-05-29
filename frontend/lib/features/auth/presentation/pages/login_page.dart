@@ -59,15 +59,17 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildMasthead() {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 30,
-        bottom: 32,
+        bottom: AppSpacing.xl3,
         left: 28,
         right: 28,
       ),
-      decoration: const BoxDecoration(color: AppColors.ink),
+      decoration: BoxDecoration(color: cs.onSurface),
       child: Column(
         children: [
           // Logo mark
@@ -75,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: AppColors.red,
+              color: cs.primary,
               borderRadius: BorderRadius.circular(AppRadius.sm),
               boxShadow: const [
                 BoxShadow(
@@ -88,22 +90,18 @@ class _LoginPageState extends State<LoginPage> {
             alignment: Alignment.center,
             child: Text(
               'S',
-              style: AppTypography.serif(
+              style: tt.headlineMedium?.copyWith(
                 fontSize: 24,
-                fontWeight: FontWeight.w700,
                 color: Colors.white,
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           // Wordmark
           Text(
             'Simmetry',
-            style: AppTypography.serif(
-              fontSize: 36,
-              fontWeight: FontWeight.w700,
+            style: tt.displayMedium?.copyWith(
               color: Colors.white,
-              letterSpacing: -0.5,
               height: 1.0,
             ),
           ),
@@ -124,8 +122,8 @@ class _LoginPageState extends State<LoginPage> {
                   height: 3,
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
-                    color: AppColors.red,
-                    borderRadius: BorderRadius.circular(2),
+                    color: cs.primary,
+                    borderRadius: BorderRadius.circular(AppRadius.xs),
                   ),
                 ),
                 Expanded(
@@ -141,10 +139,9 @@ class _LoginPageState extends State<LoginPage> {
           // Tagline
           Text(
             'YOUR DAILY BRIEFING',
-            style: AppTypography.sans(
-              fontSize: 9.5,
-              fontWeight: FontWeight.w700,
+            style: tt.labelSmall?.copyWith(
               color: Colors.white.withValues(alpha: 0.36),
+              fontWeight: FontWeight.w700,
               letterSpacing: 3.2,
             ),
           ),
@@ -154,14 +151,21 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildFormCard(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.xl2,
+          28,
+          AppSpacing.xl2,
+          0,
+        ),
         child: Form(
           key: _formKey,
           child: Column(
@@ -170,22 +174,19 @@ class _LoginPageState extends State<LoginPage> {
               // Heading
               Text(
                 'Welcome back',
-                style: AppTypography.serif(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.t1,
+                style: tt.headlineMedium?.copyWith(
                   height: 1.2,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 'Sign in to continue reading',
-                style: AppTypography.sans(
-                  fontSize: 13.5,
-                  color: AppColors.t2,
+                style: tt.labelLarge?.copyWith(
+                  color: cs.onSurfaceVariant,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xl2),
               // Email field
               _buildFieldLabel('EMAIL'),
               const SizedBox(height: 6),
@@ -193,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 autocorrect: false,
-                style: AppTypography.sans(fontSize: 15, color: AppColors.t1),
+                style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w400),
                 decoration: _fieldDecoration(
                   hint: 'you@example.com',
                   prefixIcon: Icons.email_outlined,
@@ -217,7 +218,7 @@ class _LoginPageState extends State<LoginPage> {
               TextFormField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
-                style: AppTypography.sans(fontSize: 15, color: AppColors.t1),
+                style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w400),
                 decoration: _fieldDecoration(
                   hint: '••••••••',
                   prefixIcon: Icons.lock_outlined,
@@ -226,7 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                       _obscurePassword
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined,
-                      color: AppColors.t2,
+                      color: cs.onSurfaceVariant,
                       size: 20,
                     ),
                     onPressed: () =>
@@ -261,7 +262,7 @@ class _LoginPageState extends State<LoginPage> {
                   );
                 },
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xl3),
               // Register link
               Center(
                 child: Row(
@@ -269,20 +270,18 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     Text(
                       "Don't have an account? ",
-                      style: AppTypography.sans(
-                        fontSize: 13.5,
-                        color: AppColors.t2,
+                      style: tt.labelLarge?.copyWith(
+                        color: cs.onSurfaceVariant,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => Navigator.pushReplacementNamed(
-                          context, '/Register'),
+                      onTap: () =>
+                          Navigator.pushNamed(context, '/Register'),
                       child: Text(
                         'Register',
-                        style: AppTypography.sans(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.red,
+                        style: tt.labelLarge?.copyWith(
+                          color: cs.primary,
                         ),
                       ),
                     ),
@@ -298,13 +297,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildFieldLabel(String label) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Text(
       label,
-      style: AppTypography.sans(
-        fontSize: 10,
+      style: tt.labelSmall?.copyWith(
+        color: cs.onSurfaceVariant,
         fontWeight: FontWeight.w700,
-        color: AppColors.t2,
-        letterSpacing: 1.8,
       ),
     );
   }
@@ -314,37 +313,41 @@ class _LoginPageState extends State<LoginPage> {
     required IconData prefixIcon,
     Widget? suffixIcon,
   }) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return InputDecoration(
       hintText: hint,
-      hintStyle: AppTypography.sans(fontSize: 15, color: AppColors.t3),
-      prefixIcon: Icon(prefixIcon, color: AppColors.t2, size: 18),
+      hintStyle: tt.titleMedium?.copyWith(
+        color: cs.outlineVariant,
+        fontWeight: FontWeight.w400,
+      ),
+      prefixIcon: Icon(prefixIcon, color: cs.onSurfaceVariant, size: 18),
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 13, vertical: 13),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: const BorderSide(color: AppColors.border, width: 1.5),
+        borderSide: BorderSide(color: cs.outline, width: 1.5),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: const BorderSide(color: AppColors.border, width: 1.5),
+        borderSide: BorderSide(color: cs.outline, width: 1.5),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: const BorderSide(color: AppColors.red, width: 1.5),
+        borderSide: BorderSide(color: cs.primary, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+        borderSide: BorderSide(color: cs.error, width: 1.5),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+        borderSide: BorderSide(color: cs.error, width: 1.5),
       ),
-      errorStyle: AppTypography.sans(
-        fontSize: 11,
-        color: AppColors.error,
+      errorStyle: tt.labelMedium?.copyWith(
+        color: cs.error,
         fontWeight: FontWeight.w500,
       ),
     );
@@ -377,6 +380,8 @@ class _PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return SizedBox(
       width: double.infinity,
       height: 52,
@@ -385,7 +390,7 @@ class _PrimaryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: isLoading
               ? const Color(0xFF991818)
-              : AppColors.red,
+              : cs.primary,
           foregroundColor: Colors.white,
           disabledBackgroundColor: const Color(0xFF991818),
           disabledForegroundColor: Colors.white.withValues(alpha: 0.88),
@@ -393,7 +398,7 @@ class _PrimaryButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           elevation: isLoading ? 0 : 4,
-          shadowColor: AppColors.red.withValues(alpha: 0.21),
+          shadowColor: cs.primary.withValues(alpha: 0.21),
         ),
         child: isLoading
             ? Row(
@@ -410,10 +415,9 @@ class _PrimaryButton extends StatelessWidget {
                   const SizedBox(width: 10),
                   Text(
                     loadingLabel,
-                    style: AppTypography.sans(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                    style: tt.titleMedium?.copyWith(
                       color: Colors.white,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -421,10 +425,9 @@ class _PrimaryButton extends StatelessWidget {
               )
             : Text(
                 label,
-                style: AppTypography.sans(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
+                style: tt.titleMedium?.copyWith(
                   color: Colors.white,
+                  fontWeight: FontWeight.w700,
                   letterSpacing: 0.3,
                 ),
               ),
