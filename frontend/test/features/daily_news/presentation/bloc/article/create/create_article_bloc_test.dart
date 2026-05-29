@@ -5,7 +5,7 @@ import 'package:news_app_clean_architecture/core/resources/data_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article_status.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/create/create_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/create/create_article_event.dart';
-import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/create/create_article_state.dart';
+
 
 import '../../../../../../helpers/mock_classes.dart';
 import '../../../../../../helpers/register_fallback_values.dart';
@@ -93,7 +93,8 @@ void main() {
       await Future.delayed(const Duration(milliseconds: 50));
 
       expect(bloc.state.content, longContent);
-      expect(bloc.state.readingTimeMinutes, 2);
+      // 530 words / 100 wpm -> ceil = 6
+      expect(bloc.state.readingTimeMinutes, 6);
       expect(bloc.state.hasContent, isTrue);
     });
 
