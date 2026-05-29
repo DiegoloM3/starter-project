@@ -317,6 +317,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'Symmetry';
 
   @override
+  String get tagline => 'YOUR DAILY BRIEFING';
+
+  @override
   String get tabFeed => 'Feed';
 
   @override

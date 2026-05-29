@@ -324,6 +324,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get appName => 'Symmetry';
 
   @override
+  String get tagline => 'TU RESUMEN DIARIO';
+
+  @override
   String get tabFeed => 'Inicio';
 
   @override

@@ -3,29 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_event.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_state.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/widgets/primary_button.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 import '../../../../config/theme/app_themes.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
-
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,21 +33,27 @@ class _LoginPageState extends State<LoginPage> {
             );
           }
         },
-        child: Column(
+        child: const Column(
           children: [
             // ── Masthead (dark header) ──
-            _buildMasthead(),
+            _LoginMasthead(),
             // ── Form Card ──
-            Expanded(child: _buildFormCard(context)),
+            Expanded(child: _LoginForm()),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildMasthead() {
+class _LoginMasthead extends StatelessWidget {
+  const _LoginMasthead();
+
+  @override
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.only(
@@ -102,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: AppSpacing.lg),
           // Wordmark
           Text(
-            'Simmetry',
+            l10n.appName,
             style: tt.displayMedium?.copyWith(
               color: Colors.white,
               height: 1.0,
@@ -141,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 13),
           // Tagline
           Text(
-            'YOUR DAILY BRIEFING',
+            l10n.tagline,
             style: tt.labelSmall?.copyWith(
               color: Colors.white.withValues(alpha: 0.36),
               fontWeight: FontWeight.w700,
@@ -152,8 +142,30 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+}
 
-  Widget _buildFormCard(BuildContext context) {
+class _LoginForm extends StatefulWidget {
+  const _LoginForm();
+
+  @override
+  State<_LoginForm> createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<_LoginForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
@@ -258,7 +270,7 @@ class _LoginPageState extends State<LoginPage> {
                     curr is AuthAuthenticated,
                 builder: (context, state) {
                   final isLoading = state is AuthLoading;
-                  return _PrimaryButton(
+                  return PrimaryButton(
                     label: l10n.signIn,
                     loadingLabel: l10n.signingIn,
                     isLoading: isLoading,
@@ -365,77 +377,5 @@ class _LoginPageState extends State<LoginPage> {
             password: _passwordController.text.trim(),
           ),
         );
-  }
-}
-
-/// Full-width vermilion CTA button matching the design.
-class _PrimaryButton extends StatelessWidget {
-  final String label;
-  final String loadingLabel;
-  final bool isLoading;
-  final VoidCallback onPressed;
-
-  const _PrimaryButton({
-    required this.label,
-    required this.loadingLabel,
-    required this.isLoading,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final tt = Theme.of(context).textTheme;
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isLoading
-              ? const Color(0xFF991818)
-              : cs.primary,
-          foregroundColor: Colors.white,
-          disabledBackgroundColor: const Color(0xFF991818),
-          disabledForegroundColor: Colors.white.withValues(alpha: 0.88),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md),
-          ),
-          elevation: isLoading ? 0 : 4,
-          shadowColor: cs.primary.withValues(alpha: 0.21),
-        ),
-        child: isLoading
-            ? Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    loadingLabel,
-                    style: tt.titleMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                ],
-              )
-            : Text(
-                label,
-                style: tt.titleMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.3,
-                ),
-              ),
-      ),
-    );
   }
 }

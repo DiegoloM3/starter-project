@@ -3,34 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_event.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_state.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/widgets/primary_button.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 import '../../../../config/theme/app_themes.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends StatelessWidget {
   const RegisterPage({Key? key}) : super(key: key);
-
-  @override
-  State<RegisterPage> createState() => _RegisterPageState();
-}
-
-class _RegisterPageState extends State<RegisterPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirm = true;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,20 +33,26 @@ class _RegisterPageState extends State<RegisterPage> {
             );
           }
         },
-        child: Column(
+        child: const Column(
           children: [
-            _buildCompactMasthead(),
-            Expanded(child: _buildFormCard(context)),
+            _RegisterMasthead(),
+            Expanded(child: _RegisterForm()),
           ],
         ),
       ),
     );
   }
+}
 
-  /// Compact masthead with back button + S logo + Simmetry wordmark.
-  Widget _buildCompactMasthead() {
+/// Compact masthead with back button + S logo + wordmark.
+class _RegisterMasthead extends StatelessWidget {
+  const _RegisterMasthead();
+
+  @override
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.only(
@@ -118,7 +103,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           const SizedBox(width: 9),
           Text(
-            'Simmetry',
+            l10n.appName,
             style: tt.headlineSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: Colors.white,
@@ -128,8 +113,35 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
+}
 
-  Widget _buildFormCard(BuildContext context) {
+class _RegisterForm extends StatefulWidget {
+  const _RegisterForm();
+
+  @override
+  State<_RegisterForm> createState() => _RegisterFormState();
+}
+
+class _RegisterFormState extends State<_RegisterForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
@@ -282,7 +294,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     curr is AuthAuthenticated,
                 builder: (context, state) {
                   final isLoading = state is AuthLoading;
-                  return _PrimaryButton(
+                  return PrimaryButton(
                     label: l10n.createAccount,
                     loadingLabel: l10n.creatingAccount,
                     isLoading: isLoading,
@@ -393,75 +405,5 @@ class _RegisterPageState extends State<RegisterPage> {
             displayName: _nameController.text.trim(),
           ),
         );
-  }
-}
-
-class _PrimaryButton extends StatelessWidget {
-  final String label;
-  final String loadingLabel;
-  final bool isLoading;
-  final VoidCallback onPressed;
-
-  const _PrimaryButton({
-    required this.label,
-    required this.loadingLabel,
-    required this.isLoading,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final tt = Theme.of(context).textTheme;
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor:
-              isLoading ? const Color(0xFF991818) : cs.primary,
-          foregroundColor: Colors.white,
-          disabledBackgroundColor: const Color(0xFF991818),
-          disabledForegroundColor: Colors.white.withValues(alpha: 0.88),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md),
-          ),
-          elevation: isLoading ? 0 : 4,
-          shadowColor: cs.primary.withValues(alpha: 0.21),
-        ),
-        child: isLoading
-            ? Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    loadingLabel,
-                    style: tt.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                ],
-              )
-            : Text(
-                label,
-                style: tt.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                  letterSpacing: 0.3,
-                ),
-              ),
-      ),
-    );
   }
 }

@@ -686,6 +686,12 @@ abstract class AppLocalizations {
   /// **'Symmetry'**
   String get appName;
 
+  /// No description provided for @tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR DAILY BRIEFING'**
+  String get tagline;
+
   /// No description provided for @tabFeed.
   ///
   /// In en, this message translates to:
