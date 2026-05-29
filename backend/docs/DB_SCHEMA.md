@@ -84,6 +84,8 @@ Subcollection for comments on an article. **Append-only** — comment content ca
 
 Subcollection for bookmarked/saved articles per user. Each document represents one saved article.
 
+> **Implementation note.** The shipped app persists "saved" articles **locally on-device** via Floor/SQLite (`LocalArticleBloc` → `AppDatabase.articleDAO`), so bookmarking works offline with no network round-trip. This Firestore subcollection is **designed and rule-protected but not yet wired** — it is a forward-looking schema for cross-device bookmark sync (a `FirestoreSavedArticleDataSource` would write/read it). It is documented here so the rules and indexes are ready the moment that sync is implemented.
+
 | Field | Type | Required | Constraints |
 |-------|------|----------|-------------|
 | `articleId` | `string` | Yes | Reference to the saved article's ID |
