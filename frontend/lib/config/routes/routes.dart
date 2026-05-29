@@ -10,6 +10,7 @@ import '../../features/daily_news/presentation/pages/create_article/create_artic
 import '../../features/daily_news/presentation/pages/drafts/drafts_page.dart';
 import '../../features/daily_news/presentation/pages/home/daily_news.dart';
 import '../../features/daily_news/presentation/pages/my_articles/my_articles_page.dart';
+import '../../features/daily_news/presentation/pages/route_not_found_page.dart';
 import '../../features/daily_news/presentation/pages/saved_article/saved_article.dart';
 import '../../features/daily_news/presentation/pages/search/search_page.dart';
 
@@ -35,9 +36,10 @@ class AppRoutes {
         return _materialRoute(const SavedArticles());
 
       case '/CreateArticle':
-        return _materialRoute(CreateArticlePage(
-          draft: settings.arguments as ArticleEntity?,
-        ));
+        final draft = settings.arguments is ArticleEntity
+            ? settings.arguments as ArticleEntity
+            : null;
+        return _materialRoute(CreateArticlePage(draft: draft));
 
       case '/ArticlePreview':
         if (settings.arguments is! CreateArticleState) {
@@ -57,12 +59,14 @@ class AppRoutes {
         return _materialRoute(const MyArticlesPage());
 
       case '/EditArticle':
-        return _materialRoute(CreateArticlePage(
-          draft: settings.arguments as ArticleEntity?,
-        ));
+        final draft = settings.arguments is ArticleEntity
+            ? settings.arguments as ArticleEntity
+            : null;
+        return _materialRoute(CreateArticlePage(draft: draft));
 
       default:
-        return _materialRoute(const DailyNews());
+        assert(false, 'Unknown route: ${settings.name}');
+        return _materialRoute(RouteNotFoundPage(routeName: settings.name));
     }
   }
 
