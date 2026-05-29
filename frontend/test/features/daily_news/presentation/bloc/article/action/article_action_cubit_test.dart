@@ -30,7 +30,10 @@ void main() {
       when(() => mockDelete(params: any(named: 'params')))
           .thenAnswer((_) async => const DataSuccess(null));
 
-      expectLater(
+      // Subscribe before triggering: deleteArticle emits ArticleActionInProgress
+      // synchronously, so the expectation must be set up first. Await it after
+      // the action so a failed expectation fails this test deterministically.
+      final expectation = expectLater(
         cubit.stream,
         emitsInOrder([
           isA<ArticleActionInProgress>(),
@@ -39,6 +42,7 @@ void main() {
       );
 
       await cubit.deleteArticle(tArticleId);
+      await expectation;
       verify(() => mockDelete(params: tArticleId)).called(1);
     });
 
@@ -47,7 +51,7 @@ void main() {
       when(() => mockDelete(params: any(named: 'params')))
           .thenAnswer((_) async => const DataFailed(error));
 
-      expectLater(
+      final expectation = expectLater(
         cubit.stream,
         emitsInOrder([
           isA<ArticleActionInProgress>(),
@@ -56,6 +60,7 @@ void main() {
       );
 
       await cubit.deleteArticle(tArticleId);
+      await expectation;
 
       final state = cubit.state as ArticleActionFailure;
       expect(state.error.message, 'Unauthorized');
