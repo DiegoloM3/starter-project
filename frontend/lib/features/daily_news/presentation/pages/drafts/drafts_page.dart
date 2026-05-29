@@ -19,6 +19,7 @@ class DraftsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final authState = context.read<AuthBloc>().state;
     final userId =
         authState is AuthAuthenticated ? authState.user!.uid : '';
@@ -27,7 +28,7 @@ class DraftsPage extends StatelessWidget {
       create: (_) =>
           sl<DraftsListBloc>()..add(DraftsSubscriptionRequested(userId)),
       child: Scaffold(
-        backgroundColor: AppColors.bg,
+        backgroundColor: cs.surfaceContainerLow,
         appBar: _buildAppBar(context),
         body: const _DraftsBody(),
       ),
@@ -35,25 +36,22 @@ class DraftsPage extends StatelessWidget {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return AppBar(
-      backgroundColor: AppColors.surface,
+      backgroundColor: cs.surface,
       elevation: 0,
       leading: IconButton(
-        icon: const Icon(Icons.chevron_left, color: AppColors.t1, size: 24),
+        icon: Icon(Icons.chevron_left, color: cs.onSurface, size: 24),
         onPressed: () => Navigator.pop(context),
       ),
       title: Text(
         AppLocalizations.of(context)!.myDrafts,
-        style: AppTypography.serif(
-          fontSize: 17,
-          fontWeight: FontWeight.w700,
-          color: AppColors.t1,
-          letterSpacing: -0.2,
-        ),
+        style: tt.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
       ),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Container(height: 1, color: AppColors.border),
+        child: Container(height: 1, color: cs.outline),
       ),
     );
   }
@@ -65,6 +63,7 @@ class _DraftsBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
 
     return BlocBuilder<DraftsListBloc, DraftsListState>(
       builder: (context, state) {
@@ -117,8 +116,8 @@ class _DraftsBody extends StatelessWidget {
                 direction: DismissDirection.endToStart,
                 background: Container(
                   alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 20),
-                  color: AppColors.error,
+                  padding: const EdgeInsets.only(right: AppSpacing.xl),
+                  color: cs.error,
                   child: const Icon(Icons.delete_outline,
                       color: Colors.white, size: 22),
                 ),
@@ -152,12 +151,13 @@ class _DraftsBody extends StatelessWidget {
       context.read<DraftsListBloc>().add(DraftDeleted(article.id!));
     }
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(l10n.draftDeleted),
         action: SnackBarAction(
           label: l10n.undo,
-          textColor: AppColors.red,
+          textColor: cs.primary,
           onPressed: () {
             // Re-subscribe to refresh the list (undo is approximate —
             // the draft was already deleted server-side).
@@ -178,44 +178,48 @@ class _DraftsBody extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return await showDialog<bool>(
           context: context,
-          builder: (context) => AlertDialog(
-            title: Text(
-              l10n.deleteDraft,
-              style: AppTypography.serif(fontSize: 18),
-            ),
-            content: Text(
-              l10n.deleteDraftConfirmation,
-              style: AppTypography.sans(
-                fontSize: 13,
-                color: AppColors.t2,
-                height: 1.55,
+          builder: (context) {
+            final cs = Theme.of(context).colorScheme;
+            final tt = Theme.of(context).textTheme;
+            return AlertDialog(
+              title: Text(
+                l10n.deleteDraft,
+                style: tt.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
               ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(
-                  l10n.cancel,
-                  style: AppTypography.sans(color: AppColors.t2),
+              content: Text(
+                l10n.deleteDraftConfirmation,
+                style: tt.titleSmall?.copyWith(
+                  color: cs.onSurfaceVariant,
+                  fontWeight: FontWeight.w400,
+                  height: 1.55,
                 ),
               ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                ),
-                child: Text(
-                  l10n.delete,
-                  style: AppTypography.sans(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: Text(
+                    l10n.cancel,
+                    style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
                   ),
                 ),
-              ),
-            ],
-          ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: cs.error,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    l10n.delete,
+                    style: tt.bodyMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ) ??
         false;
   }

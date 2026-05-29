@@ -15,12 +15,14 @@ class ArticlePreviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: cs.surface,
       body: CustomScrollView(
         slivers: [
           _buildSliverAppBar(context),
-          SliverToBoxAdapter(child: _buildPreviewBanner()),
+          SliverToBoxAdapter(child: _buildPreviewBanner(context)),
           SliverToBoxAdapter(child: _buildArticleContent(context)),
           const SliverToBoxAdapter(child: SizedBox(height: 140)),
         ],
@@ -30,10 +32,13 @@ class ArticlePreviewPage extends StatelessWidget {
   }
 
   Widget _buildSliverAppBar(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
     return SliverAppBar(
       expandedHeight: 220,
       pinned: true,
-      backgroundColor: AppColors.surface,
+      backgroundColor: cs.surface,
       leading: IconButton(
         icon: const Icon(Icons.chevron_left),
         onPressed: () => Navigator.pop(context, false),
@@ -41,21 +46,16 @@ class ArticlePreviewPage extends StatelessWidget {
       iconTheme: const IconThemeData(color: Colors.white),
       actions: [
         Container(
-          margin: const EdgeInsets.only(right: 12),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          margin: const EdgeInsets.only(right: AppSpacing.md),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: AppSpacing.xs),
           decoration: BoxDecoration(
-            color: AppColors.red.withValues(alpha: 0.07),
-            border: Border.all(color: AppColors.red.withValues(alpha: 0.15)),
+            color: cs.primary.withValues(alpha: 0.07),
+            border: Border.all(color: cs.primary.withValues(alpha: 0.15)),
             borderRadius: BorderRadius.circular(AppRadius.xl),
           ),
           child: Text(
             'PREVIEW',
-            style: AppTypography.sans(
-              fontSize: 9,
-              fontWeight: FontWeight.w800,
-              color: AppColors.red,
-              letterSpacing: 1.8,
-            ),
+            style: tt.labelSmall?.copyWith(color: cs.primary),
           ),
         ),
       ],
@@ -109,13 +109,16 @@ class ArticlePreviewPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPreviewBanner() {
+  Widget _buildPreviewBanner(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 9, horizontal: AppSpacing.xl),
       decoration: BoxDecoration(
-        color: AppColors.red.withValues(alpha: 0.04),
+        color: cs.primary.withValues(alpha: 0.04),
         border: Border(
-          bottom: BorderSide(color: AppColors.red.withValues(alpha: 0.1)),
+          bottom: BorderSide(color: cs.primary.withValues(alpha: 0.1)),
         ),
       ),
       child: Row(
@@ -124,18 +127,17 @@ class ArticlePreviewPage extends StatelessWidget {
           Container(
             width: 6,
             height: 6,
-            decoration: const BoxDecoration(
-              color: AppColors.red,
+            decoration: BoxDecoration(
+              color: cs.primary,
               shape: BoxShape.circle,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           Text(
             'Preview — this article is not yet published',
-            style: AppTypography.sans(
-              fontSize: 10.5,
+            style: tt.labelMedium?.copyWith(
+              color: cs.primary,
               fontWeight: FontWeight.w600,
-              color: AppColors.red,
               letterSpacing: 0.3,
             ),
           ),
@@ -146,21 +148,20 @@ class ArticlePreviewPage extends StatelessWidget {
 
   Widget _buildArticleContent(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.xl, AppSpacing.xl, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Title
           Text(
             articleState.title.isNotEmpty ? articleState.title : l10n.untitled,
-            style: AppTypography.serif(
+            style: tt.headlineMedium?.copyWith(
               fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: AppColors.t1,
               height: 1.2,
-              letterSpacing: -0.3,
             ),
           ),
           const SizedBox(height: 14),
@@ -170,17 +171,17 @@ class ArticlePreviewPage extends StatelessWidget {
               Container(
                 width: 34,
                 height: 34,
-                decoration: const BoxDecoration(
-                  color: AppColors.red,
+                decoration: BoxDecoration(
+                  color: cs.primary,
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   'A',
-                  style: AppTypography.sans(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
+                  style: tt.labelMedium?.copyWith(
                     color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0,
                   ),
                 ),
               ),
@@ -190,49 +191,47 @@ class ArticlePreviewPage extends StatelessWidget {
                 children: [
                   Text(
                     l10n.preview,
-                    style: AppTypography.sans(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.t1,
-                    ),
+                    style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                   ),
                   Text(
                     'Draft · ${articleState.readingTimeMinutes} min read',
-                    style: AppTypography.sans(fontSize: 10.5, color: AppColors.t3),
+                    style: tt.labelMedium?.copyWith(
+                      color: cs.outlineVariant,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 0,
+                    ),
                   ),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           // Decorative rule
           Row(
             children: [
-              const Expanded(child: Divider(height: 1, color: AppColors.border)),
+              Expanded(child: Divider(height: 1, color: cs.outline)),
               Container(
                 width: 14,
                 height: 3,
-                margin: const EdgeInsets.symmetric(horizontal: 8),
+                margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                 decoration: BoxDecoration(
-                  color: AppColors.red,
-                  borderRadius: BorderRadius.circular(2),
+                  color: cs.primary,
+                  borderRadius: BorderRadius.circular(AppRadius.xs),
                 ),
               ),
-              const Expanded(child: Divider(height: 1, color: AppColors.border)),
+              Expanded(child: Divider(height: 1, color: cs.outline)),
             ],
           ),
           const SizedBox(height: 18),
           // Description (italic standfirst)
           if (articleState.description.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.only(bottom: AppSpacing.xl),
               child: Text(
                 articleState.description,
-                style: AppTypography.serif(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
+                style: tt.bodyLarge?.copyWith(
+                  color: cs.onSurfaceVariant,
                   fontStyle: FontStyle.italic,
-                  color: AppColors.t2,
                   height: 1.65,
                 ),
               ),
@@ -242,11 +241,10 @@ class ArticlePreviewPage extends StatelessWidget {
             articleState.content.isNotEmpty
                 ? articleState.content
                 : l10n.noContentYet,
-            style: AppTypography.serif(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              color: articleState.content.isNotEmpty ? AppColors.t1 : AppColors.t3,
-              height: 1.82,
+            style: tt.bodyLarge?.copyWith(
+              color: articleState.content.isNotEmpty
+                  ? cs.onSurface
+                  : cs.outlineVariant,
             ),
           ),
           // End ornament
@@ -255,9 +253,9 @@ class ArticlePreviewPage extends StatelessWidget {
             child: Center(
               child: Text(
                 '— ◆ —',
-                style: AppTypography.serif(
-                  fontSize: 18,
-                  color: AppColors.t3,
+                style: tt.headlineSmall?.copyWith(
+                  color: cs.outlineVariant,
+                  fontWeight: FontWeight.w700,
                   letterSpacing: 8,
                 ),
               ),
@@ -270,12 +268,14 @@ class ArticlePreviewPage extends StatelessWidget {
 
   Widget _buildBottomBar(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.border)),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.gutter, AppSpacing.md, AppSpacing.gutter, AppSpacing.md),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        border: Border(top: BorderSide(color: cs.outline)),
       ),
       child: SafeArea(
         top: false,
@@ -289,7 +289,7 @@ class ArticlePreviewPage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => _onPublish(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.red,
+                  backgroundColor: cs.primary,
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
@@ -298,10 +298,9 @@ class ArticlePreviewPage extends StatelessWidget {
                 ),
                 child: Text(
                   '→  ${l10n.publishArticle}',
-                  style: AppTypography.sans(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
+                  style: tt.titleMedium?.copyWith(
                     color: Colors.white,
+                    fontWeight: FontWeight.w700,
                     letterSpacing: 0.3,
                   ),
                 ),
@@ -314,19 +313,18 @@ class ArticlePreviewPage extends StatelessWidget {
               child: OutlinedButton(
                 onPressed: () => Navigator.pop(context, false),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.t2,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  side: const BorderSide(color: AppColors.border, width: 1.5),
+                  foregroundColor: cs.onSurfaceVariant,
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  side: BorderSide(color: cs.outline, width: 1.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                 ),
                 child: Text(
                   '← ${l10n.keepEditing}',
-                  style: AppTypography.sans(
-                    fontSize: 14,
+                  style: tt.bodyMedium?.copyWith(
+                    color: cs.onSurfaceVariant,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.t2,
                   ),
                 ),
               ),

@@ -28,9 +28,11 @@ class ArticleDetailsView extends StatelessWidget {
     final authState = context.read<AuthBloc>().state;
     final currentUserId =
         authState is AuthAuthenticated ? authState.user!.uid : null;
-    final hasFirestoreId = article?.id != null &&
-        article!.id!.isNotEmpty &&
-        article!.authorId != null;
+    final currentUserName =
+        authState is AuthAuthenticated ? authState.user!.displayName : null;
+    // Comments work for any article with a stable id — both Firestore
+    // (user-created) and API articles (id is a deterministic md5 of the url).
+    final canComment = article?.id != null && article!.id!.isNotEmpty;
     final isOwner = currentUserId != null &&
         article?.authorId != null &&
         article!.authorId == currentUserId;
@@ -40,7 +42,7 @@ class ArticleDetailsView extends StatelessWidget {
         BlocProvider<LocalArticleBloc>(create: (_) => sl<LocalArticleBloc>()),
         BlocProvider<ArticleActionCubit>(
             create: (_) => sl<ArticleActionCubit>()),
-        if (hasFirestoreId)
+        if (canComment)
           BlocProvider<CommentBloc>(
             create: (_) => sl<CommentBloc>()
               ..add(CommentsSubscriptionRequested(article!.id!)),
@@ -64,8 +66,9 @@ class ArticleDetailsView extends StatelessWidget {
           }
         },
         child: Scaffold(
-          backgroundColor: AppColors.bg,
-          body: _buildBody(context, currentUserId, hasFirestoreId, isOwner),
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+          body: _buildBody(
+              context, currentUserId, currentUserName, canComment, isOwner),
           floatingActionButton: _buildBookmarkFab(),
         ),
       ),
@@ -73,7 +76,7 @@ class ArticleDetailsView extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context, String? currentUserId,
-      bool hasFirestoreId, bool isOwner) {
+      String? currentUserName, bool canComment, bool isOwner) {
     return CustomScrollView(
       slivers: [
         // Hero image + AppBar
@@ -81,16 +84,17 @@ class ArticleDetailsView extends StatelessWidget {
         // Article content
         SliverToBoxAdapter(
           child: Container(
-            color: AppColors.surface,
+            color: Theme.of(context).colorScheme.surface,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildArticleHeader(),
-                _buildArticleBody(),
-                if (hasFirestoreId)
+                _buildArticleHeader(context),
+                _buildArticleBody(context),
+                if (canComment)
                   CommentsSection(
                     articleId: article!.id!,
                     currentUserId: currentUserId,
+                    currentUserName: currentUserName,
                   ),
                 const SizedBox(height: 80),
               ],
@@ -107,7 +111,7 @@ class ArticleDetailsView extends StatelessWidget {
     return SliverAppBar(
       expandedHeight: 220,
       pinned: true,
-      backgroundColor: AppColors.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       leading: IconButton(
         icon: const Icon(Icons.chevron_left),
         onPressed: () => Navigator.pop(context),
@@ -176,7 +180,9 @@ class ArticleDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildArticleHeader() {
+  Widget _buildArticleHeader(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     final authorName = article?.authorName ?? '';
     final initials = authorName.isNotEmpty
         ? authorName
@@ -188,26 +194,21 @@ class ArticleDetailsView extends StatelessWidget {
         : '?';
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.xl, AppSpacing.xl, AppSpacing.xl, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Title
           Text(
             article?.title ?? '',
-            style: AppTypography.serif(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: AppColors.t1,
-              height: 1.2,
-              letterSpacing: -0.3,
-            ),
+            style: tt.headlineLarge?.copyWith(fontSize: 24),
           ),
           const SizedBox(height: 14),
           // Status badge (if not published)
           if (article?.status != null && article!.status != 'published') ...[
             StatusBadge(status: article!.status!),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
           ],
           // Author meta
           Row(
@@ -215,15 +216,14 @@ class ArticleDetailsView extends StatelessWidget {
               Container(
                 width: 32,
                 height: 32,
-                decoration: const BoxDecoration(
-                  color: AppColors.red,
+                decoration: BoxDecoration(
+                  color: cs.primary,
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   initials,
-                  style: AppTypography.sans(
-                    fontSize: 11,
+                  style: tt.labelMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
                   ),
@@ -235,10 +235,8 @@ class ArticleDetailsView extends StatelessWidget {
                 children: [
                   Text(
                     authorName,
-                    style: AppTypography.sans(
-                      fontSize: 13,
+                    style: tt.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: AppColors.t1,
                     ),
                   ),
                   Row(
@@ -246,17 +244,20 @@ class ArticleDetailsView extends StatelessWidget {
                       if (article?.publishedAt != null)
                         Text(
                           article!.publishedAt!,
-                          style: AppTypography.sans(
-                              fontSize: 11, color: AppColors.t3),
+                          style: tt.labelMedium?.copyWith(
+                              fontWeight: FontWeight.w400,
+                              color: cs.outlineVariant),
                         ),
                       if (article?.readingTimeMinutes != null) ...[
                         Text(' · ',
-                            style: AppTypography.sans(
-                                fontSize: 11, color: AppColors.t3)),
+                            style: tt.labelMedium?.copyWith(
+                                fontWeight: FontWeight.w400,
+                                color: cs.outlineVariant)),
                         Text(
                           '${article!.readingTimeMinutes} min read',
-                          style: AppTypography.sans(
-                              fontSize: 11, color: AppColors.t3),
+                          style: tt.labelMedium?.copyWith(
+                              fontWeight: FontWeight.w400,
+                              color: cs.outlineVariant),
                         ),
                       ],
                     ],
@@ -265,23 +266,22 @@ class ArticleDetailsView extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           // Decorative rule
           Row(
             children: [
-              const Expanded(
-                  child: Divider(height: 1, color: AppColors.border)),
+              Expanded(child: Divider(height: 1, color: cs.outline)),
               Container(
                 width: 16,
                 height: 3,
-                margin: const EdgeInsets.symmetric(horizontal: 8),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                 decoration: BoxDecoration(
-                  color: AppColors.red,
-                  borderRadius: BorderRadius.circular(2),
+                  color: cs.primary,
+                  borderRadius: BorderRadius.circular(AppRadius.xs),
                 ),
               ),
-              const Expanded(
-                  child: Divider(height: 1, color: AppColors.border)),
+              Expanded(child: Divider(height: 1, color: cs.outline)),
             ],
           ),
           const SizedBox(height: 18),
@@ -290,9 +290,11 @@ class ArticleDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildArticleBody() {
+  Widget _buildArticleBody(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -300,14 +302,12 @@ class ArticleDetailsView extends StatelessWidget {
           if (article?.description != null &&
               article!.description!.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.only(bottom: AppSpacing.xl),
               child: Text(
                 article!.description!,
-                style: AppTypography.serif(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
+                style: tt.bodyLarge?.copyWith(
                   fontStyle: FontStyle.italic,
-                  color: AppColors.t2,
+                  color: cs.onSurfaceVariant,
                   height: 1.65,
                 ),
               ),
@@ -316,12 +316,7 @@ class ArticleDetailsView extends StatelessWidget {
           if (article?.content != null && article!.content!.isNotEmpty)
             Text(
               article!.content!,
-              style: AppTypography.serif(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: AppColors.t1,
-                height: 1.82,
-              ),
+              style: tt.bodyLarge,
             ),
           // End ornament
           Padding(
@@ -329,9 +324,9 @@ class ArticleDetailsView extends StatelessWidget {
             child: Center(
               child: Text(
                 '— ◆ —',
-                style: AppTypography.serif(
-                  fontSize: 18,
-                  color: AppColors.t3,
+                style: tt.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: cs.outlineVariant,
                   letterSpacing: 8,
                 ),
               ),
@@ -346,7 +341,7 @@ class ArticleDetailsView extends StatelessWidget {
     return Builder(
       builder: (context) => FloatingActionButton(
         onPressed: () => _onBookmark(context),
-        backgroundColor: AppColors.red,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 4,
         child: const Icon(Icons.bookmark, color: Colors.white),
       ),

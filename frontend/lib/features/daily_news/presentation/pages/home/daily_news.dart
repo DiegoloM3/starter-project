@@ -31,15 +31,16 @@ class _DailyNewsState extends State<DailyNews> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.bg,
+      backgroundColor: cs.surfaceContainerLow,
       body: IndexedStack(
         index: _currentTab,
-        children: const [
-          _FeedTab(),
-          SearchPage(embedded: true),
-          SavedArticles(embedded: true),
-          _ProfileTab(),
+        children: [
+          const _FeedTab(),
+          const SearchPage(embedded: true),
+          SavedArticles(embedded: true, isActive: _currentTab == 2),
+          const _ProfileTab(),
         ],
       ),
       bottomNavigationBar: _BottomNav(
@@ -48,7 +49,7 @@ class _DailyNewsState extends State<DailyNews> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, '/CreateArticle'),
-        backgroundColor: AppColors.red,
+        backgroundColor: cs.primary,
         elevation: 4,
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -74,14 +75,16 @@ class _BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
     final labels = [l10n.tabFeed, l10n.tabSearch, l10n.tabSaved, l10n.tabProfile];
     return Container(
       height: 58 + MediaQuery.of(context).padding.bottom,
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        border: Border(top: BorderSide(color: cs.outline)),
       ),
       child: Row(
         children: List.generate(_icons.length, (i) {
@@ -97,16 +100,15 @@ class _BottomNav extends StatelessWidget {
                       Icon(
                         isActive ? tab.activeIcon : tab.icon,
                         size: 21,
-                        color: isActive ? AppColors.red : AppColors.t2,
+                        color: isActive ? cs.primary : cs.onSurfaceVariant,
                       ),
                       const SizedBox(height: 3),
                       Text(
                         labels[i],
-                        style: AppTypography.sans(
-                          fontSize: 9.5,
+                        style: tt.labelSmall?.copyWith(
                           fontWeight:
                               isActive ? FontWeight.w800 : FontWeight.w500,
-                          color: isActive ? AppColors.red : AppColors.t2,
+                          color: isActive ? cs.primary : cs.onSurfaceVariant,
                           letterSpacing: 0.3,
                         ),
                       ),
@@ -136,11 +138,12 @@ class _FeedTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       children: [
         // Safe area for status bar
         Container(
-          color: AppColors.surface,
+          color: cs.surface,
           child: SafeArea(
             bottom: false,
             child: _buildAppBar(context),
@@ -152,31 +155,31 @@ class _FeedTab extends StatelessWidget {
   }
 
   Widget _buildAppBar(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Container(
       height: 50,
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(bottom: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        border: Border(bottom: BorderSide(color: cs.outline)),
       ),
-      padding: const EdgeInsets.only(left: 16, right: 6),
+      padding: const EdgeInsets.only(left: AppSpacing.gutter, right: 6),
       child: Row(
         children: [
           // Red rule marker + wordmark
           Container(
             width: 3,
             height: 18,
-            margin: const EdgeInsets.only(right: 8),
+            margin: const EdgeInsets.only(right: AppSpacing.sm),
             decoration: BoxDecoration(
-              color: AppColors.red,
-              borderRadius: BorderRadius.circular(2),
+              color: cs.primary,
+              borderRadius: BorderRadius.circular(AppRadius.xs),
             ),
           ),
           Text(
             AppLocalizations.of(context)!.appName,
-            style: AppTypography.serif(
-              fontSize: 19,
+            style: tt.headlineSmall?.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.ink,
               letterSpacing: -0.3,
             ),
           ),
@@ -261,7 +264,7 @@ class _FeedTab extends StatelessWidget {
           ),
         ),
         // Section header
-        if (rest.isNotEmpty) _buildSectionHeader(l10n),
+        if (rest.isNotEmpty) _buildSectionHeader(context, l10n),
         // Rest of articles
         for (int i = 0; i < rest.length; i++)
           ArticleWidget(
@@ -277,32 +280,32 @@ class _FeedTab extends StatelessWidget {
   }
 
   /// Editorial section header: red rule + "LATEST" + divider line
-  Widget _buildSectionHeader(AppLocalizations l10n) {
+  Widget _buildSectionHeader(BuildContext context, AppLocalizations l10n) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.gutter, 14, AppSpacing.gutter, 10),
       child: Row(
         children: [
           Container(
             width: 3,
             height: 14,
             decoration: BoxDecoration(
-              color: AppColors.red,
-              borderRadius: BorderRadius.circular(2),
+              color: cs.primary,
+              borderRadius: BorderRadius.circular(AppRadius.xs),
             ),
           ),
           const SizedBox(width: 10),
           Text(
             l10n.sectionLatest,
-            style: AppTypography.sans(
-              fontSize: 9.5,
-              fontWeight: FontWeight.w800,
+            style: tt.labelSmall?.copyWith(
               letterSpacing: 2.2,
-              color: AppColors.t2,
+              color: cs.onSurfaceVariant,
             ),
           ),
           const SizedBox(width: 10),
-          const Expanded(
-            child: Divider(height: 1, color: AppColors.border),
+          Expanded(
+            child: Divider(height: 1, color: cs.outline),
           ),
         ],
       ),
@@ -318,6 +321,8 @@ class _ProfileTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
     final authState = context.read<AuthBloc>().state;
     final authUser =
@@ -335,24 +340,21 @@ class _ProfileTab extends StatelessWidget {
     return Column(
       children: [
         Container(
-          color: AppColors.surface,
+          color: cs.surface,
           child: SafeArea(
             bottom: false,
             child: Container(
               height: 50,
-              decoration: const BoxDecoration(
-                color: AppColors.surface,
-                border: Border(bottom: BorderSide(color: AppColors.border)),
+              decoration: BoxDecoration(
+                color: cs.surface,
+                border: Border(bottom: BorderSide(color: cs.outline)),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
               alignment: Alignment.centerLeft,
               child: Text(
                 l10n.tabProfile,
-                style: AppTypography.serif(
-                  fontSize: 17,
+                style: tt.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.t1,
-                  letterSpacing: -0.2,
                 ),
               ),
             ),
@@ -361,7 +363,7 @@ class _ProfileTab extends StatelessWidget {
         Expanded(
           child: ListView(
             children: [
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xl2),
               // User info
               Center(
                 child: Column(
@@ -369,34 +371,34 @@ class _ProfileTab extends StatelessWidget {
                     Container(
                       width: 56,
                       height: 56,
-                      decoration: const BoxDecoration(
-                        color: AppColors.red,
+                      decoration: BoxDecoration(
+                        color: cs.primary,
                         shape: BoxShape.circle,
                       ),
                       alignment: Alignment.center,
                       child: Text(
                         initials,
-                        style: AppTypography.sans(
+                        style: tt.titleLarge?.copyWith(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
+                          letterSpacing: 0,
                           color: Colors.white,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     Text(
                       displayName,
-                      style: AppTypography.serif(
+                      style: tt.headlineSmall?.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.t1,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
-              const Divider(height: 1, color: AppColors.border),
+              const SizedBox(height: AppSpacing.xl2),
+              Divider(height: 1, color: cs.outline),
               // Menu items
               _ProfileMenuItem(
                 icon: Icons.article_outlined,
@@ -413,11 +415,11 @@ class _ProfileTab extends StatelessWidget {
                 label: l10n.savedArticles,
                 onTap: () => Navigator.pushNamed(context, '/SavedArticles'),
               ),
-              const Divider(height: 1, color: AppColors.border),
+              Divider(height: 1, color: cs.outline),
               _ProfileMenuItem(
                 icon: Icons.logout,
                 label: l10n.signOut,
-                color: AppColors.error,
+                color: cs.error,
                 onTap: () => context
                     .read<AuthBloc>()
                     .add(const AuthSignOutRequested()),
@@ -433,25 +435,29 @@ class _ProfileTab extends StatelessWidget {
 class _ProfileMenuItem extends StatelessWidget {
   final IconData icon;
   final String label;
-  final Color color;
+  final Color? color;
   final VoidCallback onTap;
 
   const _ProfileMenuItem({
     required this.icon,
     required this.label,
     required this.onTap,
-    this.color = AppColors.t1,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    final color = this.color ?? cs.onSurface;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: AppColors.border)),
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: cs.outline)),
         ),
         child: Row(
           children: [
@@ -460,14 +466,13 @@ class _ProfileMenuItem extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: AppTypography.sans(
-                  fontSize: 14,
+                style: tt.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: color,
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right, size: 18, color: AppColors.t3),
+            Icon(Icons.chevron_right, size: 18, color: cs.outlineVariant),
           ],
         ),
       ),

@@ -4,7 +4,6 @@ import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_state.dart';
 import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
-import '../../../../../config/theme/app_themes.dart';
 import '../../../../../injection_container.dart';
 import '../../../domain/entities/article.dart';
 import '../../bloc/article/user/user_articles_bloc.dart';
@@ -36,7 +35,7 @@ class MyArticlesPage extends StatelessWidget {
         ..add(UserArticlesSubscriptionRequested(currentUserId)),
       child: Builder(
         builder: (context) => Scaffold(
-          backgroundColor: AppColors.bg,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
           appBar: _buildAppBar(context),
           body: Column(
             children: [
@@ -50,21 +49,18 @@ class MyArticlesPage extends StatelessWidget {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return AppBar(
-      backgroundColor: AppColors.surface,
+      backgroundColor: cs.surface,
       elevation: 0,
       leading: IconButton(
-        icon: const Icon(Icons.chevron_left, color: AppColors.t1, size: 24),
+        icon: Icon(Icons.chevron_left, color: cs.onSurface, size: 24),
         onPressed: () => Navigator.pop(context),
       ),
       title: Text(
         AppLocalizations.of(context)!.myArticles,
-        style: AppTypography.serif(
-          fontSize: 17,
-          fontWeight: FontWeight.w700,
-          color: AppColors.t1,
-          letterSpacing: -0.2,
-        ),
+        style: tt.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
       ),
       actions: [
         Padding(
@@ -74,8 +70,8 @@ class MyArticlesPage extends StatelessWidget {
             child: Container(
               width: 32,
               height: 32,
-              decoration: const BoxDecoration(
-                color: AppColors.red,
+              decoration: BoxDecoration(
+                color: cs.primary,
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.add, color: Colors.white, size: 16),
@@ -85,7 +81,7 @@ class MyArticlesPage extends StatelessWidget {
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Container(height: 1, color: AppColors.border),
+        child: Container(height: 1, color: cs.outline),
       ),
     );
   }
@@ -139,11 +135,12 @@ class _FilterTabs extends StatelessWidget {
               allArticles.where((a) => a.status == 'archived').length,
         };
 
+        final cs = Theme.of(context).colorScheme;
         return Container(
           height: 42,
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
-            border: Border(bottom: BorderSide(color: AppColors.border)),
+          decoration: BoxDecoration(
+            color: cs.surface,
+            border: Border(bottom: BorderSide(color: cs.outline)),
           ),
           child: Row(
             children: _filters.map((filter) {
@@ -180,6 +177,8 @@ class _FilterTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Expanded(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -192,10 +191,9 @@ class _FilterTab extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: AppTypography.sans(
-                    fontSize: 12,
+                  style: tt.bodySmall?.copyWith(
                     fontWeight: isActive ? FontWeight.w800 : FontWeight.w500,
-                    color: isActive ? AppColors.red : AppColors.t2,
+                    color: isActive ? cs.primary : cs.onSurfaceVariant,
                   ),
                 ),
                 if (count > 0) ...[
@@ -205,16 +203,15 @@ class _FilterTab extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                     decoration: BoxDecoration(
-                      color: isActive ? AppColors.red : AppColors.t3,
+                      color: isActive ? cs.primary : cs.outlineVariant,
                       borderRadius: BorderRadius.circular(99),
                     ),
                     child: Text(
                       '$count',
                       textAlign: TextAlign.center,
-                      style: AppTypography.sans(
-                        fontSize: 9.5,
+                      style: tt.labelSmall?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: isActive ? Colors.white : AppColors.surface,
+                        color: isActive ? Colors.white : cs.surface,
                       ),
                     ),
                   ),

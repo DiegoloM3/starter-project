@@ -20,10 +20,11 @@ class SearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return BlocProvider<SearchArticlesBloc>(
       create: (_) => sl<SearchArticlesBloc>(),
       child: Scaffold(
-        backgroundColor: AppColors.bg,
+        backgroundColor: cs.surfaceContainerLow,
         appBar: _buildAppBar(context),
         body: const Column(
           children: [
@@ -36,29 +37,25 @@ class SearchPage extends StatelessWidget {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return AppBar(
-      backgroundColor: AppColors.surface,
+      backgroundColor: cs.surface,
       elevation: 0,
       automaticallyImplyLeading: false,
       leading: embedded
           ? null
           : IconButton(
-              icon: const Icon(Icons.chevron_left,
-                  color: AppColors.t1, size: 24),
+              icon: Icon(Icons.chevron_left, color: cs.onSurface, size: 24),
               onPressed: () => Navigator.pop(context),
             ),
       title: Text(
         AppLocalizations.of(context)!.searchTitle,
-        style: AppTypography.serif(
-          fontSize: 17,
-          fontWeight: FontWeight.w700,
-          color: AppColors.t1,
-          letterSpacing: -0.2,
-        ),
+        style: tt.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
       ),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Container(height: 1, color: AppColors.border),
+        child: Container(height: 1, color: cs.outline),
       ),
     );
   }
@@ -70,32 +67,36 @@ class _SearchField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
 
     return Container(
-      color: AppColors.surface,
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      color: cs.surface,
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.sm),
       child: TextField(
         autofocus: false,
-        style: AppTypography.sans(fontSize: 14, color: AppColors.t1),
+        style: tt.bodyMedium,
         decoration: InputDecoration(
           hintText: l10n.searchHint,
-          hintStyle: AppTypography.sans(fontSize: 14, color: AppColors.t3),
-          prefixIcon: const Icon(Icons.search, color: AppColors.t3, size: 20),
+          hintStyle: tt.bodyMedium?.copyWith(color: cs.outlineVariant),
+          prefixIcon:
+              Icon(Icons.search, color: cs.outlineVariant, size: 20),
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 10),
           filled: true,
-          fillColor: AppColors.bg,
+          fillColor: cs.surfaceContainerLow,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppRadius.md),
-            borderSide: const BorderSide(color: AppColors.border),
+            borderSide: BorderSide(color: cs.outline),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppRadius.md),
-            borderSide: const BorderSide(color: AppColors.border),
+            borderSide: BorderSide(color: cs.outline),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppRadius.md),
-            borderSide: const BorderSide(color: AppColors.red, width: 1.5),
+            borderSide: BorderSide(color: cs.primary, width: 1.5),
           ),
         ),
         onChanged: (query) {
