@@ -3,6 +3,7 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/utils/rea
 
 void main() {
   group('ReadingTimeCalculator.calculate', () {
+    // Reading speed is 100 words per minute (see ReadingTimeCalculator).
     test('returns 1 for null content', () {
       expect(ReadingTimeCalculator.calculate(null), 1);
     });
@@ -15,20 +16,20 @@ void main() {
       expect(ReadingTimeCalculator.calculate('   \n\t  '), 1);
     });
 
-    test('returns 1 for short content under 265 words', () {
+    test('returns 1 for content up to 100 words', () {
       final shortText = List.generate(100, (i) => 'word').join(' ');
       expect(ReadingTimeCalculator.calculate(shortText), 1);
     });
 
-    test('returns 2 for content between 266 and 530 words', () {
+    test('returns 3 for content between 201 and 300 words', () {
       final mediumText = List.generate(300, (i) => 'word').join(' ');
-      expect(ReadingTimeCalculator.calculate(mediumText), 2);
+      expect(ReadingTimeCalculator.calculate(mediumText), 3);
     });
 
     test('calculates correctly for long content', () {
       final longText = List.generate(1000, (i) => 'word').join(' ');
-      // 1000 / 265 = 3.77 -> ceil = 4
-      expect(ReadingTimeCalculator.calculate(longText), 4);
+      // 1000 / 100 = 10 -> ceil = 10
+      expect(ReadingTimeCalculator.calculate(longText), 10);
     });
 
     test('handles single word', () {
@@ -37,7 +38,7 @@ void main() {
 
     test('handles multiple spaces between words', () {
       final text = List.generate(300, (i) => 'word').join('   ');
-      expect(ReadingTimeCalculator.calculate(text), 2);
+      expect(ReadingTimeCalculator.calculate(text), 3);
     });
   });
 }

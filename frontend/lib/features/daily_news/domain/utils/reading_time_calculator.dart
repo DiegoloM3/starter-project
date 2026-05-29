@@ -1,5 +1,7 @@
 abstract class ReadingTimeCalculator {
-  static const int _wordsPerMinute = 265;
+  // Intentionally low so the live "min read" indicator visibly climbs while
+  // typing. Single source of truth for reading time across the app.
+  static const int _wordsPerMinute = 100;
 
   static int calculate(String? content) {
     if (content == null || content.trim().isEmpty) return 1;
