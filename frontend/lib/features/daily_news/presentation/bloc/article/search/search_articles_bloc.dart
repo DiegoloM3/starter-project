@@ -60,6 +60,14 @@ Stream<E> _debounce<E>(Stream<E> events, Duration duration) {
   return controller.stream;
 }
 
+/// Search is intentionally performed client-side over the live feed.
+///
+/// [GetFeedArticlesUseCase] already streams every published Firestore article
+/// (the feed query is unbounded) merged with the News API headlines, so
+/// filtering the in-memory list covers the full searchable set instantly and
+/// without issuing a new Firestore query per keystroke. A server-side search
+/// use case would be strictly narrower (Firestore only, no News API) and more
+/// expensive, so it is deliberately not used here.
 class SearchArticlesBloc
     extends Bloc<SearchArticlesEvent, SearchArticlesState> {
   final GetFeedArticlesUseCase _getFeedArticlesUseCase;

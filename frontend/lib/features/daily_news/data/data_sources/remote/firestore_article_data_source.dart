@@ -155,20 +155,4 @@ class FirestoreArticleDataSource {
         .snapshots()
         .map((snap) => snap.docs.map((doc) => doc.data()).toList());
   }
-
-  Stream<List<ArticleModel>> searchPublishedArticles(String query) {
-    final lowerQuery = query.toLowerCase();
-    return _articlesRef
-        .where('isDeleted', isEqualTo: false)
-        .where('status', isEqualTo: ArticleStatus.published)
-        .orderBy('publishedAt', descending: true)
-        .snapshots()
-        .map((snap) => snap.docs
-            .map((doc) => doc.data())
-            .where((article) =>
-                (article.title?.toLowerCase().contains(lowerQuery) ?? false) ||
-                (article.description?.toLowerCase().contains(lowerQuery) ??
-                    false))
-            .toList());
-  }
 }

@@ -15,7 +15,6 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/remove_article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/save_article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/update_article.dart';
-import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/search_articles.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_feed_articles.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/upload_thumbnail.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/create/create_article_bloc.dart';
@@ -60,7 +59,6 @@ void registerArticleModule(GetIt sl) {
   sl.registerSingleton<GetUserArticlesUseCase>(GetUserArticlesUseCase(sl()));
   sl.registerSingleton<GetDraftArticlesUseCase>(GetDraftArticlesUseCase(sl()));
   sl.registerSingleton<UploadThumbnailUseCase>(UploadThumbnailUseCase(sl()));
-  sl.registerSingleton<SearchArticlesUseCase>(SearchArticlesUseCase(sl()));
   sl.registerSingleton<GetFeedArticlesUseCase>(GetFeedArticlesUseCase(sl()));
 
   // BLoCs

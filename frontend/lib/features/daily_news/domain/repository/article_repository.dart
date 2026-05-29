@@ -23,9 +23,6 @@ abstract class ArticleRepository {
   Stream<DataState<List<ArticleEntity>>> getUserArticles(String userId);
   Stream<DataState<List<ArticleEntity>>> getDraftArticles(String userId);
 
-  // Search
-  Stream<DataState<List<ArticleEntity>>> searchArticles(String query);
-
   // Storage
   Future<DataState<String>> uploadThumbnail({
     required String articleId,

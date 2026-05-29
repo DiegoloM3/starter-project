@@ -14,7 +14,6 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_published_articles.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_user_articles.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_draft_articles.dart';
-import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/search_articles.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_feed_articles.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/add_comment.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_comments.dart';
@@ -65,9 +64,6 @@ class MockGetUserArticlesUseCase extends Mock
 
 class MockGetDraftArticlesUseCase extends Mock
     implements GetDraftArticlesUseCase {}
-
-class MockSearchArticlesUseCase extends Mock
-    implements SearchArticlesUseCase {}
 
 class MockGetFeedArticlesUseCase extends Mock
     implements GetFeedArticlesUseCase {}

@@ -214,12 +214,6 @@ class ArticleRepositoryImpl implements ArticleRepository {
         _firestoreDataSource.getDraftArticles(userId));
   }
 
-  @override
-  Stream<DataState<List<ArticleEntity>>> searchArticles(String query) {
-    return _wrapArticleStream(
-        _firestoreDataSource.searchPublishedArticles(query));
-  }
-
   Stream<DataState<List<ArticleEntity>>> _wrapArticleStream(
     Stream<List<ArticleModel>> source,
   ) {

@@ -297,31 +297,6 @@ void main() {
     });
   });
 
-  group('searchArticles', () {
-    test('stream maps models to DataSuccess with entities', () async {
-      final models = testArticleModelList();
-      when(() => mockFirestore.searchPublishedArticles(any()))
-          .thenAnswer((_) => Stream.value(models));
-
-      final stream = repository.searchArticles('flutter');
-      final result = await stream.first;
-
-      expect(result, isA<DataSuccess>());
-      expect(result.data!.length, models.length);
-      verify(() => mockFirestore.searchPublishedArticles('flutter')).called(1);
-    });
-
-    test('stream emits DataFailed when source stream errors', () async {
-      when(() => mockFirestore.searchPublishedArticles(any()))
-          .thenAnswer((_) => Stream.error(Exception('fail')));
-
-      final stream = repository.searchArticles('test');
-      final result = await stream.first;
-
-      expect(result, isA<DataFailed>());
-    });
-  });
-
   group('uploadThumbnail', () {
     test('returns DataSuccess with download URL', () async {
       when(() => mockAuthRepository.currentUser)
