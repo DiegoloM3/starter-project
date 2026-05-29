@@ -10,6 +10,9 @@ ROADMAP.md
 **/google-services.json
 **/GoogleService-Info.plist
 **/firebase_options.dart
+# FlutterFire-generated app config (holds project/app IDs). Path is specific so
+# the backend's firebase.json (CLI emulator/rules config) stays tracked.
+frontend/firebase.json
 
 # Environment secrets
 env.json
