@@ -4,6 +4,12 @@ This folder is essentially the app and what the user sees.
 It has a dependency to the backend which ensures that there is data consistency.
 You will be doing most of your work in this folder.
 
+## Prerequisites
+- [Flutter SDK](https://flutter.dev/docs/get-started/install) 3.x (the Dart SDK ships with it)
+- An IDE with the Flutter/Dart plugins (VS Code, Android Studio, or IntelliJ)
+- Platform tooling to run a device/emulator: Xcode (iOS/macOS) or the Android SDK
+- A configured Firebase project (see below) and a [NewsAPI](https://newsapi.org/) key
+
 ## Getting Started
 Before you can run the app, you must connect it to a Firebase project. The Firebase
 config files are **not committed** — they hold your project/app IDs, so every developer
@@ -28,6 +34,14 @@ Once you have completed this appropriately, you can start to work with the proje
 ### Install the Project Dependencies (in pubsec.yaml)
 `flutter pub get`
 
+### Generate the localization files (AppLocalizations)
+`flutter gen-l10n`
+
+### Run the tests
+`flutter test`
+
+To run with coverage: `flutter test --coverage`
+
 ### Run the app (NewsAPI key required)
 The NewsAPI key is read at compile time from the `NEWS_API_KEY` dart-define. Copy
 `env.example.json` to `env.json`, fill in your key, then run with the file:
@@ -45,7 +59,8 @@ This tutorial **literally builds this project from the ground up** so we really 
 Furthermore, we will now leave the index of this project with all the documentation that must be read before contributing to the frontend.
 
 # Index
-1. [Contribution Guidelines](./docs/CONTRIBUTION_GUIDELINES.md)
-2. [Architecture Violations](./docs/ARCHITECTURE_VIOLATIONS.md)
-3. [Code Quality Violations](./docs/CODING_GUIDELINES.md)
-4. [Our App Architecture](./docs/APP_ARCHITECTURE.md)
+1. [Contribution Guidelines](../docs/CONTRIBUTION_GUIDELINES.md)
+2. [Architecture Violations](../docs/ARCHITECTURE_VIOLATIONS.md)
+3. [Code Quality Violations](../docs/CODING_GUIDELINES.md)
+4. [Our App Architecture](../docs/APP_ARCHITECTURE.md)
+5. [Project Report](../docs/REPORT.md)

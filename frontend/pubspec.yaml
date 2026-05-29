@@ -1,5 +1,5 @@
 name: news_app_clean_architecture
-description: A new Flutter project.
+description: A Firebase-backed news app (Clean Architecture + BLoC) — create, draft, publish and read articles with comments, search and i18n.
 
 publish_to: 'none'
 
