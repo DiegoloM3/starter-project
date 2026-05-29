@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:news_app_clean_architecture/core/constants/constants.dart';
 import 'package:news_app_clean_architecture/core/errors/app_exception.dart';
 import 'package:news_app_clean_architecture/shared/data/errors/exception_mapper.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/repository/auth_repository.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/local/app_database.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/firebase_storage_data_source.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/firestore_article_data_source.dart';
@@ -20,14 +21,14 @@ class ArticleRepositoryImpl implements ArticleRepository {
   final AppDatabase _appDatabase;
   final FirestoreArticleDataSource _firestoreDataSource;
   final FirebaseStorageDataSource _storageDataSource;
-  final FirebaseAuth _auth;
+  final AuthRepository _authRepository;
 
   ArticleRepositoryImpl(
     this._newsApiService,
     this._appDatabase,
     this._firestoreDataSource,
     this._storageDataSource,
-    this._auth,
+    this._authRepository,
   );
 
   // --- News API ---
@@ -62,21 +63,36 @@ class ArticleRepositoryImpl implements ArticleRepository {
   // --- Local database ---
 
   @override
-  Future<List<ArticleEntity>> getSavedArticles() async {
-    final models = await _appDatabase.articleDAO.getArticles();
-    return models.map((model) => model.toEntity()).toList();
+  Future<DataState<List<ArticleEntity>>> getSavedArticles() async {
+    try {
+      final models = await _appDatabase.articleDAO.getArticles();
+      final entities = models.map((model) => model.toEntity()).toList();
+      return DataSuccess(entities);
+    } catch (e) {
+      return DataFailed(ExceptionMapper.fromException(e));
+    }
   }
 
   @override
-  Future<void> removeArticle(ArticleEntity article) {
-    return _appDatabase.articleDAO
-        .deleteArticle(ArticleModel.fromEntity(article));
+  Future<DataState<void>> removeArticle(ArticleEntity article) async {
+    try {
+      await _appDatabase.articleDAO
+          .deleteArticle(ArticleModel.fromEntity(article));
+      return const DataSuccess(null);
+    } catch (e) {
+      return DataFailed(ExceptionMapper.fromException(e));
+    }
   }
 
   @override
-  Future<void> saveArticle(ArticleEntity article) {
-    return _appDatabase.articleDAO
-        .insertArticle(ArticleModel.fromEntity(article));
+  Future<DataState<void>> saveArticle(ArticleEntity article) async {
+    try {
+      await _appDatabase.articleDAO
+          .insertArticle(ArticleModel.fromEntity(article));
+      return const DataSuccess(null);
+    } catch (e) {
+      return DataFailed(ExceptionMapper.fromException(e));
+    }
   }
 
   // --- Firestore CRUD ---
@@ -132,8 +148,9 @@ class ArticleRepositoryImpl implements ArticleRepository {
             handleData: (models, sink) {
               final firestoreEntities =
                   models.map((m) => m.toEntity()).toList();
-              sink.add(DataSuccess(
-                  _mergeSorted(apiArticles, firestoreEntities)));
+              sink.add(
+                DataSuccess(_mergeSorted(apiArticles, firestoreEntities)),
+              );
             },
             handleError: (error, stackTrace, sink) {
               if (apiArticles.isNotEmpty) {
@@ -141,7 +158,8 @@ class ArticleRepositoryImpl implements ArticleRepository {
                 return;
               }
               sink.add(
-                  DataFailed(ExceptionMapper.fromException(error)));
+                DataFailed(ExceptionMapper.fromException(error)),
+              );
             },
           ),
         );
@@ -210,7 +228,8 @@ class ArticleRepositoryImpl implements ArticleRepository {
           DataState<List<ArticleEntity>>>.fromHandlers(
         handleData: (models, sink) {
           sink.add(
-              DataSuccess(models.map((m) => m.toEntity()).toList()));
+            DataSuccess(models.map((m) => m.toEntity()).toList()),
+          );
         },
         handleError: (error, stackTrace, sink) {
           sink.add(DataFailed(ExceptionMapper.fromException(error)));
@@ -227,7 +246,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
     required String filePath,
   }) async {
     try {
-      final uid = _auth.currentUser?.uid;
+      final uid = _authRepository.currentUser?.uid;
       if (uid == null) {
         return const DataFailed(
           AuthException(

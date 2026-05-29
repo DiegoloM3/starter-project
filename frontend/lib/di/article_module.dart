@@ -38,7 +38,13 @@ void registerArticleModule(GetIt sl) {
 
   // Repository
   sl.registerSingleton<ArticleRepository>(
-    ArticleRepositoryImpl(sl(), sl(), sl(), sl(), sl()),
+    ArticleRepositoryImpl(
+      sl(),
+      sl(),
+      sl(),
+      sl(),
+      sl<AuthRepository>(),
+    ),
   );
 
   // Use Cases

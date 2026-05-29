@@ -6,9 +6,9 @@ abstract class ArticleRepository {
   Future<DataState<List<ArticleEntity>>> getNewsArticles();
 
   // Local database
-  Future<List<ArticleEntity>> getSavedArticles();
-  Future<void> saveArticle(ArticleEntity article);
-  Future<void> removeArticle(ArticleEntity article);
+  Future<DataState<List<ArticleEntity>>> getSavedArticles();
+  Future<DataState<void>> saveArticle(ArticleEntity article);
+  Future<DataState<void>> removeArticle(ArticleEntity article);
 
   // Firestore CRUD
   Future<DataState<ArticleEntity>> createArticle(ArticleEntity article);
