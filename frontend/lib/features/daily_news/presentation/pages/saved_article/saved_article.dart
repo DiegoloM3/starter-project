@@ -119,6 +119,10 @@ class _SavedBody extends StatelessWidget {
             icon: Icons.error_outline,
             title: l10n.somethingWentWrong,
             subtitle: state.error.message,
+            actionLabel: l10n.tryAgain,
+            onAction: () => context
+                .read<LocalArticleBloc>()
+                .add(const GetSavedArticles()),
           );
         }
 

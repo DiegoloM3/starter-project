@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app_clean_architecture/core/errors/app_exception.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/comment.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/add_comment.dart';
@@ -35,6 +36,11 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
     _subscription =
         _getCommentsUseCase(params: event.articleId).listen(
       (dataState) => add(CommentsUpdated(dataState)),
+      onError: (Object error) {
+        add(CommentsUpdated(DataFailed(
+          AppException(message: error.toString(), code: 'stream_error'),
+        )));
+      },
     );
   }
 

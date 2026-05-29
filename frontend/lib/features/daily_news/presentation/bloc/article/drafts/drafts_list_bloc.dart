@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/core/errors/app_exception.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
@@ -12,8 +10,6 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 class DraftsListBloc extends Bloc<DraftsListEvent, DraftsListState> {
   final GetDraftArticlesUseCase _getDraftArticlesUseCase;
   final DeleteArticleUseCase _deleteArticleUseCase;
-
-  StreamSubscription<DataState<List<ArticleEntity>>>? _subscription;
 
   DraftsListBloc(
     this._getDraftArticlesUseCase,
@@ -28,8 +24,6 @@ class DraftsListBloc extends Bloc<DraftsListEvent, DraftsListState> {
     Emitter<DraftsListState> emit,
   ) async {
     emit(const DraftsListLoading());
-
-    await _subscription?.cancel();
 
     await emit.forEach<DataState<List<ArticleEntity>>>(
       _getDraftArticlesUseCase(params: event.userId),
@@ -56,11 +50,5 @@ class DraftsListBloc extends Bloc<DraftsListEvent, DraftsListState> {
     if (result is DataFailed) {
       emit(DraftsListFailure(result.error!));
     }
-  }
-
-  @override
-  Future<void> close() {
-    _subscription?.cancel();
-    return super.close();
   }
 }
