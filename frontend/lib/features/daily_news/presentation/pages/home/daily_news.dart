@@ -252,30 +252,44 @@ class _FeedTab extends StatelessWidget {
     final featured = articles.first;
     final rest = articles.length > 1 ? articles.sublist(1) : <ArticleEntity>[];
 
-    return ListView(
-      children: [
-        // Lead story — feature card
-        FeatureCard(
-          article: featured,
-          onTap: () => Navigator.pushNamed(
-            context,
-            '/ArticleDetails',
-            arguments: featured,
-          ),
-        ),
-        // Section header
-        if (rest.isNotEmpty) _buildSectionHeader(context, l10n),
-        // Rest of articles
-        for (int i = 0; i < rest.length; i++)
-          ArticleWidget(
-            article: rest[i],
-            showDivider: i < rest.length - 1,
-            onArticlePressed: (a) =>
-                Navigator.pushNamed(context, '/ArticleDetails', arguments: a),
-          ),
-        // Bottom padding so FAB doesn't overlap last item
-        const SizedBox(height: 80),
-      ],
+    // Leading slots before the article list:
+    //   0 -> lead story feature card
+    //   1 -> section header (only when there are more articles)
+    // Trailing slot:
+    //   last -> bottom padding so the FAB doesn't overlap the last item.
+    final headerOffset = rest.isNotEmpty ? 2 : 1;
+    final itemCount = headerOffset + rest.length + 1;
+
+    return ListView.builder(
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          // Lead story — feature card
+          return FeatureCard(
+            article: featured,
+            onTap: () => Navigator.pushNamed(
+              context,
+              '/ArticleDetails',
+              arguments: featured,
+            ),
+          );
+        }
+        if (rest.isNotEmpty && index == 1) {
+          // Section header
+          return _buildSectionHeader(context, l10n);
+        }
+        if (index == itemCount - 1) {
+          // Bottom padding so FAB doesn't overlap last item
+          return const SizedBox(height: 80);
+        }
+        final restIndex = index - headerOffset;
+        return ArticleWidget(
+          article: rest[restIndex],
+          showDivider: restIndex < rest.length - 1,
+          onArticlePressed: (a) =>
+              Navigator.pushNamed(context, '/ArticleDetails', arguments: a),
+        );
+      },
     );
   }
 

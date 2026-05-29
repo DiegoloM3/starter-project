@@ -6,6 +6,7 @@ import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 import '../../../../../injection_container.dart';
 import '../../../domain/entities/article.dart';
+import '../../../domain/entities/article_status.dart';
 import '../../bloc/article/user/user_articles_bloc.dart';
 import '../../bloc/article/user/user_articles_event.dart';
 import '../../bloc/article/user/user_articles_state.dart';
@@ -37,7 +38,7 @@ class MyArticlesPage extends StatelessWidget {
         builder: (context) => Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
           appBar: _buildAppBar(context),
-          body: Column(
+          body: const Column(
             children: [
               _FilterTabs(),
               Expanded(child: _ArticlesList()),
@@ -91,6 +92,8 @@ class MyArticlesPage extends StatelessWidget {
 // Filter tabs with counts
 // ---------------------------------------------------------------------------
 class _FilterTabs extends StatelessWidget {
+  const _FilterTabs();
+
   static const _filters = [
     UserArticlesFilter.all,
     UserArticlesFilter.drafts,
@@ -127,12 +130,15 @@ class _FilterTabs extends StatelessWidget {
         // store _allArticles in the bloc. For now we compute from available data.
         final counts = <String, int>{
           UserArticlesFilter.all: allArticles.length,
-          UserArticlesFilter.drafts:
-              allArticles.where((a) => a.status == 'draft').length,
-          UserArticlesFilter.published:
-              allArticles.where((a) => a.status == 'published').length,
-          UserArticlesFilter.archived:
-              allArticles.where((a) => a.status == 'archived').length,
+          UserArticlesFilter.drafts: allArticles
+              .where((a) => a.status == ArticleStatus.draft)
+              .length,
+          UserArticlesFilter.published: allArticles
+              .where((a) => a.status == ArticleStatus.published)
+              .length,
+          UserArticlesFilter.archived: allArticles
+              .where((a) => a.status == ArticleStatus.archived)
+              .length,
         };
 
         final cs = Theme.of(context).colorScheme;
@@ -229,6 +235,8 @@ class _FilterTab extends StatelessWidget {
 // Articles list content
 // ---------------------------------------------------------------------------
 class _ArticlesList extends StatelessWidget {
+  const _ArticlesList();
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -339,7 +347,7 @@ class _ArticlesList extends StatelessWidget {
   }
 
   void _onArticlePressed(BuildContext context, ArticleEntity article) {
-    if (article.status == 'draft') {
+    if (article.status == ArticleStatus.draft) {
       Navigator.pushNamed(context, '/EditArticle', arguments: article);
     } else {
       Navigator.pushNamed(context, '/ArticleDetails', arguments: article);
