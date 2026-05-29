@@ -135,50 +135,40 @@ class CreateArticleBloc
   Future<void> _performSave(Emitter<CreateArticleState> emit) async {
     emit(state.copyWith(isSaving: true, clearError: true));
 
-    try {
-      if (state.articleId == null) {
-        final created = await _createNewArticle();
-        if (created is DataFailed) {
-          emit(state.copyWith(isSaving: false, error: created.error));
-          return;
-        }
-        emit(state.copyWith(articleId: created.data!.id));
-      } else {
-        final updated = await _updateExistingArticle();
-        if (updated is DataFailed) {
-          emit(state.copyWith(isSaving: false, error: updated.error));
-          return;
-        }
+    if (state.articleId == null) {
+      final created = await _createNewArticle();
+      if (created is DataFailed) {
+        emit(state.copyWith(isSaving: false, error: created.error));
+        return;
       }
-
-      // Upload thumbnail if selected but not yet uploaded
-      if (state.selectedImagePath != null &&
-          state.thumbnailUrl == null &&
-          state.articleId != null) {
-        final uploaded = await _uploadThumbnail();
-        if (uploaded is DataFailed) {
-          emit(state.copyWith(isSaving: false, error: uploaded.error));
-          return;
-        }
-        emit(state.copyWith(thumbnailUrl: uploaded.data));
-
-        final persisted = await _updateExistingArticle();
-        if (persisted is DataFailed) {
-          emit(state.copyWith(isSaving: false, error: persisted.error));
-          return;
-        }
+      emit(state.copyWith(articleId: created.data!.id));
+    } else {
+      final updated = await _updateExistingArticle();
+      if (updated is DataFailed) {
+        emit(state.copyWith(isSaving: false, error: updated.error));
+        return;
       }
-
-      emit(state.copyWith(isSaving: false, lastSavedAt: DateTime.now()));
-    } catch (_) {
-      emit(state.copyWith(
-        isSaving: false,
-        error: const AppException(
-          message: 'Could not save draft',
-          code: 'save-failed',
-        ),
-      ));
     }
+
+    // Upload thumbnail if selected but not yet uploaded
+    if (state.selectedImagePath != null &&
+        state.thumbnailUrl == null &&
+        state.articleId != null) {
+      final uploaded = await _uploadThumbnail();
+      if (uploaded is DataFailed) {
+        emit(state.copyWith(isSaving: false, error: uploaded.error));
+        return;
+      }
+      emit(state.copyWith(thumbnailUrl: uploaded.data));
+
+      final persisted = await _updateExistingArticle();
+      if (persisted is DataFailed) {
+        emit(state.copyWith(isSaving: false, error: persisted.error));
+        return;
+      }
+    }
+
+    emit(state.copyWith(isSaving: false, lastSavedAt: DateTime.now()));
   }
 
   Future<void> _onPublish(
@@ -196,56 +186,46 @@ class CreateArticleBloc
 
     emit(state.copyWith(isPublishing: true, clearError: true));
 
-    try {
-      // Ensure the article exists
-      if (state.articleId == null) {
-        final created = await _createNewArticle();
-        if (created is DataFailed) {
-          emit(state.copyWith(isPublishing: false, error: created.error));
-          return;
-        }
-        emit(state.copyWith(articleId: created.data!.id));
-      }
-
-      // Upload thumbnail if selected but not yet uploaded
-      if (state.selectedImagePath != null && state.thumbnailUrl == null) {
-        final uploaded = await _uploadThumbnail();
-        if (uploaded is DataFailed) {
-          emit(state.copyWith(isPublishing: false, error: uploaded.error));
-          return;
-        }
-        emit(state.copyWith(thumbnailUrl: uploaded.data));
-      }
-
-      // Transition to published. The same update persists the thumbnail URL
-      // (read from state), so no separate write is needed.
-      final entity = state
-          .toEntity(authorId: authorId, authorName: authorName)
-          .copyWith(
-            status: ArticleStatus.published,
-            publishedAt: DateTime.now().toIso8601String(),
-          );
-
-      final result = await _updateArticleUseCase(params: entity);
-      if (result is DataFailed) {
-        emit(state.copyWith(isPublishing: false, error: result.error));
+    // Ensure the article exists
+    if (state.articleId == null) {
+      final created = await _createNewArticle();
+      if (created is DataFailed) {
+        emit(state.copyWith(isPublishing: false, error: created.error));
         return;
       }
-
-      emit(state.copyWith(
-        isPublishing: false,
-        isPublished: true,
-        status: ArticleStatus.published,
-      ));
-    } catch (_) {
-      emit(state.copyWith(
-        isPublishing: false,
-        error: const AppException(
-          message: 'Could not publish the article',
-          code: 'publish-failed',
-        ),
-      ));
+      emit(state.copyWith(articleId: created.data!.id));
     }
+
+    // Upload thumbnail if selected but not yet uploaded
+    if (state.selectedImagePath != null && state.thumbnailUrl == null) {
+      final uploaded = await _uploadThumbnail();
+      if (uploaded is DataFailed) {
+        emit(state.copyWith(isPublishing: false, error: uploaded.error));
+        return;
+      }
+      emit(state.copyWith(thumbnailUrl: uploaded.data));
+    }
+
+    // Transition to published. The same update persists the thumbnail URL
+    // (read from state), so no separate write is needed.
+    final entity = state
+        .toEntity(authorId: authorId, authorName: authorName)
+        .copyWith(
+          status: ArticleStatus.published,
+          publishedAt: DateTime.now().toIso8601String(),
+        );
+
+    final result = await _updateArticleUseCase(params: entity);
+    if (result is DataFailed) {
+      emit(state.copyWith(isPublishing: false, error: result.error));
+      return;
+    }
+
+    emit(state.copyWith(
+      isPublishing: false,
+      isPublished: true,
+      status: ArticleStatus.published,
+    ));
   }
 
   Future<void> _onArchive(
@@ -263,30 +243,20 @@ class CreateArticleBloc
 
     emit(state.copyWith(isPublishing: true, clearError: true));
 
-    try {
-      final entity = state
-          .toEntity(authorId: authorId, authorName: authorName)
-          .copyWith(status: ArticleStatus.archived);
+    final entity = state
+        .toEntity(authorId: authorId, authorName: authorName)
+        .copyWith(status: ArticleStatus.archived);
 
-      final result = await _updateArticleUseCase(params: entity);
-      if (result is DataFailed) {
-        emit(state.copyWith(isPublishing: false, error: result.error));
-        return;
-      }
-
-      emit(state.copyWith(
-        isPublishing: false,
-        status: ArticleStatus.archived,
-      ));
-    } catch (_) {
-      emit(state.copyWith(
-        isPublishing: false,
-        error: const AppException(
-          message: 'Could not archive the article',
-          code: 'archive-failed',
-        ),
-      ));
+    final result = await _updateArticleUseCase(params: entity);
+    if (result is DataFailed) {
+      emit(state.copyWith(isPublishing: false, error: result.error));
+      return;
     }
+
+    emit(state.copyWith(
+      isPublishing: false,
+      status: ArticleStatus.archived,
+    ));
   }
 
   // --- Private helpers (return results, never emit) ---

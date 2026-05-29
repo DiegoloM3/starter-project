@@ -230,7 +230,7 @@ class CreateArticlePage extends HookWidget {
           ),
           const SizedBox(width: AppSpacing.xs),
           Text(
-            'Saving…',
+            l10n.savingDraft,
             style: tt.labelSmall?.copyWith(
               fontWeight: FontWeight.w400,
               color: cs.onSurfaceVariant,
@@ -267,6 +267,7 @@ class CreateArticlePage extends HookWidget {
   Widget _buildCoverImage(BuildContext context, String? selectedImagePath) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
     if (selectedImagePath != null) {
       return Stack(
         children: [
@@ -323,7 +324,7 @@ class CreateArticlePage extends HookWidget {
                 borderRadius: BorderRadius.circular(AppRadius.xs),
               ),
               child: Text(
-                'COVER IMAGE',
+                l10n.coverImage,
                 style: tt.labelSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -357,7 +358,7 @@ class CreateArticlePage extends HookWidget {
             Icon(Icons.camera_alt_outlined, color: cs.primary, size: 22),
             const SizedBox(height: 7),
             Text(
-              'Add cover image',
+              l10n.addCoverImage,
               style: tt.bodySmall?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: cs.primary,
@@ -411,6 +412,7 @@ class CreateArticlePage extends HookWidget {
       BuildContext context, TextEditingController controller) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.only(top: 14, bottom: 14),
       decoration: BoxDecoration(
@@ -420,7 +422,7 @@ class CreateArticlePage extends HookWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'DESCRIPTION',
+            l10n.descriptionLabel,
             style: tt.labelSmall?.copyWith(
               color: cs.outlineVariant,
               letterSpacing: 2,
@@ -464,6 +466,7 @@ class CreateArticlePage extends HookWidget {
       BuildContext context, TextEditingController controller) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.only(top: 14),
       decoration: BoxDecoration(
@@ -476,7 +479,7 @@ class CreateArticlePage extends HookWidget {
           Row(
             children: [
               Text(
-                'CONTENT',
+                l10n.contentLabel,
                 style: tt.labelSmall?.copyWith(
                   color: cs.outlineVariant,
                   letterSpacing: 2,
@@ -506,7 +509,7 @@ class CreateArticlePage extends HookWidget {
                             size: 11, color: cs.onSurfaceVariant),
                         const SizedBox(width: AppSpacing.xs),
                         Text(
-                          '${state.readingTimeMinutes} min read',
+                          l10n.readingTime(state.readingTimeMinutes),
                           style: tt.labelMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: cs.onSurfaceVariant,
@@ -554,6 +557,7 @@ class CreateArticlePage extends HookWidget {
   Widget _buildStatsBar(BuildContext context, CreateArticleState state) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
     final wordCount = state.content.trim().isEmpty
         ? 0
         : state.content.trim().split(RegExp(r'\s+')).length;
@@ -567,7 +571,7 @@ class CreateArticlePage extends HookWidget {
       child: Row(
         children: [
           Text(
-            '$wordCount word${wordCount != 1 ? 's' : ''}',
+            l10n.wordCount(wordCount),
             style: tt.labelMedium?.copyWith(
               fontWeight: FontWeight.w500,
               color: cs.outlineVariant,
@@ -583,7 +587,7 @@ class CreateArticlePage extends HookWidget {
           Icon(Icons.schedule, size: 12, color: cs.outlineVariant),
           const SizedBox(width: AppSpacing.xs),
           Text(
-            '${state.readingTimeMinutes} min read',
+            l10n.readingTime(state.readingTimeMinutes),
             style: tt.labelMedium?.copyWith(
               fontWeight: FontWeight.w500,
               color: cs.outlineVariant,
@@ -649,7 +653,7 @@ class CreateArticlePage extends HookWidget {
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            'Publishing…',
+                            l10n.publishing,
                             style: tt.titleMedium?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -714,7 +718,7 @@ class CreateArticlePage extends HookWidget {
       maxHeight: 1200,
       imageQuality: 85,
     );
-    if (picked != null) {
+    if (picked != null && context.mounted) {
       context.read<CreateArticleBloc>().add(ThumbnailSelected(picked.path));
     }
   }
