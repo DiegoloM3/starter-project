@@ -35,8 +35,8 @@ void main() {
       const result = DataSuccess<int>(42);
 
       expect(result, isA<DataState<int>>());
-      expect(result is DataSuccess<int>, isTrue);
-      expect(result is DataFailed<int>, isFalse);
+      expect(result, isA<DataSuccess<int>>());
+      expect(result, isNot(isA<DataFailed<int>>()));
     });
 
     test('DataFailed is DataState', () {
@@ -45,8 +45,8 @@ void main() {
       );
 
       expect(result, isA<DataState<int>>());
-      expect(result is DataFailed<int>, isTrue);
-      expect(result is DataSuccess<int>, isFalse);
+      expect(result, isA<DataFailed<int>>());
+      expect(result, isNot(isA<DataSuccess<int>>()));
     });
   });
 }

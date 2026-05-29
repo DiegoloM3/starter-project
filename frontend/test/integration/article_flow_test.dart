@@ -7,7 +7,7 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/entities/
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/add_comment.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/create_article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/delete_article.dart';
-import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/delete_comment.dart';
+
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_comments.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_published_articles.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/update_article.dart';
