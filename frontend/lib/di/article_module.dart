@@ -32,8 +32,8 @@ void registerArticleModule(GetIt sl) {
   sl.registerSingleton<NewsApiService>(NewsApiService(sl()));
   sl.registerSingleton<FirestoreArticleDataSource>(
       FirestoreArticleDataSource(sl()));
-  sl.registerSingleton<FirebaseStorageDataSource>(
-      FirebaseStorageDataSource(sl()));
+  sl.registerLazySingleton<FirebaseStorageDataSource>(
+      () => FirebaseStorageDataSource(sl()));
 
   // Repository
   sl.registerSingleton<ArticleRepository>(
@@ -72,7 +72,9 @@ void registerArticleModule(GetIt sl) {
       sl(),
       sl(),
       authorId: user?.uid ?? '',
-      authorName: user?.displayName ?? 'Anonymous',
+      // Empty when unavailable; the article UI falls back to a localized
+      // "unknown author" label, so no user-facing string is hardcoded here.
+      authorName: user?.displayName ?? '',
     );
   });
   sl.registerFactory<DraftsListBloc>(() => DraftsListBloc(sl(), sl()));
