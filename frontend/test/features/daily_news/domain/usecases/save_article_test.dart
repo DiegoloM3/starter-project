@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:news_app_clean_architecture/core/resources/data_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/save_article.dart';
 
 import '../../../../helpers/mock_classes.dart';
@@ -20,7 +21,7 @@ void main() {
   test('calls repository.saveArticle with correct entity', () async {
     final article = testArticle();
     when(() => mockRepository.saveArticle(any()))
-        .thenAnswer((_) async {});
+        .thenAnswer((_) async => const DataSuccess<void>(null));
 
     await useCase(params: article);
 

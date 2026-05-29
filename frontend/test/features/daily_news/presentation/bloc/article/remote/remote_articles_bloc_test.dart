@@ -62,15 +62,18 @@ void main() {
       verify(() => mockUseCase()).called(1);
     });
 
-    test('stays in Loading when DataSuccess has empty list', () async {
+    test('emits [Done] with an empty list on empty DataSuccess', () async {
       when(() => mockUseCase())
           .thenAnswer((_) async => const DataSuccess([]));
 
       bloc.add(const GetArticles());
-      // Give time for the event to process
-      await Future.delayed(const Duration(milliseconds: 50));
+      await expectLater(
+        bloc.stream,
+        emits(isA<RemoteArticlesDone>()),
+      );
 
-      expect(bloc.state, isA<RemoteArticlesLoading>());
+      final state = bloc.state as RemoteArticlesDone;
+      expect(state.articles, isEmpty);
       verify(() => mockUseCase()).called(1);
     });
   });

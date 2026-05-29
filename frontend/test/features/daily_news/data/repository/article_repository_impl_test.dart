@@ -22,8 +22,7 @@ void main() {
   late MockArticleDao mockDao;
   late MockFirestoreArticleDataSource mockFirestore;
   late MockFirebaseStorageDataSource mockStorage;
-  late MockFirebaseAuth mockAuth;
-  late MockUser mockUser;
+  late MockAuthRepository mockAuthRepository;
 
   setUpAll(() => registerTestFallbackValues());
 
@@ -33,8 +32,7 @@ void main() {
     mockDao = MockArticleDao();
     mockFirestore = MockFirestoreArticleDataSource();
     mockStorage = MockFirebaseStorageDataSource();
-    mockAuth = MockFirebaseAuth();
-    mockUser = MockUser();
+    mockAuthRepository = MockAuthRepository();
 
     when(() => mockDatabase.articleDAO).thenReturn(mockDao);
 
@@ -43,7 +41,7 @@ void main() {
       mockDatabase,
       mockFirestore,
       mockStorage,
-      mockAuth,
+      mockAuthRepository,
     );
   });
 
@@ -112,8 +110,9 @@ void main() {
 
       final result = await repository.getSavedArticles();
 
-      expect(result.length, models.length);
-      expect(result.first.id, models.first.id);
+      expect(result, isA<DataSuccess>());
+      expect(result.data!.length, models.length);
+      expect(result.data!.first.id, models.first.id);
     });
   });
 
@@ -325,8 +324,8 @@ void main() {
 
   group('uploadThumbnail', () {
     test('returns DataSuccess with download URL', () async {
-      when(() => mockAuth.currentUser).thenReturn(mockUser);
-      when(() => mockUser.uid).thenReturn(tUserId);
+      when(() => mockAuthRepository.currentUser)
+          .thenReturn(testAuthUser(uid: tUserId));
       when(() => mockStorage.uploadThumbnail(
             uid: any(named: 'uid'),
             articleId: any(named: 'articleId'),
@@ -343,7 +342,7 @@ void main() {
     });
 
     test('returns DataFailed when user is not authenticated', () async {
-      when(() => mockAuth.currentUser).thenReturn(null);
+      when(() => mockAuthRepository.currentUser).thenReturn(null);
 
       final result = await repository.uploadThumbnail(
         articleId: tArticleId,
@@ -355,8 +354,8 @@ void main() {
     });
 
     test('returns DataFailed on FirebaseException', () async {
-      when(() => mockAuth.currentUser).thenReturn(mockUser);
-      when(() => mockUser.uid).thenReturn(tUserId);
+      when(() => mockAuthRepository.currentUser)
+          .thenReturn(testAuthUser(uid: tUserId));
       when(() => mockStorage.uploadThumbnail(
             uid: any(named: 'uid'),
             articleId: any(named: 'articleId'),

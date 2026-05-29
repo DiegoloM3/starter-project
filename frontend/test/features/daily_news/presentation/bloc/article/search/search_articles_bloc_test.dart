@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:news_app_clean_architecture/core/errors/app_exception.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/search/search_articles_bloc.dart';
@@ -10,6 +11,10 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 
 import '../../../../../../helpers/mock_classes.dart';
 import '../../../../../../helpers/test_fixtures.dart';
+
+/// Slightly longer than the bloc's 300ms SearchQueryChanged debounce so a
+/// debounced query has resolved before assertions read the state.
+const _pastDebounce = Duration(milliseconds: 350);
 
 void main() {
   late MockGetFeedArticlesUseCase mockUseCase;
@@ -52,6 +57,35 @@ void main() {
     });
   });
 
+  group('feed error', () {
+    test('emits Failure when feed stream yields DataFailed', () async {
+      final bloc = SearchArticlesBloc(mockUseCase);
+
+      controller.add(const DataFailed(
+        AppException(message: 'boom', code: 'firestore_error'),
+      ));
+
+      await expectLater(
+        bloc.stream,
+        emits(isA<SearchArticlesFailure>()),
+      );
+      expect((bloc.state as SearchArticlesFailure).error?.message, 'boom');
+      await bloc.close();
+    });
+
+    test('emits Failure when feed stream emits a raw error', () async {
+      final bloc = SearchArticlesBloc(mockUseCase);
+
+      controller.addError(Exception('stream blew up'));
+
+      await expectLater(
+        bloc.stream,
+        emits(isA<SearchArticlesFailure>()),
+      );
+      await bloc.close();
+    });
+  });
+
   group('SearchQueryChanged', () {
     test('filters articles by title', () async {
       final bloc = SearchArticlesBloc(mockUseCase);
@@ -82,9 +116,8 @@ void main() {
       await Future.delayed(Duration.zero);
 
       bloc.add(const SearchQueryChanged('something'));
-      await Future.delayed(Duration.zero);
       bloc.add(const SearchQueryChanged(''));
-      await Future.delayed(Duration.zero);
+      await Future.delayed(_pastDebounce);
 
       final state = bloc.state as SearchArticlesDone;
       expect(state.articles!.length, 3);
@@ -99,7 +132,7 @@ void main() {
       await Future.delayed(Duration.zero);
 
       bloc.add(const SearchQueryChanged('nonexistent'));
-      await Future.delayed(Duration.zero);
+      await Future.delayed(_pastDebounce);
 
       final state = bloc.state as SearchArticlesDone;
       expect(state.articles, isEmpty);
