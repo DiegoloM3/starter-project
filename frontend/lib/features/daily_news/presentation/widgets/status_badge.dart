@@ -20,42 +20,41 @@ class StatusBadge extends StatelessWidget {
       ),
       child: Text(
         config.label.toUpperCase(),
-        style: AppTypography.sans(
-          fontSize: 8.5,
-          fontWeight: FontWeight.w800,
-          color: config.fg,
-          letterSpacing: 1.2,
-        ),
+        style: Theme.of(context)
+            .textTheme
+            .labelSmall
+            ?.copyWith(color: config.fg, letterSpacing: 1.2),
       ),
     );
   }
 
   static _StatusConfig _configForStatus(String status, BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final sem = context.semantic;
     switch (status) {
       case ArticleStatus.draft:
         return _StatusConfig(
           label: l10n.draft,
-          fg: AppColors.draftFg,
-          bg: AppColors.draftBg,
+          fg: sem.draftFg,
+          bg: sem.draftBg,
         );
       case ArticleStatus.published:
         return _StatusConfig(
           label: l10n.published,
-          fg: AppColors.publishedFg,
-          bg: AppColors.publishedBg,
+          fg: sem.publishedFg,
+          bg: sem.publishedBg,
         );
       case ArticleStatus.archived:
         return _StatusConfig(
           label: l10n.archived,
-          fg: AppColors.archivedFg,
-          bg: AppColors.archivedBg,
+          fg: sem.archivedFg,
+          bg: sem.archivedBg,
         );
       default:
         return _StatusConfig(
           label: status,
-          fg: AppColors.archivedFg,
-          bg: AppColors.archivedBg,
+          fg: sem.archivedFg,
+          bg: sem.archivedBg,
         );
     }
   }

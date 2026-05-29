@@ -8,13 +8,14 @@ class SkeletonCommentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Shimmer.fromColors(
-      baseColor: AppColors.border,
-      highlightColor: AppColors.surface,
+      baseColor: cs.outline,
+      highlightColor: cs.surface,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-        decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: AppColors.border)),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: AppSpacing.xl),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: cs.outline)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,7 +56,7 @@ class SkeletonCommentTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
                   FractionallySizedBox(
                     widthFactor: 0.7,
                     alignment: Alignment.centerLeft,

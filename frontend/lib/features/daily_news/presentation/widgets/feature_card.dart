@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../config/theme/app_themes.dart';
 import '../../domain/entities/article.dart';
 
 /// Full-width lead story card matching the Ink & Paper "FeatureCard" design.
@@ -20,22 +19,24 @@ class FeatureCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        color: AppColors.surface,
+        color: cs.surface,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildHeroImage(),
-            _buildContent(),
+            _buildHeroImage(context),
+            _buildContent(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeroImage() {
+  Widget _buildHeroImage(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final url = article.thumbnailUrl;
     return SizedBox(
       height: 185,
@@ -48,7 +49,7 @@ class FeatureCard extends StatelessWidget {
               imageUrl: url,
               fit: BoxFit.cover,
               placeholder: (_, __) => Container(
-                color: AppColors.ink.withValues(alpha: 0.12),
+                color: cs.onSurface.withValues(alpha: 0.12),
               ),
               errorWidget: (_, __, ___) => Container(
                 decoration: const BoxDecoration(
@@ -88,11 +89,13 @@ class FeatureCard extends StatelessWidget {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: cs.outline)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,10 +105,8 @@ class FeatureCard extends StatelessWidget {
             article.title ?? '',
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: AppTypography.serif(
-              fontSize: 17,
+            style: tt.headlineSmall?.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.t1,
               height: 1.28,
             ),
           ),
@@ -117,21 +118,22 @@ class FeatureCard extends StatelessWidget {
               article.description!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.sans(
-                fontSize: 12.5,
-                color: AppColors.t2,
+              style: tt.bodySmall?.copyWith(
+                color: cs.onSurfaceVariant,
                 height: 1.55,
               ),
             ),
           const SizedBox(height: 10),
           // Author meta
-          _buildAuthorMeta(),
+          _buildAuthorMeta(context),
         ],
       ),
     );
   }
 
-  Widget _buildAuthorMeta() {
+  Widget _buildAuthorMeta(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     final authorName = article.authorName ?? '';
     final initials = authorName.isNotEmpty
         ? authorName
@@ -148,17 +150,16 @@ class FeatureCard extends StatelessWidget {
         Container(
           width: 22,
           height: 22,
-          decoration: const BoxDecoration(
-            color: AppColors.red,
+          decoration: BoxDecoration(
+            color: cs.primary,
             shape: BoxShape.circle,
           ),
           alignment: Alignment.center,
           child: Text(
             initials,
-            style: AppTypography.sans(
-              fontSize: 8,
-              fontWeight: FontWeight.w800,
+            style: tt.labelSmall?.copyWith(
               color: Colors.white,
+              letterSpacing: 0,
             ),
           ),
         ),
@@ -166,36 +167,37 @@ class FeatureCard extends StatelessWidget {
         if (authorName.isNotEmpty) ...[
           Text(
             authorName,
-            style: AppTypography.sans(
-              fontSize: 11.5,
+            style: tt.bodySmall?.copyWith(
               fontWeight: FontWeight.w600,
-              color: AppColors.t2,
+              color: cs.onSurfaceVariant,
             ),
           ),
-          _dot(),
+          _dot(context),
         ],
         if (article.publishedAt != null)
           Text(
             article.publishedAt!,
-            style: AppTypography.sans(fontSize: 11, color: AppColors.t3),
+            style: tt.bodySmall?.copyWith(color: cs.outlineVariant),
           ),
         if (article.readingTimeMinutes != null) ...[
-          _dot(),
+          _dot(context),
           Text(
             '${article.readingTimeMinutes} min read',
-            style: AppTypography.sans(fontSize: 11, color: AppColors.t3),
+            style: tt.bodySmall?.copyWith(color: cs.outlineVariant),
           ),
         ],
       ],
     );
   }
 
-  Widget _dot() {
+  Widget _dot(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Text(
         '·',
-        style: AppTypography.sans(fontSize: 11, color: AppColors.t3),
+        style: tt.bodySmall?.copyWith(color: cs.outlineVariant),
       ),
     );
   }

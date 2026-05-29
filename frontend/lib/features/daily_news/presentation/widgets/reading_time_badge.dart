@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../config/theme/app_themes.dart';
-
 class ReadingTimeBadge extends StatelessWidget {
   final int minutes;
 
@@ -9,14 +7,20 @@ class ReadingTimeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(Icons.schedule, size: 12, color: AppColors.t3),
+        Icon(Icons.schedule, size: 12, color: cs.outlineVariant),
         const SizedBox(width: 3),
         Text(
           '$minutes min read',
-          style: AppTypography.sans(fontSize: 11, color: AppColors.t3),
+          style: tt.labelMedium?.copyWith(
+            color: cs.outlineVariant,
+            fontWeight: FontWeight.w400,
+            letterSpacing: 0,
+          ),
         ),
       ],
     );

@@ -20,31 +20,31 @@ class EmptyStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 36),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 44, color: AppColors.t3),
-            const SizedBox(height: 16),
+            Icon(icon, size: 44, color: cs.outlineVariant),
+            const SizedBox(height: AppSpacing.md),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: AppTypography.serif(
-                fontSize: 17,
+              style: tt.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: AppColors.t1,
                 height: 1.2,
+                letterSpacing: 0,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: AppTypography.sans(
-                fontSize: 12.5,
-                color: AppColors.t2,
+              style: tt.bodySmall?.copyWith(
+                color: cs.onSurfaceVariant,
                 height: 1.6,
               ),
             ),
@@ -54,7 +54,7 @@ class EmptyStateWidget extends StatelessWidget {
               width: 22,
               height: 3,
               decoration: BoxDecoration(
-                color: AppColors.red,
+                color: cs.primary,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -63,7 +63,7 @@ class EmptyStateWidget extends StatelessWidget {
               ElevatedButton(
                 onPressed: onAction,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.red,
+                  backgroundColor: cs.primary,
                   foregroundColor: Colors.white,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
@@ -74,10 +74,9 @@ class EmptyStateWidget extends StatelessWidget {
                 ),
                 child: Text(
                   actionLabel!,
-                  style: AppTypography.sans(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w700,
+                  style: tt.labelLarge?.copyWith(
                     color: Colors.white,
+                    letterSpacing: 0,
                   ),
                 ),
               ),

@@ -11,7 +11,7 @@ class StatusChangeDialog {
           message:
               'Are you sure you want to publish this article? It will be visible to all users.',
           confirmLabel: 'Publish',
-          confirmColor: AppColors.red,
+          confirmColor: Theme.of(context).colorScheme.primary,
         ) ??
         false;
   }
@@ -23,7 +23,7 @@ class StatusChangeDialog {
           message:
               'Are you sure you want to archive this article? This cannot be undone.',
           confirmLabel: 'Archive',
-          confirmColor: AppColors.warning,
+          confirmColor: context.semantic.warning,
         ) ??
         false;
   }
@@ -51,39 +51,51 @@ class StatusChangeDialog {
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title, style: AppTypography.serif(fontSize: 18)),
-        content: Text(
-          message,
-          style: AppTypography.sans(fontSize: 13.5, color: AppColors.t2, height: 1.55),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: AppTypography.sans(color: AppColors.t2),
+      builder: (context) {
+        final cs = Theme.of(context).colorScheme;
+        final tt = Theme.of(context).textTheme;
+        return AlertDialog(
+          title: Text(
+            title,
+            style: tt.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          content: Text(
+            message,
+            style: tt.labelLarge?.copyWith(
+              color: cs.onSurfaceVariant,
+              fontWeight: FontWeight.w400,
+              letterSpacing: 0,
+              height: 1.55,
             ),
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: confirmColor,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(
+                'Cancel',
+                style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
               ),
             ),
-            child: Text(
-              confirmLabel,
-              style: AppTypography.sans(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: confirmColor,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+              ),
+              child: Text(
+                confirmLabel,
+                style: tt.bodyMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      },
     );
   }
 }

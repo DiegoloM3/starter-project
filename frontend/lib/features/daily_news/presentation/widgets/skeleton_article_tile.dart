@@ -11,14 +11,18 @@ class SkeletonArticleTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Shimmer.fromColors(
-          baseColor: AppColors.border,
-          highlightColor: AppColors.surface,
+          baseColor: cs.outline,
+          highlightColor: cs.surface,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.gutter,
+              vertical: AppSpacing.md,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -30,7 +34,7 @@ class SkeletonArticleTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,9 +98,9 @@ class SkeletonArticleTile extends StatelessWidget {
           ),
         ),
         if (showDivider)
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Divider(height: 1, color: AppColors.border),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+            child: Divider(height: 1, color: cs.outline),
           ),
       ],
     );

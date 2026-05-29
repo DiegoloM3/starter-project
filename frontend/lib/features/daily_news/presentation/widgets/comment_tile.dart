@@ -19,10 +19,12 @@ class CommentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.border)),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: AppSpacing.xl),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: cs.outline)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,17 +32,17 @@ class CommentTile extends StatelessWidget {
           Container(
             width: 32,
             height: 32,
-            decoration: const BoxDecoration(
-              color: AppColors.red,
+            decoration: BoxDecoration(
+              color: cs.primary,
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
             child: Text(
               (comment.authorName ?? 'U')[0].toUpperCase(),
-              style: AppTypography.sans(
-                fontSize: 11,
+              style: tt.labelMedium?.copyWith(
                 fontWeight: FontWeight.w800,
                 color: Colors.white,
+                letterSpacing: 0,
               ),
             ),
           ),
@@ -54,37 +56,42 @@ class CommentTile extends StatelessWidget {
                     Text(
                       comment.authorName ??
                           AppLocalizations.of(context)!.unknownAuthor,
-                      style: AppTypography.sans(
+                      style: tt.bodySmall?.copyWith(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.t1,
+                        color: cs.onSurface,
                       ),
                     ),
                     const SizedBox(width: 6),
                     Text(
                       _formatDate(comment.createdAt),
-                      style: AppTypography.sans(fontSize: 11, color: AppColors.t3),
+                      style: tt.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w400,
+                        color: cs.outlineVariant,
+                        letterSpacing: 0,
+                      ),
                     ),
                     if (isOwner) ...[
                       const Spacer(),
                       GestureDetector(
                         onTap: onDelete,
-                        child: const Padding(
-                          padding: EdgeInsets.only(left: 4),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: AppSpacing.xs),
                           child: Icon(Icons.delete_outline,
-                              size: 14, color: AppColors.t3),
+                              size: 14, color: cs.outlineVariant),
                         ),
                       ),
                     ],
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   comment.content ?? '',
-                  style: AppTypography.sans(
-                    fontSize: 13.5,
-                    color: AppColors.t1,
+                  style: tt.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w400,
+                    color: cs.onSurface,
                     height: 1.55,
+                    letterSpacing: 0,
                   ),
                 ),
               ],

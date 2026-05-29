@@ -9,9 +9,10 @@ class SkeletonFeatureCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Shimmer.fromColors(
-      baseColor: AppColors.border,
-      highlightColor: AppColors.surface,
+      baseColor: cs.outline,
+      highlightColor: cs.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -19,9 +20,14 @@ class SkeletonFeatureCard extends StatelessWidget {
           Container(height: 185, color: Colors.white),
           // Content skeleton
           Container(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-            decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: AppColors.border)),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.gutter,
+              AppSpacing.sm,
+              AppSpacing.gutter,
+              14,
+            ),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: cs.outline)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,7 +51,7 @@ class SkeletonFeatureCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 // Snippet line 2
                 FractionallySizedBox(
                   widthFactor: 0.72,
@@ -58,7 +64,7 @@ class SkeletonFeatureCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.sm),
                 // Author meta row
                 Row(
                   children: [

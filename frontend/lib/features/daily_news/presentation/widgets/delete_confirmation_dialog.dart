@@ -26,11 +26,13 @@ class DeleteConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
 
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 36),
       child: Column(
@@ -40,10 +42,10 @@ class DeleteConfirmationDialog extends StatelessWidget {
           Container(
             width: 36,
             height: 4,
-            margin: const EdgeInsets.only(top: 12, bottom: 20),
+            margin: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.xl),
             decoration: BoxDecoration(
-              color: AppColors.border,
-              borderRadius: BorderRadius.circular(2),
+              color: cs.outline,
+              borderRadius: BorderRadius.circular(AppRadius.xs),
             ),
           ),
           // Title
@@ -51,25 +53,26 @@ class DeleteConfirmationDialog extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Text(
               l10n.deleteArticle,
-              style: AppTypography.serif(
-                fontSize: 18,
+              style: tt.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: AppColors.t1,
+                height: null,
+                letterSpacing: null,
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           // Article preview card (if article provided)
-          if (article != null) _buildArticlePreview(),
+          if (article != null) _buildArticlePreview(context),
           // Warning text
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
               l10n.deleteArticleConfirmation,
-              style: AppTypography.sans(
-                fontSize: 13,
-                color: AppColors.t2,
+              style: tt.titleSmall?.copyWith(
+                color: cs.onSurfaceVariant,
+                fontWeight: FontWeight.w400,
                 height: 1.55,
+                letterSpacing: null,
               ),
             ),
           ),
@@ -80,7 +83,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.error,
+                backgroundColor: cs.error,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
@@ -90,10 +93,11 @@ class DeleteConfirmationDialog extends StatelessWidget {
               ),
               child: Text(
                 l10n.deletePermanently,
-                style: AppTypography.sans(
-                  fontSize: 14.5,
+                style: tt.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
+                  height: null,
+                  letterSpacing: null,
                 ),
               ),
             ),
@@ -105,17 +109,18 @@ class DeleteConfirmationDialog extends StatelessWidget {
             child: TextButton(
               onPressed: () => Navigator.pop(context, false),
               style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
               ),
               child: Text(
                 l10n.cancel,
-                style: AppTypography.sans(
-                  fontSize: 14.5,
+                style: tt.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w500,
-                  color: AppColors.t2,
+                  color: cs.onSurfaceVariant,
+                  height: null,
+                  letterSpacing: null,
                 ),
               ),
             ),
@@ -125,13 +130,16 @@ class DeleteConfirmationDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildArticlePreview() {
+  Widget _buildArticlePreview(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(11),
       decoration: BoxDecoration(
-        color: AppColors.bg,
-        border: Border.all(color: AppColors.border),
+        color: cs.surfaceContainerLow,
+        border: Border.all(color: cs.outline),
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Row(
@@ -139,7 +147,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
           // Thumbnail
           ClipRRect(
             borderRadius: BorderRadius.circular(AppRadius.sm),
-            child: _buildPreviewThumbnail(),
+            child: _buildPreviewThumbnail(context),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -151,14 +159,15 @@ class DeleteConfirmationDialog extends StatelessWidget {
                   article?.title ?? '',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.serif(
+                  style: tt.bodyLarge?.copyWith(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.t1,
+                    height: null,
+                    letterSpacing: null,
                   ),
                 ),
                 if (article?.status != null) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
                   StatusBadge(status: article!.status!),
                 ],
               ],
@@ -169,14 +178,15 @@ class DeleteConfirmationDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildPreviewThumbnail() {
+  Widget _buildPreviewThumbnail(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final url = article?.thumbnailUrl;
     if (url == null || url.isEmpty) {
       return Container(
         width: 40,
         height: 40,
-        color: AppColors.ink.withValues(alpha: 0.08),
-        child: const Icon(Icons.image_outlined, color: AppColors.t3, size: 16),
+        color: cs.onSurface.withValues(alpha: 0.08),
+        child: Icon(Icons.image_outlined, color: cs.outlineVariant, size: 16),
       );
     }
     return CachedNetworkImage(
@@ -187,7 +197,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
       errorWidget: (_, __, ___) => Container(
         width: 40,
         height: 40,
-        color: AppColors.ink.withValues(alpha: 0.08),
+        color: cs.onSurface.withValues(alpha: 0.08),
       ),
     );
   }
