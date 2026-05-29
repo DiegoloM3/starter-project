@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:floor/floor.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
@@ -105,6 +104,15 @@ class ArticleModel extends ArticleEntity {
     );
   }
 
+  /// Sentinel value for `createdAt`/`updatedAt` in the plain maps produced by
+  /// [toFirestoreMap]/[toFirestoreUpdateMap]. The Firestore data source replaces
+  /// it with `FieldValue.serverTimestamp()` before writing — this keeps the
+  /// cloud_firestore dependency out of the model layer.
+  static const String serverTimestampSentinel = '__server_timestamp__';
+
+  /// Builds a model from already-parsed plain values. The Firestore data source
+  /// converts `Timestamp` fields to ISO-8601 strings (or null) before calling
+  /// this, so the model never touches a `Timestamp` directly.
   factory ArticleModel.fromFirestore(Map<String, dynamic> data) {
     return ArticleModel(
       id: data['id'] as String?,
@@ -125,6 +133,9 @@ class ArticleModel extends ArticleEntity {
     );
   }
 
+  /// Plain-Dart Firestore payload. `publishedAt` is an ISO-8601 String or null;
+  /// `createdAt`/`updatedAt` carry [serverTimestampSentinel]. The data source
+  /// translates these into `Timestamp`/`FieldValue.serverTimestamp()` on write.
   Map<String, dynamic> toFirestoreMap() {
     return {
       'id': id,
@@ -135,12 +146,9 @@ class ArticleModel extends ArticleEntity {
       'authorName': authorName,
       'thumbnailUrl': thumbnailUrl ?? '',
       'thumbnailPath': thumbnailPath ?? '',
-      'url': url,
-      'publishedAt': publishedAt != null
-          ? Timestamp.fromDate(DateTime.parse(publishedAt!))
-          : null,
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
+      'publishedAt': publishedAt,
+      'createdAt': serverTimestampSentinel,
+      'updatedAt': serverTimestampSentinel,
       'status': status ?? ArticleStatus.draft,
       'isDeleted': isDeleted ?? false,
       'readingTimeMinutes': readingTimeMinutes ?? 1,
@@ -148,6 +156,8 @@ class ArticleModel extends ArticleEntity {
   }
 
   /// For updates only — excludes immutable fields (id, authorId, createdAt).
+  /// Same plain-Dart contract as [toFirestoreMap]: `publishedAt` is an ISO-8601
+  /// String or null and `updatedAt` carries [serverTimestampSentinel].
   Map<String, dynamic> toFirestoreUpdateMap() {
     return {
       'title': title,
@@ -156,20 +166,16 @@ class ArticleModel extends ArticleEntity {
       'authorName': authorName,
       'thumbnailUrl': thumbnailUrl ?? '',
       'thumbnailPath': thumbnailPath ?? '',
-      'url': url,
-      'publishedAt': publishedAt != null
-          ? Timestamp.fromDate(DateTime.parse(publishedAt!))
-          : null,
-      'updatedAt': FieldValue.serverTimestamp(),
+      'publishedAt': publishedAt,
+      'updatedAt': serverTimestampSentinel,
       'status': status,
       'isDeleted': isDeleted,
       'readingTimeMinutes': readingTimeMinutes,
     };
   }
 
-  static String? _timestampToString(dynamic value) {
+  static String? _timestampToString(Object? value) {
     if (value == null) return null;
-    if (value is Timestamp) return value.toDate().toIso8601String();
     if (value is String) return value;
     return null;
   }

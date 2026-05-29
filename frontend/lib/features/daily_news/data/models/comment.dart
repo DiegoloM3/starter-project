@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/comment.dart';
 
 class CommentModel extends CommentEntity {
@@ -20,6 +19,15 @@ class CommentModel extends CommentEntity {
           isDeleted: isDeleted,
         );
 
+  /// Sentinel value for `createdAt` in the plain map produced by
+  /// [toFirestoreMap]. The Firestore data source replaces it with
+  /// `FieldValue.serverTimestamp()` before writing — this keeps the
+  /// cloud_firestore dependency out of the model layer.
+  static const String serverTimestampSentinel = '__server_timestamp__';
+
+  /// Builds a model from already-parsed plain values. The Firestore data source
+  /// converts the `createdAt` `Timestamp` to an ISO-8601 string (or null) before
+  /// calling this, so the model never touches a `Timestamp` directly.
   factory CommentModel.fromFirestore(Map<String, dynamic> data) {
     return CommentModel(
       id: data['id'] as String?,
@@ -44,6 +52,9 @@ class CommentModel extends CommentEntity {
     );
   }
 
+  /// Plain-Dart Firestore payload. `createdAt` carries
+  /// [serverTimestampSentinel]; the data source translates it into
+  /// `FieldValue.serverTimestamp()` on write.
   Map<String, dynamic> toFirestoreMap() {
     return {
       'id': id,
@@ -51,7 +62,7 @@ class CommentModel extends CommentEntity {
       'authorId': authorId,
       'authorName': authorName,
       'content': content,
-      'createdAt': FieldValue.serverTimestamp(),
+      'createdAt': serverTimestampSentinel,
       'isDeleted': isDeleted ?? false,
     };
   }
@@ -68,9 +79,8 @@ class CommentModel extends CommentEntity {
     );
   }
 
-  static String? _timestampToString(dynamic value) {
+  static String? _timestampToString(Object? value) {
     if (value == null) return null;
-    if (value is Timestamp) return value.toDate().toIso8601String();
     if (value is String) return value;
     return null;
   }
