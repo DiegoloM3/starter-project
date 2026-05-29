@@ -138,8 +138,9 @@ class _SearchResults extends StatelessWidget {
             subtitle: state.error?.message ?? l10n.searchFailed,
             actionLabel: l10n.tryAgain,
             onAction: () {
-              // Retry not directly possible without the query — user can
-              // re-type in the field.
+              context
+                  .read<SearchArticlesBloc>()
+                  .add(const SearchRetryRequested());
             },
           );
         }
