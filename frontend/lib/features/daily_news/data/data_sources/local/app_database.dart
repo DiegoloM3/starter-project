@@ -6,7 +6,7 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 import 'dart:async';
 part 'app_database.g.dart';
 
-@Database(version: 1, entities: [ArticleModel])
+@Database(version: 2, entities: [ArticleModel])
 abstract class AppDatabase extends FloorDatabase {
   ArticleDao get articleDAO;
 }
