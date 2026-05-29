@@ -63,7 +63,7 @@ void main() {
       await controller.close();
     });
 
-    test('emits [Loading, Failure] on DataFailed', () async {
+    test('emits [Loading, LoadFailure] on DataFailed', () async {
       const error = AppException(message: 'fail', code: 'err');
       final controller =
           StreamController<DataState<List<CommentEntity>>>();
@@ -80,8 +80,8 @@ void main() {
 
       expect(states.length, 2);
       expect(states[0], isA<CommentsLoading>());
-      expect(states[1], isA<CommentsFailure>());
-      expect((states[1] as CommentsFailure).error, error);
+      expect(states[1], isA<CommentsLoadFailure>());
+      expect((states[1] as CommentsLoadFailure).error, error);
 
       await sub.cancel();
       await controller.close();
@@ -100,7 +100,7 @@ void main() {
       verify(() => mockAddComment(params: any(named: 'params'))).called(1);
     });
 
-    test('emits Failure when add returns DataFailed', () async {
+    test('emits ActionFailure when add returns DataFailed', () async {
       const error = AppException(message: 'fail', code: 'err');
       when(() => mockAddComment(params: any(named: 'params')))
           .thenAnswer((_) async => const DataFailed(error));
@@ -108,10 +108,37 @@ void main() {
       bloc.add(CommentAdded(testComment()));
       await expectLater(
         bloc.stream,
-        emits(isA<CommentsFailure>()),
+        emits(isA<CommentsActionFailure>()),
       );
 
-      expect((bloc.state as CommentsFailure).error, error);
+      expect((bloc.state as CommentsActionFailure).error, error);
+    });
+
+    test('action failure keeps the currently loaded comments', () async {
+      final comments = testCommentList();
+      final controller =
+          StreamController<DataState<List<CommentEntity>>>();
+      when(() => mockGetComments(params: any(named: 'params')))
+          .thenAnswer((_) => controller.stream);
+      when(() => mockAddComment(params: any(named: 'params'))).thenAnswer(
+          (_) async =>
+              const DataFailed(AppException(message: 'fail', code: 'err')));
+
+      // Seed a loaded list first.
+      bloc.add(const CommentsSubscriptionRequested(tArticleId));
+      await Future.delayed(Duration.zero);
+      controller.add(DataSuccess(comments));
+      await Future.delayed(Duration.zero);
+      expect(bloc.state, isA<CommentsDone>());
+
+      // A failed add must NOT wipe the list.
+      bloc.add(CommentAdded(testComment()));
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      expect(bloc.state, isA<CommentsActionFailure>());
+      expect((bloc.state as CommentsActionFailure).comments, comments);
+
+      await controller.close();
     });
   });
 
@@ -129,7 +156,7 @@ void main() {
       verify(() => mockDeleteComment(params: any(named: 'params'))).called(1);
     });
 
-    test('emits Failure when delete returns DataFailed', () async {
+    test('emits ActionFailure when delete returns DataFailed', () async {
       const error = AppException(message: 'fail', code: 'err');
       when(() => mockDeleteComment(params: any(named: 'params')))
           .thenAnswer((_) async => const DataFailed(error));
@@ -140,10 +167,10 @@ void main() {
       ));
       await expectLater(
         bloc.stream,
-        emits(isA<CommentsFailure>()),
+        emits(isA<CommentsActionFailure>()),
       );
 
-      expect((bloc.state as CommentsFailure).error, error);
+      expect((bloc.state as CommentsActionFailure).error, error);
     });
   });
 

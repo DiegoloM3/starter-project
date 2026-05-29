@@ -46,7 +46,7 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
       emit(CommentsDone(event.dataState.data!));
     }
     if (event.dataState is DataFailed) {
-      emit(CommentsFailure(event.dataState.error!));
+      emit(CommentsLoadFailure(event.dataState.error!));
     }
   }
 
@@ -57,8 +57,14 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
     final result =
         await _addCommentUseCase(params: event.comment);
 
+    // On success the realtime stream re-emits CommentsDone with the new comment,
+    // so no success state is needed here. On failure keep the current list and
+    // surface the error as a transient action failure.
     if (result is DataFailed) {
-      emit(CommentsFailure(result.error!));
+      emit(CommentsActionFailure(
+        result.error!,
+        comments: state.comments ?? const [],
+      ));
     }
   }
 
@@ -74,7 +80,10 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
     );
 
     if (result is DataFailed) {
-      emit(CommentsFailure(result.error!));
+      emit(CommentsActionFailure(
+        result.error!,
+        comments: state.comments ?? const [],
+      ));
     }
   }
 

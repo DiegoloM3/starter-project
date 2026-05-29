@@ -22,6 +22,16 @@ class CommentsDone extends CommentState {
       : super(comments: comments);
 }
 
-class CommentsFailure extends CommentState {
-  const CommentsFailure(AppException error) : super(error: error);
+/// The comment stream failed to load. Replaces the list with an error UI.
+class CommentsLoadFailure extends CommentState {
+  const CommentsLoadFailure(AppException error) : super(error: error);
+}
+
+/// An add/delete action failed. Carries the current comments so the list stays
+/// visible while a snackbar surfaces the error.
+class CommentsActionFailure extends CommentState {
+  const CommentsActionFailure(
+    AppException error, {
+    required List<CommentEntity> comments,
+  }) : super(comments: comments, error: error);
 }
