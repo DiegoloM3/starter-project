@@ -1,3 +1,3 @@
-abstract class StreamUseCase<Type, Params> {
-  Stream<Type> call({Params params});
+abstract class StreamUseCase<T, Params> {
+  Stream<T> call({Params params});
 }
