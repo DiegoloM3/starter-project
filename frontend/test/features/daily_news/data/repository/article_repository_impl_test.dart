@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:news_app_clean_architecture/core/errors/app_exception.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
-import 'package:news_app_clean_architecture/features/daily_news/data/models/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/models/news_api_response.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/repository/article_repository_impl.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -55,7 +55,7 @@ void main() {
             country: any(named: 'country'),
             category: any(named: 'category'),
           )).thenAnswer((_) async => HttpResponse(
-            models,
+            NewsApiResponse(articles: models),
             Response(
               requestOptions: RequestOptions(path: ''),
               statusCode: HttpStatus.ok,
@@ -74,7 +74,7 @@ void main() {
             country: any(named: 'country'),
             category: any(named: 'category'),
           )).thenAnswer((_) async => HttpResponse(
-            <ArticleModel>[],
+            const NewsApiResponse(articles: []),
             Response(
               requestOptions: RequestOptions(path: ''),
               statusCode: 500,
