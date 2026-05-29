@@ -104,6 +104,20 @@ class ArticleModel extends ArticleEntity {
     );
   }
 
+  /// Raw JSON map mirroring [fromJson]/[fromRawData] (the News API shape).
+  /// Inverse of the parsing factory so an API article can round-trip.
+  Map<String, dynamic> toJson() {
+    return {
+      'author': authorName,
+      'title': title,
+      'description': description,
+      'url': url,
+      'urlToImage': thumbnailUrl,
+      'publishedAt': publishedAt,
+      'content': content,
+    };
+  }
+
   /// Sentinel value for `createdAt`/`updatedAt` in the plain maps produced by
   /// [toFirestoreMap]/[toFirestoreUpdateMap]. The Firestore data source replaces
   /// it with `FieldValue.serverTimestamp()` before writing — this keeps the

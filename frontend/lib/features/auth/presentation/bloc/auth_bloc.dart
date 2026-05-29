@@ -28,6 +28,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     _authSubscription = getAuthStateChanges().listen(
       (user) => add(AuthStateChanged(user: user)),
+      // A failure in the auth-state stream means the session can't be
+      // confirmed; treat it as signed out so the app routes to login.
+      onError: (Object _) => add(const AuthStateChanged()),
     );
   }
 
