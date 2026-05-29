@@ -338,4 +338,135 @@ class AppLocalizationsEn extends AppLocalizations {
   String readingTime(int minutes) {
     return '$minutes min read';
   }
+
+  @override
+  String get welcomeBack => 'Welcome back';
+
+  @override
+  String get signInSubtitle => 'Sign in to continue reading and writing.';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get passwordLabel => 'Password';
+
+  @override
+  String get emailHint => 'you@example.com';
+
+  @override
+  String get passwordHint => 'Enter your password';
+
+  @override
+  String get signIn => 'Sign in';
+
+  @override
+  String get signingIn => 'Signing in...';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account?';
+
+  @override
+  String get register => 'Register';
+
+  @override
+  String get createAccount => 'Create account';
+
+  @override
+  String get registerSubtitle => 'Join us to start publishing your stories.';
+
+  @override
+  String get fullNameLabel => 'Full name';
+
+  @override
+  String get fullNameHint => 'Jane Doe';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm password';
+
+  @override
+  String get confirmPasswordHint => 'Re-enter your password';
+
+  @override
+  String get creatingAccount => 'Creating account...';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get nameRequired => 'Please enter your name';
+
+  @override
+  String get nameMaxLength => 'Name must be under 100 characters';
+
+  @override
+  String get signInFailed => 'Sign in failed. Please try again.';
+
+  @override
+  String get registrationFailed => 'Registration failed. Please try again.';
+
+  @override
+  String get savingDraft => 'Saving draft...';
+
+  @override
+  String get publishing => 'Publishing...';
+
+  @override
+  String get coverImage => 'Cover image';
+
+  @override
+  String get addCoverImage => 'Add cover image';
+
+  @override
+  String get descriptionLabel => 'Description';
+
+  @override
+  String get contentLabel => 'Content';
+
+  @override
+  String wordCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count words',
+      one: '1 word',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get couldNotSaveDraft => 'Could not save draft';
+
+  @override
+  String get couldNotPublishArticle => 'Could not publish article';
+
+  @override
+  String get couldNotArchiveArticle => 'Could not archive article';
+
+  @override
+  String get previewBadge => 'Preview';
+
+  @override
+  String get previewBanner =>
+      'This is a preview of how your article will appear once published.';
+
+  @override
+  String get publishConfirmTitle => 'Publish article?';
+
+  @override
+  String get publishConfirmMessage =>
+      'Once published, this article will be visible to all readers.';
+
+  @override
+  String get archiveConfirmTitle => 'Archive article?';
+
+  @override
+  String get archiveConfirmMessage =>
+      'Archived articles are hidden from readers but kept for your reference.';
+
+  @override
+  String get archiveAction => 'Archive';
+
+  @override
+  String get pageNotFound => 'Page not found';
 }

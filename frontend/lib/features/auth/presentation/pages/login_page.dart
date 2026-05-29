@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_event.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_state.dart';
+import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 import '../../../../config/theme/app_themes.dart';
 
@@ -40,8 +41,10 @@ class _LoginPageState extends State<LoginPage> {
           if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content:
-                    Text(state.error?.message ?? 'Sign in failed'),
+                content: Text(
+                  state.error?.message ??
+                      AppLocalizations.of(context)!.signInFailed,
+                ),
               ),
             );
           }
@@ -153,6 +156,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildFormCard(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -173,14 +177,14 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               // Heading
               Text(
-                'Welcome back',
+                l10n.welcomeBack,
                 style: tt.headlineMedium?.copyWith(
                   height: 1.2,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                'Sign in to continue reading',
+                l10n.signInSubtitle,
                 style: tt.labelLarge?.copyWith(
                   color: cs.onSurfaceVariant,
                   fontWeight: FontWeight.w400,
@@ -188,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: AppSpacing.xl2),
               // Email field
-              _buildFieldLabel('EMAIL'),
+              _buildFieldLabel(l10n.emailLabel.toUpperCase()),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _emailController,
@@ -196,31 +200,31 @@ class _LoginPageState extends State<LoginPage> {
                 autocorrect: false,
                 style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w400),
                 decoration: _fieldDecoration(
-                  hint: 'you@example.com',
+                  hint: l10n.emailHint,
                   prefixIcon: Icons.email_outlined,
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Email is required';
+                    return l10n.emailRequired;
                   }
                   final emailRegex =
                       RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
                   if (!emailRegex.hasMatch(value.trim())) {
-                    return 'Enter a valid email address';
+                    return l10n.invalidEmail;
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 14),
               // Password field
-              _buildFieldLabel('PASSWORD'),
+              _buildFieldLabel(l10n.passwordLabel.toUpperCase()),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
                 style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w400),
                 decoration: _fieldDecoration(
-                  hint: '••••••••',
+                  hint: l10n.passwordHint,
                   prefixIcon: Icons.lock_outlined,
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -236,10 +240,10 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Password is required';
+                    return l10n.passwordRequired;
                   }
                   if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
+                    return l10n.passwordMinLength;
                   }
                   return null;
                 },
@@ -255,8 +259,8 @@ class _LoginPageState extends State<LoginPage> {
                 builder: (context, state) {
                   final isLoading = state is AuthLoading;
                   return _PrimaryButton(
-                    label: 'Sign In',
-                    loadingLabel: 'Signing in…',
+                    label: l10n.signIn,
+                    loadingLabel: l10n.signingIn,
                     isLoading: isLoading,
                     onPressed: _onSignIn,
                   );
@@ -269,7 +273,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "Don't have an account? ",
+                      '${l10n.dontHaveAccount} ',
                       style: tt.labelLarge?.copyWith(
                         color: cs.onSurfaceVariant,
                         fontWeight: FontWeight.w400,
@@ -279,7 +283,7 @@ class _LoginPageState extends State<LoginPage> {
                       onTap: () =>
                           Navigator.pushNamed(context, '/Register'),
                       child: Text(
-                        'Register',
+                        l10n.register,
                         style: tt.labelLarge?.copyWith(
                           color: cs.primary,
                         ),

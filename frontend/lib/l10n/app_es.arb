@@ -46,6 +46,14 @@
   "saved": "Guardado",
   "justSaved": "Recién guardado",
   "savedTimeAgo": "Guardado hace {time}",
+  "@savedTimeAgo": {
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "2 minutos"
+      }
+    }
+  },
   "edit": "Editar",
   "saveDraftTooltip": "Guardar borrador",
   "draft": "Borrador",
@@ -96,7 +104,8 @@
   "@noResultsFor": {
     "placeholders": {
       "query": {
-        "type": "String"
+        "type": "String",
+        "example": "flutter"
       }
     }
   },
@@ -119,5 +128,53 @@
         "example": "5"
       }
     }
-  }
+  },
+  "welcomeBack": "Bienvenido de nuevo",
+  "signInSubtitle": "Iniciá sesión para seguir leyendo y escribiendo.",
+  "emailLabel": "Email",
+  "passwordLabel": "Contraseña",
+  "emailHint": "vos@ejemplo.com",
+  "passwordHint": "Ingresá tu contraseña",
+  "signIn": "Iniciar sesión",
+  "signingIn": "Iniciando sesión...",
+  "dontHaveAccount": "¿No tenés una cuenta?",
+  "register": "Registrarse",
+  "createAccount": "Crear cuenta",
+  "registerSubtitle": "Unite para empezar a publicar tus historias.",
+  "fullNameLabel": "Nombre completo",
+  "fullNameHint": "Juan Pérez",
+  "confirmPasswordLabel": "Confirmar contraseña",
+  "confirmPasswordHint": "Reingresá tu contraseña",
+  "creatingAccount": "Creando cuenta...",
+  "alreadyHaveAccount": "¿Ya tenés una cuenta?",
+  "nameRequired": "Ingresá tu nombre",
+  "nameMaxLength": "El nombre debe tener menos de 100 caracteres",
+  "signInFailed": "Error al iniciar sesión. Intentá de nuevo.",
+  "registrationFailed": "Error al registrarse. Intentá de nuevo.",
+  "savingDraft": "Guardando borrador...",
+  "publishing": "Publicando...",
+  "coverImage": "Imagen de portada",
+  "addCoverImage": "Agregar imagen de portada",
+  "descriptionLabel": "Descripción",
+  "contentLabel": "Contenido",
+  "wordCount": "{count, plural, one{1 palabra} other{{count} palabras}}",
+  "@wordCount": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "42"
+      }
+    }
+  },
+  "couldNotSaveDraft": "No se pudo guardar el borrador",
+  "couldNotPublishArticle": "No se pudo publicar el artículo",
+  "couldNotArchiveArticle": "No se pudo archivar el artículo",
+  "previewBadge": "Vista previa",
+  "previewBanner": "Esta es una vista previa de cómo se verá tu artículo una vez publicado.",
+  "publishConfirmTitle": "¿Publicar artículo?",
+  "publishConfirmMessage": "Una vez publicado, este artículo será visible para todos los lectores.",
+  "archiveConfirmTitle": "¿Archivar artículo?",
+  "archiveConfirmMessage": "Los artículos archivados se ocultan de los lectores pero se conservan como referencia.",
+  "archiveAction": "Archivar",
+  "pageNotFound": "Página no encontrada"
 }

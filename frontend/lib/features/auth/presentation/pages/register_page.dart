@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_event.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_state.dart';
+import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 import '../../../../config/theme/app_themes.dart';
 
@@ -45,8 +46,10 @@ class _RegisterPageState extends State<RegisterPage> {
           if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content:
-                    Text(state.error?.message ?? 'Registration failed'),
+                content: Text(
+                  state.error?.message ??
+                      AppLocalizations.of(context)!.registrationFailed,
+                ),
               ),
             );
           }
@@ -129,6 +132,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget _buildFormCard(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -144,14 +148,14 @@ class _RegisterPageState extends State<RegisterPage> {
             children: [
               // Heading
               Text(
-                'Create account',
+                l10n.createAccount,
                 style: tt.headlineMedium?.copyWith(
                   height: 1.2,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                'Start your reading journey today',
+                l10n.registerSubtitle,
                 style: tt.labelLarge?.copyWith(
                   fontWeight: FontWeight.w400,
                   letterSpacing: 0,
@@ -160,29 +164,29 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 22),
               // Full name
-              _buildFieldLabel('FULL NAME'),
+              _buildFieldLabel(l10n.fullNameLabel.toUpperCase()),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _nameController,
                 textCapitalization: TextCapitalization.words,
                 style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w400),
                 decoration: _fieldDecoration(
-                  hint: 'Jane Doe',
+                  hint: l10n.fullNameHint,
                   prefixIcon: Icons.person_outline,
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Name is required';
+                    return l10n.nameRequired;
                   }
                   if (value.trim().length > 50) {
-                    return 'Name must be 50 characters or fewer';
+                    return l10n.nameMaxLength;
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 14),
               // Email
-              _buildFieldLabel('EMAIL'),
+              _buildFieldLabel(l10n.emailLabel.toUpperCase()),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _emailController,
@@ -190,31 +194,31 @@ class _RegisterPageState extends State<RegisterPage> {
                 autocorrect: false,
                 style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w400),
                 decoration: _fieldDecoration(
-                  hint: 'you@example.com',
+                  hint: l10n.emailHint,
                   prefixIcon: Icons.email_outlined,
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Email is required';
+                    return l10n.emailRequired;
                   }
                   final emailRegex =
                       RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
                   if (!emailRegex.hasMatch(value.trim())) {
-                    return 'Enter a valid email address';
+                    return l10n.invalidEmail;
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 14),
               // Password
-              _buildFieldLabel('PASSWORD'),
+              _buildFieldLabel(l10n.passwordLabel.toUpperCase()),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
                 style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w400),
                 decoration: _fieldDecoration(
-                  hint: 'Min. 6 characters',
+                  hint: l10n.passwordHint,
                   prefixIcon: Icons.lock_outlined,
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -230,24 +234,24 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Password is required';
+                    return l10n.passwordRequired;
                   }
                   if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
+                    return l10n.passwordMinLength;
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 14),
               // Confirm Password
-              _buildFieldLabel('CONFIRM PASSWORD'),
+              _buildFieldLabel(l10n.confirmPasswordLabel.toUpperCase()),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _confirmPasswordController,
                 obscureText: _obscureConfirm,
                 style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w400),
                 decoration: _fieldDecoration(
-                  hint: 'Repeat your password',
+                  hint: l10n.confirmPasswordHint,
                   prefixIcon: Icons.lock_outlined,
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -263,7 +267,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 validator: (value) {
                   if (value != _passwordController.text) {
-                    return 'Passwords do not match';
+                    return l10n.passwordsDoNotMatch;
                   }
                   return null;
                 },
@@ -279,8 +283,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 builder: (context, state) {
                   final isLoading = state is AuthLoading;
                   return _PrimaryButton(
-                    label: 'Create Account',
-                    loadingLabel: 'Creating account…',
+                    label: l10n.createAccount,
+                    loadingLabel: l10n.creatingAccount,
                     isLoading: isLoading,
                     onPressed: _onRegister,
                   );
@@ -293,7 +297,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Already have an account? ',
+                      '${l10n.alreadyHaveAccount} ',
                       style: tt.labelLarge?.copyWith(
                         fontWeight: FontWeight.w400,
                         letterSpacing: 0,
@@ -303,7 +307,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
                       child: Text(
-                        'Sign in',
+                        l10n.signIn,
                         style: tt.labelLarge?.copyWith(
                           letterSpacing: 0,
                           color: cs.primary,

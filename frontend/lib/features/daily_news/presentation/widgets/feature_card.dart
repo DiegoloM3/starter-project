@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 import '../../domain/entities/article.dart';
 
@@ -182,7 +183,7 @@ class FeatureCard extends StatelessWidget {
         if (article.readingTimeMinutes != null) ...[
           _dot(context),
           Text(
-            '${article.readingTimeMinutes} min read',
+            AppLocalizations.of(context)!.readingTime(article.readingTimeMinutes!),
             style: tt.bodySmall?.copyWith(color: cs.outlineVariant),
           ),
         ],

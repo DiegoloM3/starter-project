@@ -270,7 +270,8 @@ class CommentsSection extends HookWidget {
             authorId: currentUserId,
             // Stored author label. Matches article authoring fallback
             // (di/article_module.dart) so authors render consistently.
-            authorName: currentUserName ?? 'Anonymous',
+            authorName:
+                currentUserName ?? AppLocalizations.of(context)!.unknownAuthor,
             content: text,
           )),
         );

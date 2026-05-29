@@ -345,4 +345,136 @@ class AppLocalizationsEs extends AppLocalizations {
   String readingTime(int minutes) {
     return '$minutes min de lectura';
   }
+
+  @override
+  String get welcomeBack => 'Bienvenido de nuevo';
+
+  @override
+  String get signInSubtitle =>
+      'Iniciá sesión para seguir leyendo y escribiendo.';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get passwordLabel => 'Contraseña';
+
+  @override
+  String get emailHint => 'vos@ejemplo.com';
+
+  @override
+  String get passwordHint => 'Ingresá tu contraseña';
+
+  @override
+  String get signIn => 'Iniciar sesión';
+
+  @override
+  String get signingIn => 'Iniciando sesión...';
+
+  @override
+  String get dontHaveAccount => '¿No tenés una cuenta?';
+
+  @override
+  String get register => 'Registrarse';
+
+  @override
+  String get createAccount => 'Crear cuenta';
+
+  @override
+  String get registerSubtitle => 'Unite para empezar a publicar tus historias.';
+
+  @override
+  String get fullNameLabel => 'Nombre completo';
+
+  @override
+  String get fullNameHint => 'Juan Pérez';
+
+  @override
+  String get confirmPasswordLabel => 'Confirmar contraseña';
+
+  @override
+  String get confirmPasswordHint => 'Reingresá tu contraseña';
+
+  @override
+  String get creatingAccount => 'Creando cuenta...';
+
+  @override
+  String get alreadyHaveAccount => '¿Ya tenés una cuenta?';
+
+  @override
+  String get nameRequired => 'Ingresá tu nombre';
+
+  @override
+  String get nameMaxLength => 'El nombre debe tener menos de 100 caracteres';
+
+  @override
+  String get signInFailed => 'Error al iniciar sesión. Intentá de nuevo.';
+
+  @override
+  String get registrationFailed => 'Error al registrarse. Intentá de nuevo.';
+
+  @override
+  String get savingDraft => 'Guardando borrador...';
+
+  @override
+  String get publishing => 'Publicando...';
+
+  @override
+  String get coverImage => 'Imagen de portada';
+
+  @override
+  String get addCoverImage => 'Agregar imagen de portada';
+
+  @override
+  String get descriptionLabel => 'Descripción';
+
+  @override
+  String get contentLabel => 'Contenido';
+
+  @override
+  String wordCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count palabras',
+      one: '1 palabra',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get couldNotSaveDraft => 'No se pudo guardar el borrador';
+
+  @override
+  String get couldNotPublishArticle => 'No se pudo publicar el artículo';
+
+  @override
+  String get couldNotArchiveArticle => 'No se pudo archivar el artículo';
+
+  @override
+  String get previewBadge => 'Vista previa';
+
+  @override
+  String get previewBanner =>
+      'Esta es una vista previa de cómo se verá tu artículo una vez publicado.';
+
+  @override
+  String get publishConfirmTitle => '¿Publicar artículo?';
+
+  @override
+  String get publishConfirmMessage =>
+      'Una vez publicado, este artículo será visible para todos los lectores.';
+
+  @override
+  String get archiveConfirmTitle => '¿Archivar artículo?';
+
+  @override
+  String get archiveConfirmMessage =>
+      'Los artículos archivados se ocultan de los lectores pero se conservan como referencia.';
+
+  @override
+  String get archiveAction => 'Archivar';
+
+  @override
+  String get pageNotFound => 'Página no encontrada';
 }

@@ -34,6 +34,7 @@ class ArticlePreviewPage extends StatelessWidget {
   Widget _buildSliverAppBar(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return SliverAppBar(
       expandedHeight: 220,
@@ -54,7 +55,7 @@ class ArticlePreviewPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.xl),
           ),
           child: Text(
-            'PREVIEW',
+            l10n.previewBadge,
             style: tt.labelSmall?.copyWith(color: cs.primary),
           ),
         ),
@@ -112,6 +113,7 @@ class ArticlePreviewPage extends StatelessWidget {
   Widget _buildPreviewBanner(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 9, horizontal: AppSpacing.xl),
@@ -134,7 +136,7 @@ class ArticlePreviewPage extends StatelessWidget {
           ),
           const SizedBox(width: AppSpacing.sm),
           Text(
-            'Preview — this article is not yet published',
+            l10n.previewBanner,
             style: tt.labelMedium?.copyWith(
               color: cs.primary,
               fontWeight: FontWeight.w600,
@@ -194,7 +196,8 @@ class ArticlePreviewPage extends StatelessWidget {
                     style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                   ),
                   Text(
-                    'Draft · ${articleState.readingTimeMinutes} min read',
+                    '${l10n.draft} · '
+                    '${l10n.readingTime(articleState.readingTimeMinutes)}',
                     style: tt.labelMedium?.copyWith(
                       color: cs.outlineVariant,
                       fontWeight: FontWeight.w400,

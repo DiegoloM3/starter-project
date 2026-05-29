@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 
 class ReadingTimeBadge extends StatelessWidget {
   final int minutes;
@@ -15,7 +16,7 @@ class ReadingTimeBadge extends StatelessWidget {
         Icon(Icons.schedule, size: 12, color: cs.outlineVariant),
         const SizedBox(width: 3),
         Text(
-          '$minutes min read',
+          AppLocalizations.of(context)!.readingTime(minutes),
           style: tt.labelMedium?.copyWith(
             color: cs.outlineVariant,
             fontWeight: FontWeight.w400,

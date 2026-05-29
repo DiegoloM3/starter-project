@@ -8,6 +8,7 @@ import 'package:news_app_clean_architecture/l10n/app_localizations.dart';
 import '../../../../../config/theme/app_themes.dart';
 import '../../../../../injection_container.dart';
 import '../../../domain/entities/article.dart';
+import '../../../domain/entities/article_status.dart';
 import '../../bloc/article/local/local_article_bloc.dart';
 import '../../bloc/article/local/local_article_event.dart';
 import '../../bloc/article/action/article_action_cubit.dart';
@@ -183,6 +184,7 @@ class ArticleDetailsView extends StatelessWidget {
   Widget _buildArticleHeader(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
     final authorName = article?.authorName ?? '';
     final initials = authorName.isNotEmpty
         ? authorName
@@ -206,7 +208,8 @@ class ArticleDetailsView extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           // Status badge (if not published)
-          if (article?.status != null && article!.status != 'published') ...[
+          if (article?.status != null &&
+              article!.status != ArticleStatus.published) ...[
             StatusBadge(status: article!.status!),
             const SizedBox(height: AppSpacing.md),
           ],
@@ -254,7 +257,7 @@ class ArticleDetailsView extends StatelessWidget {
                                 fontWeight: FontWeight.w400,
                                 color: cs.outlineVariant)),
                         Text(
-                          '${article!.readingTimeMinutes} min read',
+                          l10n.readingTime(article!.readingTimeMinutes!),
                           style: tt.labelMedium?.copyWith(
                               fontWeight: FontWeight.w400,
                               color: cs.outlineVariant),

@@ -727,6 +727,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{minutes} min read'**
   String readingTime(int minutes);
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get welcomeBack;
+
+  /// No description provided for @signInSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to continue reading and writing.'**
+  String get signInSubtitle;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordLabel;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'you@example.com'**
+  String get emailHint;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get passwordHint;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get signIn;
+
+  /// No description provided for @signingIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing in...'**
+  String get signingIn;
+
+  /// No description provided for @dontHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get dontHaveAccount;
+
+  /// No description provided for @register.
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get register;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get createAccount;
+
+  /// No description provided for @registerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join us to start publishing your stories.'**
+  String get registerSubtitle;
+
+  /// No description provided for @fullNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get fullNameLabel;
+
+  /// No description provided for @fullNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Jane Doe'**
+  String get fullNameHint;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @confirmPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter your password'**
+  String get confirmPasswordHint;
+
+  /// No description provided for @creatingAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating account...'**
+  String get creatingAccount;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @nameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your name'**
+  String get nameRequired;
+
+  /// No description provided for @nameMaxLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be under 100 characters'**
+  String get nameMaxLength;
+
+  /// No description provided for @signInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in failed. Please try again.'**
+  String get signInFailed;
+
+  /// No description provided for @registrationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration failed. Please try again.'**
+  String get registrationFailed;
+
+  /// No description provided for @savingDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving draft...'**
+  String get savingDraft;
+
+  /// No description provided for @publishing.
+  ///
+  /// In en, this message translates to:
+  /// **'Publishing...'**
+  String get publishing;
+
+  /// No description provided for @coverImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover image'**
+  String get coverImage;
+
+  /// No description provided for @addCoverImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add cover image'**
+  String get addCoverImage;
+
+  /// No description provided for @descriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get descriptionLabel;
+
+  /// No description provided for @contentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get contentLabel;
+
+  /// No description provided for @wordCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 word} other{{count} words}}'**
+  String wordCount(int count);
+
+  /// No description provided for @couldNotSaveDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save draft'**
+  String get couldNotSaveDraft;
+
+  /// No description provided for @couldNotPublishArticle.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not publish article'**
+  String get couldNotPublishArticle;
+
+  /// No description provided for @couldNotArchiveArticle.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not archive article'**
+  String get couldNotArchiveArticle;
+
+  /// No description provided for @previewBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get previewBadge;
+
+  /// No description provided for @previewBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a preview of how your article will appear once published.'**
+  String get previewBanner;
+
+  /// No description provided for @publishConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish article?'**
+  String get publishConfirmTitle;
+
+  /// No description provided for @publishConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Once published, this article will be visible to all readers.'**
+  String get publishConfirmMessage;
+
+  /// No description provided for @archiveConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive article?'**
+  String get archiveConfirmTitle;
+
+  /// No description provided for @archiveConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived articles are hidden from readers but kept for your reference.'**
+  String get archiveConfirmMessage;
+
+  /// No description provided for @archiveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get archiveAction;
+
+  /// No description provided for @pageNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Page not found'**
+  String get pageNotFound;
 }
 
 class _AppLocalizationsDelegate

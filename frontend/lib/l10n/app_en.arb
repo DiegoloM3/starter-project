@@ -49,7 +49,8 @@
   "@savedTimeAgo": {
     "placeholders": {
       "time": {
-        "type": "String"
+        "type": "String",
+        "example": "2 minutes"
       }
     }
   },
@@ -103,7 +104,8 @@
   "@noResultsFor": {
     "placeholders": {
       "query": {
-        "type": "String"
+        "type": "String",
+        "example": "flutter"
       }
     }
   },
@@ -126,5 +128,53 @@
         "example": "5"
       }
     }
-  }
+  },
+  "welcomeBack": "Welcome back",
+  "signInSubtitle": "Sign in to continue reading and writing.",
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "emailHint": "you@example.com",
+  "passwordHint": "Enter your password",
+  "signIn": "Sign in",
+  "signingIn": "Signing in...",
+  "dontHaveAccount": "Don't have an account?",
+  "register": "Register",
+  "createAccount": "Create account",
+  "registerSubtitle": "Join us to start publishing your stories.",
+  "fullNameLabel": "Full name",
+  "fullNameHint": "Jane Doe",
+  "confirmPasswordLabel": "Confirm password",
+  "confirmPasswordHint": "Re-enter your password",
+  "creatingAccount": "Creating account...",
+  "alreadyHaveAccount": "Already have an account?",
+  "nameRequired": "Please enter your name",
+  "nameMaxLength": "Name must be under 100 characters",
+  "signInFailed": "Sign in failed. Please try again.",
+  "registrationFailed": "Registration failed. Please try again.",
+  "savingDraft": "Saving draft...",
+  "publishing": "Publishing...",
+  "coverImage": "Cover image",
+  "addCoverImage": "Add cover image",
+  "descriptionLabel": "Description",
+  "contentLabel": "Content",
+  "wordCount": "{count, plural, one{1 word} other{{count} words}}",
+  "@wordCount": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "42"
+      }
+    }
+  },
+  "couldNotSaveDraft": "Could not save draft",
+  "couldNotPublishArticle": "Could not publish article",
+  "couldNotArchiveArticle": "Could not archive article",
+  "previewBadge": "Preview",
+  "previewBanner": "This is a preview of how your article will appear once published.",
+  "publishConfirmTitle": "Publish article?",
+  "publishConfirmMessage": "Once published, this article will be visible to all readers.",
+  "archiveConfirmTitle": "Archive article?",
+  "archiveConfirmMessage": "Archived articles are hidden from readers but kept for your reference.",
+  "archiveAction": "Archive",
+  "pageNotFound": "Page not found"
 }
