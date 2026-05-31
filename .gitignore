@@ -1,0 +1,6 @@
+.agents
+
+# Firebase config files with secrets - do not commit
+frontend/lib/firebase_options.dart
+frontend/android/app/google-services.json
+frontend/ios/Runner/GoogleService-Info.plist

@@ -2,6 +2,11 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+    // Community article images: public read, owner write/delete.
+    match /community_article_images/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write, delete: if request.auth != null
+        && request.auth.uid == userId;
     }
+  }
 }

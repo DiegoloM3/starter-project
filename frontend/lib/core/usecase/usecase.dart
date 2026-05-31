@@ -1,3 +1,7 @@
-abstract class UseCase<Type,Params> {
-  Future<Type> call({Params params});
+abstract class UseCase<Result, Params> {
+  Future<Result> call({Params params});
+}
+
+abstract class StreamUseCase<Result, Params> {
+  Stream<Result> call({Params params});
 }
