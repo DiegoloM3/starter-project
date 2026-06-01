@@ -1,7 +1,17 @@
 rules_version = '2';
+  service firebase.storage {
+    match /b/{bucket}/o {
 
-service firebase.storage {
-  match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+     
+      match /articles/{userId}/{allPaths=**} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      
+      match /avatars/{userId}/{allPaths=**} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
     }
-}
+  }

@@ -1,10 +1,16 @@
-import 'package:dio/dio.dart';
+import 'package:equatable/equatable.dart';
 
-abstract class DataState<T> {
-  final T ? data;
-  final DioError ? error;
+abstract class DataState<T> extends Equatable {
+  final T? data;
+  final Exception? error;
 
   const DataState({this.data, this.error});
+
+  bool get isSuccess => this is DataSuccess<T>;
+  bool get isFailure => this is DataFailed<T>;
+
+  @override
+  List<Object?> get props => [data, error];
 }
 
 class DataSuccess<T> extends DataState<T> {
@@ -12,5 +18,5 @@ class DataSuccess<T> extends DataState<T> {
 }
 
 class DataFailed<T> extends DataState<T> {
-  const DataFailed(DioError error) : super(error: error);
+  const DataFailed(Exception error) : super(error: error);
 }

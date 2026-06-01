@@ -1,3 +1,7 @@
+# Firebase credentials
+google-services.json
+GoogleService-Info.plist
+
 # Miscellaneous
 *.class
 *.log
