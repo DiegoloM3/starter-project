@@ -1,0 +1,21 @@
+{
+  "name": "news-app-functions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloud Functions for the news app: the editorial assistant backed by Claude.",
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "test": "node --test \"tests/**/*.test.js\"",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
+    "firebase-admin": "^13.0.0",
+    "firebase-functions": "^6.3.0"
+  }
+}

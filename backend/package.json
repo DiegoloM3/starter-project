@@ -1,0 +1,17 @@
+{
+  "name": "news-app-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Firebase Firestore and Cloud Storage rules for the news app, with emulator-based rule tests.",
+  "type": "module",
+  "scripts": {
+    "test": "firebase emulators:exec --only firestore,storage \"node --test --test-concurrency=1 \"tests/**/*.test.js\"\"",
+    "test:watch": "firebase emulators:exec --only firestore,storage \"node --test --watch --test-concurrency=1 \"tests/**/*.test.js\"\"",
+    "emulators": "firebase emulators:start",
+    "deploy:rules": "firebase deploy --only firestore,storage"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "firebase": "^12.19.0"
+  }
+}

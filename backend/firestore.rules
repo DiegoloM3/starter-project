@@ -1,7 +1,118 @@
 rules_version = '2';
 
+// Schema enforcement for the news app. See docs/DB_SCHEMA.md for the
+// human-readable description of every constraint below.
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    // ---------- Generic helpers ----------
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isNonEmptyString(value, maxLength) {
+      return value is string && value.size() > 0 && value.size() <= maxLength;
+    }
+
+    function isOptionalString(value, maxLength) {
+      return value == null || isNonEmptyString(value, maxLength);
+    }
+
+    function isServerTimestamp(value) {
+      return value is timestamp && value == request.time;
+    }
+
+    // ---------- Article schema ----------
+
+    function articleFields() {
+      return [
+        'title',
+        'description',
+        'content',
+        'author',
+        'authorId',
+        'category',
+        'thumbnailURL',
+        'thumbnailPath',
+        'publishedAt',
+        'createdAt',
+        'updatedAt'
+      ];
+    }
+
+    function categories() {
+      return ['general', 'business', 'technology', 'science', 'health', 'sports', 'entertainment'];
+    }
+
+    // A Firebase Storage download URL pointing inside media/articles/.
+    // Example:
+    // https://firebasestorage.googleapis.com/v0/b/<bucket>/o/media%2Farticles%2Fphoto.jpg?alt=media&token=...
+    function isArticleThumbnailUrl(value) {
+      return value is string
+        && value.matches('^https://firebasestorage\\.googleapis\\.com/v0/b/[^/]+/o/media%2Farticles%2F'
+            + request.auth.uid + '-[^/?]+\\?alt=media.*$');
+    }
+
+    // The plain Storage object path: one file directly inside media/articles/,
+    // named after the caller so it matches what the Storage rules let them write.
+    function isArticleThumbnailPath(value) {
+      return value is string && value.matches('^media/articles/' + request.auth.uid + '-[^/]+$');
+    }
+
+    // Either no thumbnail at all (both null) or a consistent URL + path pair.
+    function hasConsistentThumbnail(data) {
+      return (data.thumbnailURL == null && data.thumbnailPath == null)
+        || (isArticleThumbnailUrl(data.thumbnailURL) && isArticleThumbnailPath(data.thumbnailPath));
+    }
+
+    function hasExactlyArticleFields(data) {
+      return data.keys().hasAll(articleFields()) && data.keys().hasOnly(articleFields());
+    }
+
+    function isValidArticle(data) {
+      return hasExactlyArticleFields(data)
+        && isNonEmptyString(data.title, 150)
+        && isOptionalString(data.description, 300)
+        && isNonEmptyString(data.content, 20000)
+        && isNonEmptyString(data.author, 80)
+        && isNonEmptyString(data.authorId, 128)
+        && data.category in categories()
+        && hasConsistentThumbnail(data)
+        && data.publishedAt is timestamp
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isAuthor(data) {
+      return isSignedIn() && data.authorId == request.auth.uid;
+    }
+
+    // ---------- Collections ----------
+
+    match /articles/{articleId} {
+      // The feed is public.
+      allow read: if true;
+
+      // Only a signed-in journalist may publish, and only under their own uid.
+      // createdAt and updatedAt must come from FieldValue.serverTimestamp().
+      allow create: if isValidArticle(request.resource.data)
+        && isAuthor(request.resource.data)
+        && isServerTimestamp(request.resource.data.createdAt)
+        && isServerTimestamp(request.resource.data.updatedAt);
+
+      // Only the author may edit. authorId and createdAt are immutable;
+      // updatedAt must be refreshed on every write.
+      allow update: if isValidArticle(request.resource.data)
+        && isAuthor(resource.data)
+        && request.resource.data.authorId == resource.data.authorId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && isServerTimestamp(request.resource.data.updatedAt);
+
+      // Only the author may delete.
+      allow delete: if isAuthor(resource.data);
+    }
+
+    // Everything not matched above is denied by default.
   }
 }

@@ -16,6 +16,13 @@
     "singleProjectMode": true,
     "storage": {
       "port": 9199
+    },
+    "functions": {
+      "port": 5001
     }
+  },
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs22"
   }
 }

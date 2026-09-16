@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "525171538586",
+    "project_id": "back-pruebasymmetry",
+    "storage_bucket": "back-pruebasymmetry.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:525171538586:android:cae9916335be13551c7d23",
+        "android_client_info": {
+          "package_name": "com.example.news_app_clean_architecture"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "525171538586-9q3haess80kulrkejie732cf4monnnph.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.news_app_clean_architecture",
+            "certificate_hash": "54fd32ff6b771a94689d30a809182594cde122ff"
+          }
+        },
+        {
+          "client_id": "525171538586-e14v73kkfutp9jlih83t8a0ovi90efqg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCK6W-4xMxSIcoz2bnJNCsHqxnTpAs0qEo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "525171538586-e14v73kkfutp9jlih83t8a0ovi90efqg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

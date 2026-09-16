@@ -1,7 +1,48 @@
 rules_version = '2';
 
+// Article thumbnails live in media/articles/. See docs/DB_SCHEMA.md.
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+
+    function isSignedIn() {
+      return request.auth != null;
     }
+
+    function isSupportedImage() {
+      return request.resource.contentType.matches('^image/(jpeg|png|webp)$');
+    }
+
+    function isWithinSizeLimit() {
+      // 5 MiB
+      return request.resource.size <= 5 * 1024 * 1024;
+    }
+
+    // Thumbnails are named `{uid}-{anything}` so the file carries its owner:
+    // only that account can create, replace or delete it. One file directly
+    // inside media/articles/; sub-folders are not allowed. Anyone can view.
+    function isOwnThumbnail(fileName) {
+      return isSignedIn() && fileName.matches('^' + request.auth.uid + '-[^/]+$');
+    }
+
+    match /media/articles/{fileName} {
+      allow read: if true;
+      allow create, update: if isOwnThumbnail(fileName) && isSupportedImage() && isWithinSizeLimit();
+      allow delete: if isOwnThumbnail(fileName);
+    }
+
+    // Profile photos: one file per account, named after the uid, written
+    // only by that account. Anyone can view them (they appear on articles).
+    function isOwnAvatar(fileName) {
+      return isSignedIn()
+        && fileName in [request.auth.uid + '.jpg', request.auth.uid + '.png', request.auth.uid + '.webp'];
+    }
+
+    match /media/avatars/{fileName} {
+      allow read: if true;
+      allow create, update: if isOwnAvatar(fileName) && isSupportedImage() && isWithinSizeLimit();
+      allow delete: if isOwnAvatar(fileName);
+    }
+
+    // Everything else in the bucket is denied by default.
+  }
 }

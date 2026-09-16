@@ -44,3 +44,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Test coverage output
+/coverage/
+
+# Build-time secrets (see env.example.json)
+/env.json
