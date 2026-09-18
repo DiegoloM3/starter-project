@@ -1,7 +1,5 @@
 {
   "projects": {
-    "default": // TODO: ADD PROJECT ID
-  },
-  "targets": {},
-  "etags": {}
+    "default": "symmetry-technical-test-62d73"
+  }
 }

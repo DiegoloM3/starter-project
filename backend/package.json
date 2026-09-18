@@ -1,0 +1,17 @@
+{
+  "name": "symmetry-backend-rules-tests",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "firebase emulators:exec --config firebase.test.json --project demo-symmetry-rules --only firestore,storage \"node --test tests/rules.test.js\"",
+    "test:integration": "firebase emulators:exec --config firebase.test.json --project demo-symmetry-rules --only firestore,storage \"node --test tests/emulator-safety.test.js tests/publication.integration.test.js\"",
+    "test:safety": "node --test tests/emulator-safety.test.js"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "5.0.2",
+    "firebase": "12.19.0"
+  }
+}

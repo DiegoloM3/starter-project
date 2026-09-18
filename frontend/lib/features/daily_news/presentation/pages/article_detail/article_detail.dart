@@ -30,7 +30,7 @@ class ArticleDetailsView extends HookWidget {
         builder: (context) => GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () => _onBackButtonTapped(context),
-          child: const Icon(Ionicons.chevron_back, color: Colors.black),
+          child: const Icon(Ionicons.chevronBack, color: Colors.black),
         ),
       ),
     );
@@ -67,7 +67,7 @@ class ArticleDetailsView extends HookWidget {
           // DateTime
           Row(
             children: [
-              const Icon(Ionicons.time_outline, size: 16),
+              const Icon(Ionicons.timeOutline, size: 16),
               const SizedBox(width: 4),
               Text(
                 article!.publishedAt!,

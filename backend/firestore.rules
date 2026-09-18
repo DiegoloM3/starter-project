@@ -2,6 +2,57 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+    function isValidArticle() {
+      let article = request.resource.data;
+
+      return article.keys().hasAll([
+          'author',
+          'title',
+          'description',
+          'content',
+          'thumbnailURL',
+          'publishedAt',
+          'createdAt',
+          'updatedAt'
+        ])
+        && article.keys().hasOnly([
+          'author',
+          'title',
+          'description',
+          'content',
+          'thumbnailURL',
+          'publishedAt',
+          'createdAt',
+          'updatedAt'
+        ])
+        && article.author is string
+        && article.author.size() > 0
+        && article.author.size() <= 100
+        && article.title is string
+        && article.title.size() > 0
+        && article.title.size() <= 200
+        && article.description is string
+        && article.description.size() > 0
+        && article.description.size() <= 500
+        && article.content is string
+        && article.content.size() > 0
+        && article.content.size() <= 50000
+        && article.thumbnailURL is string
+        && article.thumbnailURL.matches(
+          'https://firebasestorage[.]googleapis[.]com/.*'
+        )
+        && article.publishedAt is timestamp
+        && article.createdAt is timestamp
+        && article.updatedAt is timestamp
+        && article.createdAt == request.time
+        && article.updatedAt == request.time
+        && article.publishedAt <= request.time;
+    }
+
+    match /articles/{articleId} {
+      allow read: if true;
+      allow create: if isValidArticle();
+      allow update, delete: if false;
+    }
   }
 }
