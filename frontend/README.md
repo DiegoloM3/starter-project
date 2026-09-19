@@ -11,6 +11,12 @@ To do this, follow these steps:
 2. Watch this [tutorial to setup Firebase for Flutter](https://youtu.be/Wa0rdbb53I8?list=PL4cUxeGkcC9j--TKIdkb3ISfRbJeJYQwC)
 Once you have completed this appropriately, you can start to work with the project.
 
+The app uses anonymous Firebase Authentication so Firestore rules can identify
+the author during local development. Article thumbnails are entered as public HTTPS URLs;
+Cloud Storage is not required. From this folder, run `flutterfire configure`, select
+the same Firebase project configured in `backend/.firebaserc`, and then run `flutter pub get`.
+Enable Anonymous sign-in in Firebase Authentication before launching the app.
+
 ### Generate files for routing, di etc.:
 `flutter pub run build_runner build --delete-conflicting-outputs`
 ### Generate the icons:

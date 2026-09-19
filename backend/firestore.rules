@@ -2,6 +2,35 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function validArticle() {
+      return request.resource.data.keys().hasAll([
+        'authorId', 'authorName', 'title', 'description', 'content',
+        'thumbnailURL', 'createdAt', 'updatedAt', 'publishedAt', 'status'
+      ])
+      && request.resource.data.authorId == request.auth.uid
+      && request.resource.data.title is string
+      && request.resource.data.title.size() > 0
+      && request.resource.data.title.size() <= 140
+      && request.resource.data.description is string
+      && request.resource.data.description.size() <= 320
+      && request.resource.data.content is string
+      && request.resource.data.content.size() > 0
+      && request.resource.data.thumbnailURL is string
+      && request.resource.data.status == 'published';
+    }
+
+    match /articles/{articleId} {
+      allow read: if resource.data.status == 'published' ||
+        (signedIn() && resource.data.authorId == request.auth.uid);
+      allow create: if signedIn() && validArticle();
+      allow update: if signedIn()
+        && resource.data.authorId == request.auth.uid
+        && validArticle();
+      allow delete: if signedIn() && resource.data.authorId == request.auth.uid;
+    }
   }
 }

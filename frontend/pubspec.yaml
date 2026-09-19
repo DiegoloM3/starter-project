@@ -38,7 +38,7 @@ dependencies:
   # Firebase
   firebase_core: ^2.24.0
   cloud_firestore: ^4.13.3
-  firebase_storage: ^11.5.5
+  firebase_auth: ^4.16.1
 
 
   #Hooks
