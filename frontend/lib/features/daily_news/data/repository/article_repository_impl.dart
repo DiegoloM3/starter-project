@@ -25,7 +25,8 @@ class ArticleRepositoryImpl implements ArticleRepository {
     );
 
     if (httpResponse.response.statusCode == HttpStatus.ok) {
-      return DataSuccess(httpResponse.data);
+      final publishedArticles = await _appDatabase.articleDAO.getArticles();
+      return DataSuccess([...publishedArticles, ...httpResponse.data]);
     } else {
       return DataFailed(
         DioError(
@@ -39,6 +40,11 @@ class ArticleRepositoryImpl implements ArticleRepository {
    } on DioError catch(e){
     return DataFailed(e);
    }
+  }
+
+  @override
+  Future<void> publishArticle(ArticleEntity article) {
+    return _appDatabase.articleDAO.insertArticle(ArticleModel.fromEntity(article));
   }
 
   @override

@@ -18,7 +18,7 @@ class DailyNews extends StatelessWidget {
   _buildAppbar(BuildContext context) {
     return AppBar(
       title: const Text(
-        'Daily News',
+        'THE DAILY / EDITION 01',
         style: TextStyle(color: Colors.black),
       ),
       actions: [
@@ -71,9 +71,10 @@ class DailyNews extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: REPLACE ROUTE WITH YOUR "ADD ARTICLE" PAGE
+          Navigator.pushNamed(context, '/CreateArticle');
         },
-        child: const Icon(Icons.add),
+        tooltip: 'Write an article',
+        child: const Icon(Icons.edit_rounded),
       ),
     );
   }

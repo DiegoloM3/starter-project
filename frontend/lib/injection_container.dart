@@ -8,6 +8,7 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 import 'features/daily_news/data/data_sources/local/app_database.dart';
 import 'features/daily_news/domain/usecases/get_saved_article.dart';
 import 'features/daily_news/domain/usecases/remove_article.dart';
+import 'features/daily_news/domain/usecases/publish_article.dart';
 import 'features/daily_news/domain/usecases/save_article.dart';
 import 'features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 
@@ -37,6 +38,10 @@ Future<void> initializeDependencies() async {
     GetSavedArticleUseCase(sl())
   );
 
+  sl.registerSingleton<PublishArticleUseCase>(
+    PublishArticleUseCase(sl())
+  );
+
   sl.registerSingleton<SaveArticleUseCase>(
     SaveArticleUseCase(sl())
   );
@@ -48,7 +53,7 @@ Future<void> initializeDependencies() async {
 
   //Blocs
   sl.registerFactory<RemoteArticlesBloc>(
-    ()=> RemoteArticlesBloc(sl())
+    ()=> RemoteArticlesBloc(sl(), sl())
   );
 
   sl.registerFactory<LocalArticleBloc>(
