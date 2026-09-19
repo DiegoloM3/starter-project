@@ -2,6 +2,16 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    match /media/articles/{articleId}/{fileName} {
+      allow read: if signedIn();
+      allow write: if signedIn()
+        && request.resource.contentType.matches('image/.*')
+        && request.resource.size < 5 * 1024 * 1024;
+      allow delete: if signedIn();
+    }
     }
 }

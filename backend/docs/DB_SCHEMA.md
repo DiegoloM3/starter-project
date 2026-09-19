@@ -9,21 +9,11 @@ The `articles` collection stores published newsroom stories. Documents use an au
 | `title` | string | yes | Headline, limited to 140 characters. |
 | `description` | string | yes | Standfirst, limited to 320 characters. |
 | `content` | string | yes | Article body. |
-| `thumbnailURL` | string | yes | Download URL for the image stored under `media/articles/{articleId}`. |
+| `thumbnailURL` | string | yes | Public HTTPS URL for the article thumbnail. |
 | `createdAt` | timestamp | yes | Server timestamp when the draft was published. |
 | `updatedAt` | timestamp | yes | Server timestamp of the last edit. |
 | `publishedAt` | timestamp | yes | Server timestamp used for feed ordering. |
 | `status` | string | yes | Currently `published`; reserved for `draft` and `archived`. |
-
-## Storage
-
-Article thumbnails are stored at:
-
-```text
-media/articles/{articleId}/{originalFileName}
-```
-
-The Firestore document stores the resulting download URL, never a device-local path.
 
 ## Query shape
 

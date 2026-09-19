@@ -3,11 +3,10 @@ In this folder are all the [Firebase Firestore](https://firebase.google.com/docs
 You will use this folder to add the schema of the *Articles* you want to upload for the app and to add the rules that enforce this schema. 
 
 ## DB Schema
-**TODO: ADD YOUR DB SCHEMA (SCHEMA FOR "ARTICLES" AND ANY OTHER SCHEMAS) HERE**
+The article schema is documented in [docs/DB_SCHEMA.md](docs/DB_SCHEMA.md).
 
 ## Getting Started
-Before starting to work on the backend, you must have a Firebase project with the [Firebase Firestore](https://firebase.google.com/docs/firestore), [Firebase Cloud Storage](https://firebase.google.com/docs/storage) and [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite) technologies enabled.
-To do this, create a project but enable only Firebase Cloud Storage, Firebase Firestore, and Firebase Local Emulator Suite technologies.
+Before starting to work on the backend, you must have a Firebase project with [Firebase Firestore](https://firebase.google.com/docs/firestore), [Firebase Authentication](https://firebase.google.com/docs/auth) and the [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite) available. Cloud Storage is not required: article thumbnails use public HTTPS URLs.
 
 
 ## Deploying the Project
@@ -34,12 +33,15 @@ firebase init
 You should leave everything as it is, choose:
 - emulators
 - firestore
-- cloud storage
+- authentication
 
 ### 5. Deploy to firebase
 ```
 firebase deploy
 ```
+
+Before deploying, replace `replace-with-your-firebase-project-id` in `.firebaserc`.
+The Flutter app must also be configured with `flutterfire configure` from the `frontend` folder.
 This will deploy all the rules you write in `firestore.rules` to your Firebase Firestore project.
 Be careful becasuse it will overwrite the existing firestore.rules file of your project.
 

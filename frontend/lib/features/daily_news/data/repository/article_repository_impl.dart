@@ -9,11 +9,13 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/entities/
 import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart';
 
 import '../data_sources/remote/news_api_service.dart';
+import '../data_sources/remote/firebase_article_data_source.dart';
 
 class ArticleRepositoryImpl implements ArticleRepository {
   final NewsApiService _newsApiService;
   final AppDatabase _appDatabase;
-  ArticleRepositoryImpl(this._newsApiService,this._appDatabase);
+  final FirebaseArticleDataSource _firebaseArticleDataSource;
+  ArticleRepositoryImpl(this._newsApiService, this._appDatabase, this._firebaseArticleDataSource);
   
   @override
   Future<DataState<List<ArticleModel>>> getNewsArticles() async {
@@ -26,7 +28,9 @@ class ArticleRepositoryImpl implements ArticleRepository {
 
     if (httpResponse.response.statusCode == HttpStatus.ok) {
       final publishedArticles = await _appDatabase.articleDAO.getArticles();
-      return DataSuccess([...publishedArticles, ...httpResponse.data]);
+      final firebaseArticles = await _firebaseArticleDataSource.getPublishedArticles();
+      final firebaseModels = firebaseArticles.map(ArticleModel.fromEntity).toList();
+      return DataSuccess([...firebaseModels, ...publishedArticles, ...httpResponse.data]);
     } else {
       return DataFailed(
         DioError(
@@ -44,7 +48,12 @@ class ArticleRepositoryImpl implements ArticleRepository {
 
   @override
   Future<void> publishArticle(ArticleEntity article) {
-    return _appDatabase.articleDAO.insertArticle(ArticleModel.fromEntity(article));
+    return _publishArticleToFirebaseAndCache(article);
+  }
+
+  Future<void> _publishArticleToFirebaseAndCache(ArticleEntity article) async {
+    await _firebaseArticleDataSource.publishArticle(article);
+    await _appDatabase.articleDAO.insertArticle(ArticleModel.fromEntity(article));
   }
 
   @override

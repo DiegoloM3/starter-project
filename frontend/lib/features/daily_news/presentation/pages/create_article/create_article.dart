@@ -64,7 +64,7 @@ class _CreateArticlePageState extends State<CreateArticlePage> {
           _field(_titleController, 'Headline', 'Give readers a reason to stop.', 2),
           _field(_descriptionController, 'Standfirst', 'The one sentence that earns the next paragraph.', 3),
           _field(_contentController, 'The story', 'Write what matters. Keep the signal.', 12),
-          _field(_imageController, 'Thumbnail URL', 'Paste a public image URL for now.', 1, keyboardType: TextInputType.url),
+          _field(_imageController, 'Thumbnail URL', 'Paste a public image URL.', 1, keyboardType: TextInputType.url),
           const SizedBox(height: 16),
           _imagePreview(),
         ],
