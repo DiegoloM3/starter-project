@@ -2,6 +2,101 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    // Articles collection rules
+    match /articles/{articleId} {
+
+      // --- Schema helpers ---------------------------------------------------
+      // The limits mirror backend/docs/DB_SCHEMA.md and the business rules in
+      // JournalistArticleEntity. They are enforced here too, so the documented
+      // schema is actually guaranteed and not just respected by our own client.
+
+      function isValidTitle(data) {
+        return data.title is string
+          && data.title.size() > 0
+          && data.title.size() <= 200;
+      }
+
+      function isValidDescription(data) {
+        return data.description is string
+          && data.description.size() <= 500;
+      }
+
+      // A draft is allowed to be incomplete and has no publication date; a
+      // published article must carry the moment it went live. Requiring a
+      // timestamp for both is what made every "save as draft" fail.
+      function hasValidPublicationDate(data) {
+        return data.status == "published"
+          ? data.publishedAt is timestamp
+          : data.publishedAt == null;
+      }
+
+      function hasValidShape(data) {
+        return isValidTitle(data)
+          && isValidDescription(data)
+          && data.status in ["draft", "published"]
+          && data.content is string
+          && data.author is string
+          && data.thumbnailURL is string
+          && data.viewCount is int
+          && data.viewCount >= 0
+          && hasValidPublicationDate(data)
+          && data.createdAt is timestamp
+          && data.updatedAt is timestamp;
+      }
+
+      function isOwner() {
+        return request.auth != null
+          && request.auth.uid == resource.data.userId;
+      }
+
+      // A reader may only ever push viewCount up by exactly one, and may
+      // change nothing else. Anything more is an edit, and edits are the
+      // author's business.
+      function isViewCountIncrement() {
+        return request.resource.data.diff(resource.data)
+            .affectedKeys().hasOnly(["viewCount"])
+          && request.resource.data.viewCount == resource.data.viewCount + 1;
+      }
+
+      // --- Access rules -----------------------------------------------------
+
+      // Allow reading a published article, or an article owned by the requester.
+      // This condition applies to both `get` (single document) and `list`
+      // (collection query) requests. For `list`, Firestore requires the
+      // client's query to include a `where` filter that entails this
+      // condition for every possible result (e.g. .where('status', '==',
+      // 'published')); an unfiltered query is rejected outright, even if
+      // every existing document happens to satisfy the rule.
+      allow read: if resource.data.status == "published"
+        || (request.auth != null && request.auth.uid == resource.data.userId);
+
+      // Allow authenticated users to create articles (with their own userId)
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.userId
+        && hasValidShape(request.resource.data)
+        && request.resource.data.viewCount == 0;
+
+      // The author may edit their own article, keeping its owner and its view
+      // count untouched. Any reader may open a published one, which only
+      // increments viewCount.
+      allow update: if (
+          isOwner()
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.viewCount == resource.data.viewCount
+          && hasValidShape(request.resource.data)
+        ) || (
+          resource.data.status == "published"
+          && isViewCountIncrement()
+        );
+
+      // Allow users to delete their own articles
+      allow delete: if isOwner();
+    }
+
+    // Default deny all other paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }

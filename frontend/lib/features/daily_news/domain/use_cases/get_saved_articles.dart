@@ -1,0 +1,17 @@
+import 'package:news_app_clean_architecture/core/resources/data_state.dart';
+import 'package:news_app_clean_architecture/core/usecase/usecase.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart';
+
+/// The articles the reader chose to keep.
+class GetSavedArticlesUseCase
+    implements UseCase<DataState<List<ArticleEntity>>, NoParams> {
+  final ArticleRepository _articleRepository;
+
+  const GetSavedArticlesUseCase(this._articleRepository);
+
+  @override
+  Future<DataState<List<ArticleEntity>>> call(NoParams params) {
+    return _articleRepository.getSavedArticles();
+  }
+}

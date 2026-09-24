@@ -2,6 +2,30 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+
+    // Articles media folder
+    match /media/articles/{userId}/{allPaths=**} {
+      // Allow anyone to read article images (articles are public or belong to authenticated users)
+      allow read;
+
+      // Allow authenticated users to upload images only to their own folder.
+      //
+      // The content type is checked as well as the size, so this folder can
+      // only ever hold images. `ArticleThumbnailEntity` enforces the same
+      // formats on the device; this is the copy that cannot be bypassed.
+      allow write: if request.auth.uid != null
+        && request.auth.uid == userId
+        && request.resource.size < 5242880 // 5MB max file size
+        && request.resource.contentType.matches('image/(jpeg|png|webp|gif)');
+
+      // Allow users to delete their own images
+      allow delete: if request.auth.uid != null
+        && request.auth.uid == userId;
     }
+
+    // Deny all other paths
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
 }

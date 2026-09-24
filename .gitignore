@@ -1,0 +1,16 @@
+# IDE settings. Machine specific: paths to the local SDK, device streaming
+# config and run configurations that mean nothing on anybody else's machine.
+.idea/
+*.iml
+
+# Agent tooling. These are Firebase skill files fetched by the assistant's
+# tooling, not part of the project: 100 files that say nothing about the app
+# and would drown the diff of every review.
+backend/.agents/
+backend/.claude/
+backend/skills-lock.json
+
+# Firebase emulator output
+**/firestore-debug.log
+**/ui-debug.log
+**/database-debug.log

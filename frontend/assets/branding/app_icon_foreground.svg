@@ -1,0 +1,12 @@
+<!--
+  The adaptive-icon foreground: the same two bars, on nothing.
+
+  Android crops an adaptive icon to whatever shape the launcher uses, and only
+  the middle ~66% is guaranteed to survive it. The bars are scaled down into
+  that safe area so no launcher shape can clip them; the violet tile they sit
+  on is supplied separately as the background colour.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="1024" height="1024">
+  <rect x="32.7" y="38.6" width="34.6" height="6" rx="3" fill="#FFFFFF"/>
+  <rect x="32.7" y="51.2" width="20" height="6" rx="3" fill="#FFFFFF" fill-opacity="0.62"/>
+</svg>

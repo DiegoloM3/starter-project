@@ -9,6 +9,7 @@
 .history
 .svn/
 
+
 # IntelliJ related
 *.iml
 *.ipr
@@ -44,3 +45,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# FVM: the pinned Flutter SDK lives here (.fvmrc records the version and is committed)
+.fvm/
+
+# `flutter test --coverage` output: a build artifact, regenerated on demand
+/coverage/
