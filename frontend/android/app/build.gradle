@@ -24,7 +24,8 @@ if (flutterVersionName == null) {
 
 
 android {
-    namespace "com.example.news_app_clean_architecture" // Add your namespace here
+    namespace "com.example.news_app_clean_architecture"
+    ndkVersion = "28.2.13676358"
 
     compileSdkVersion flutter.compileSdkVersion
 

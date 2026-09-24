@@ -14,9 +14,6 @@ dependencies:
 
   cupertino_icons: ^1.0.2
 
-  #icon
-  ionicons: ^0.1.2
-
   #state management
   flutter_bloc: ^8.1.2
 
@@ -40,20 +37,22 @@ dependencies:
   cloud_firestore: ^4.13.3
   firebase_storage: ^11.5.5
 
+  # Image picker
+  image_picker: ^1.2.1
 
   #Hooks
   flutter_hooks: ^0.18.3
 
-  #chached image 
+  #chached image
   cached_network_image: ^3.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
-  retrofit_generator: 3.0.1+1
   floor_generator: 1.2.0
   build_runner: 2.1.2
+  mocktail: ^1.0.3
   
 
 flutter:

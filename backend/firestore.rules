@@ -2,6 +2,65 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isArticleOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasValidArticleType(type) {
+      return type in ['api', 'user_uploaded'];
+    }
+
+    function validateUploadArticle() {
+      let data = request.resource.data;
+      return data.title is string && data.title.size() >= 5 && data.title.size() <= 200
+        && data.content is string && data.content.size() >= 20
+        && data.author is string && data.author.size() >= 2 && data.author.size() <= 100
+        && data.articleType is string && hasValidArticleType(data.articleType)
+        && data.isPublished is bool
+        && (data.articleType == 'user_uploaded' ? (
+          data.uploadedBy is string && data.uploadedBy == request.auth.uid
+          && data.uploadedAt is timestamp
+        ) : true)
+        && (data.articleType == 'user_uploaded' ? data.thumbnailURL is string : true);
+    }
+
+    function validateUpdateArticle() {
+      let data = request.resource.data;
+      let original = resource.data;
+      return (data.title is string && data.title.size() >= 5 && data.title.size() <= 200 || data.title == original.title)
+        && (data.content is string && data.content.size() >= 20 || data.content == original.content)
+        && (data.isPublished is bool || data.isPublished == original.isPublished)
+        && data.articleType == original.articleType
+        && data.uploadedBy == original.uploadedBy
+        && data.uploadedAt == original.uploadedAt;
+    }
+
+    match /articles/{articleId} {
+
+      allow read: if
+        request.auth != null ||
+        resource.data.isPublished == true;
+
+      allow create: if
+        isAuthenticated() &&
+        request.resource.data.articleType == 'user_uploaded' &&
+        validateUploadArticle();
+
+      allow update: if
+        isAuthenticated() &&
+        resource.data.articleType == 'user_uploaded' &&
+        isArticleOwner(resource.data.uploadedBy) &&
+        validateUpdateArticle();
+
+      allow delete: if
+        isAuthenticated() &&
+        resource.data.articleType == 'user_uploaded' &&
+        isArticleOwner(resource.data.uploadedBy);
+    }
   }
 }

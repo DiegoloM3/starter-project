@@ -2,6 +2,39 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+
+    function isAuthenticated() {
+      return request.auth != null;
     }
+
+    function isValidImageFile() {
+      return request.resource.contentType in [
+        'image/jpeg',
+        'image/png',
+        'image/jpg'
+      ];
+    }
+
+    function isValidFileSize() {
+      return request.resource.size <= 5 * 1024 * 1024;
+    }
+
+    match /media/articles/{articleId}/thumbnail {
+
+      allow read: if request.auth != null;
+
+      allow write: if
+        isAuthenticated() &&
+        isValidImageFile() &&
+        isValidFileSize() &&
+        request.resource.name == 'thumbnail';
+
+      allow delete: if
+        isAuthenticated();
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
 }
