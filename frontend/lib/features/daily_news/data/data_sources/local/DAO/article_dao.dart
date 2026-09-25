@@ -10,6 +10,6 @@ abstract class ArticleDao {
   @delete
   Future<void> deleteArticle(ArticleModel articleModel);
   
-  @Query('SELECT * FROM article')
-  Future<List<ArticleModel>> getArticles();
+  @Query('SELECT * FROM article WHERE savedBy = :savedBy')
+  Future<List<ArticleModel>> getArticles(String savedBy);
 }

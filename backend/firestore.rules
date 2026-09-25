@@ -1,7 +1,96 @@
 rules_version = '2';
 
+// Schema and reasoning documented in backend/docs/DB_SCHEMA.md.
+//
+// String lengths below are UTF-16 code units -- how rules measure strings
+// (checked with a live probe: an emoji is 2, an accented letter 1). The app
+// limits its fields in the same unit, so it never lets anyone type
+// something these rules would then reject.
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    match /articles/{articleId} {
+
+      // Exactly the fields DB_SCHEMA.md documents -- nothing else can be
+      // smuggled onto an article, whatever its value would have been.
+      function hasOnlySchemaFields(data) {
+        return data.keys().hasOnly([
+          'authorId', 'authorName', 'title', 'description', 'content',
+          'thumbnailURL', 'status', 'createdAt', 'updatedAt'
+        ]);
+      }
+
+      // Holds for every article, draft or not: a draft is unfinished, but
+      // it's still bounded -- otherwise anyone could fill the database with
+      // megabyte-sized "drafts" straight through the API.
+      function withinLimits(data) {
+        return data.authorName is string && data.authorName.size() <= 60
+          && data.title is string && data.title.size() <= 150
+          && data.description is string && data.description.size() <= 300
+          && data.content is string && data.content.size() <= 5000
+          && data.thumbnailURL is string
+          && (data.thumbnailURL == '' || isArticlePhotoUrl(data.thumbnailURL));
+      }
+
+      // A real Cloud Storage download URL for the articles' own folder, per
+      // the README's requirement ("a reference to an image in Firebase
+      // Cloud Storage, folder 'media/articles'"). Download URLs percent-
+      // encode the path's slashes, hence %2F.
+      function isArticlePhotoUrl(url) {
+        return url.matches('.*media%2Farticles%2F.*');
+      }
+
+      // What a published article needs on top of withinLimits(). A draft
+      // skips these -- being incomplete is what makes it a draft.
+      function isPublishable(data) {
+        return data.authorName.size() > 0
+          && data.title.size() >= 3
+          && data.description.size() >= 10
+          && data.content.size() >= 50
+          && data.thumbnailURL != '';
+      }
+
+      function hasValidContent(data) {
+        return hasOnlySchemaFields(data)
+          && data.status in ['draft', 'published']
+          && withinLimits(data)
+          && (data.status == 'draft' || isPublishable(data));
+      }
+
+      function isAuthor() {
+        return request.auth != null
+          && request.auth.uid == resource.data.authorId;
+      }
+
+      // Anyone can read a published article (DB_SCHEMA.md's "flat, public
+      // collection"); a draft only its own author. `status` is read with a
+      // default because an article written before the field existed has
+      // none -- and those were published. A missing field isn't null in
+      // rules, it's an error, so `resource.data.status` alone would quietly
+      // make every one of them private.
+      allow read: if resource.data.get('status', 'published') != 'draft'
+        || isAuthor();
+
+      // Only a signed-in user (Anonymous Auth counts), only as themselves,
+      // and only with the server's own clock for both timestamps
+      // (FieldValue.serverTimestamp() on the client) -- a client can't
+      // backdate or forge either.
+      allow create: if request.auth != null
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && hasValidContent(request.resource.data);
+
+      // Only the author, who can't hand the article to someone else or
+      // rewrite when it was created. Publishing a draft, or moving a
+      // published article back to drafts, is just a change of `status`.
+      allow update: if isAuthor()
+        && request.resource.data.authorId == resource.data.authorId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time
+        && hasValidContent(request.resource.data);
+
+      allow delete: if isAuthor();
+    }
   }
 }

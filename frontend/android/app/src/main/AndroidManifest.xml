@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.news_app_clean_architecture">
+    <!-- connectivity_plus reads this to report the current connection type. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
    <application
         android:label="news_app_clean_architecture"
         android:name="androidx.multidex.MultiDexApplication"
@@ -33,4 +35,12 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+    <!-- Since Android 11, an app only sees the apps it declares it needs: this
+         lets "Read full article" (url_launcher) find a browser for https. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
 </manifest>

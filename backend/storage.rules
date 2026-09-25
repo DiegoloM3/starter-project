@@ -1,7 +1,54 @@
 rules_version = '2';
 
+// Schema and reasoning documented in backend/docs/DB_SCHEMA.md.
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+
+    match /media/articles/{fileName} {
+      // Thumbnails are public, same as the articles they belong to.
+      allow read: if true;
+
+      // Every upload of file bytes lands here -- a brand-new file and
+      // replacing an existing one alike. (Empirically: a plain `allow
+      // update` gated on the existing file's owner never actually fired
+      // for a same-path overwrite here, so this rule can't assume Storage
+      // will route overwrites to `update` and only new files to `create`;
+      // it has to tell the two apart itself, through `resource`, the file
+      // already at this path (null when there's none).)
+      //
+      // - New file (resource == null): open to any signed-in user. Each
+      //   upload is stamped with its author's uid as custom metadata (see
+      //   UserArticleStorageDataSource.uploadThumbnail) precisely so THIS
+      //   check has something of its own to read on the next write --
+      //   nothing to compare against yet on the very first one.
+      // - Existing file: only the uid stamped on it as `authorId` may
+      //   replace it. Without this, anyone signed in (Anonymous Auth means
+      //   literally anyone who opens the app) could swap another author's
+      //   already-published photo for one of their own.
+      allow create: if request.auth != null
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*')
+        && (resource == null
+            || resource.metadata.authorId == request.auth.uid);
+
+      // Every future replacement must keep carrying its author's uid --
+      // otherwise the very first stranger to (legitimately) fail the check
+      // above could still overwrite a file that predates this metadata
+      // convention and had none, since resource.metadata.authorId on that
+      // file would be missing/null, which trivially isn't equal to
+      // request.auth.uid, but also isn't the NEW author's fault to fix.
+      // Requiring it here just keeps the metadata itself consistent
+      // going forward.
+      allow update: if request.auth != null
+        && request.resource.metadata.authorId == request.auth.uid;
+
+      // Same check, straight off the file being deleted -- unlike the
+      // create/update rules above, this one doesn't even need to reason
+      // about ordering against Firestore: the metadata lives on the file
+      // itself, so it's there regardless of whether the article's own
+      // Firestore document still exists at the moment this runs.
+      allow delete: if request.auth != null
+        && resource.metadata.authorId == request.auth.uid;
     }
+  }
 }

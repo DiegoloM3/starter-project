@@ -172,3 +172,4 @@ This index contains all the links to the project's documentation.
 2. [Architecture Violations](./docs/ARCHITECTURE_VIOLATIONS.md)
 3. [Code Quality Violations](./docs/CODING_GUIDELINES.md)
 4. [Our App Architecture](./docs/APP_ARCHITECTURE.md)
+5. [Design System — "Editorial Obsidian"](./docs/DESIGN.md)

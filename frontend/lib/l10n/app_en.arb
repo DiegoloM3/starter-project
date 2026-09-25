@@ -1,0 +1,272 @@
+{
+  "@@locale": "en",
+  "tabNews": "News",
+  "tabMyArticles": "My Articles",
+  "tabSaved": "Saved",
+  "tabProfile": "Profile",
+  "newArticle": "New article",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "save": "Save",
+  "back": "Back",
+  "continueAction": "Continue",
+  "genericError": "Something went wrong. Please try again.",
+  "byAuthor": "By {author}",
+  "@byAuthor": {
+    "placeholders": {
+      "author": {
+        "type": "String"
+      }
+    }
+  },
+  "savedArticlesTitle": "Saved Articles",
+  "articleSaved": "Article saved successfully.",
+  "articleRemovedFromSaved": "Article removed from saved.",
+  "myArticlesTitle": "My Articles",
+  "tapToWriteYourOwn": "Tap to write your own",
+  "deleteArticleTitle": "Delete article",
+  "cannotBeUndone": "This action cannot be undone.",
+  "editArticle": "Edit article",
+  "publish": "Publish",
+  "chooseCoverImage": "Choose a cover image",
+  "discardChangesTitle": "Discard changes?",
+  "unsavedChangesMessage": "You have unsaved changes on this article.",
+  "keepEditing": "Keep editing",
+  "discard": "Discard",
+  "bylineLabel": "Your name (byline)",
+  "titleLabel": "Title",
+  "summaryLabel": "Short summary",
+  "fullContentLabel": "Full content",
+  "requiredField": "Required",
+  "minimumCharacters": "Minimum {count} characters",
+  "@minimumCharacters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "articleSaveFailed": "Couldn't save your article. Please try again.",
+  "bold": "Bold",
+  "subheading": "Subheading",
+  "bulletList": "Bullet list",
+  "numberedList": "Numbered list",
+  "quote": "Quote",
+  "wordCount": "{count} words",
+  "@wordCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "write": "Write",
+  "preview": "Preview",
+  "nothingToPreview": "Nothing to preview yet.",
+  "profileTitle": "Profile",
+  "theme": "Theme",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "language": "Language",
+  "guest": "Guest",
+  "yourAccount": "Your account",
+  "signedIn": "Signed in",
+  "articlesOnlyOnThisPhone": "Your articles only live on this phone.",
+  "keepYourArticles": "Keep your articles",
+  "guestExplanation": "You're writing as a guest, so your articles only live on this phone. Connect an account to keep them if you reinstall the app or switch phones.",
+  "continueWithGoogle": "Continue with Google",
+  "continueWithEmail": "Continue with email",
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "signIn": "Sign in",
+  "createAccount": "Create account",
+  "nameLabel": "Your name",
+  "editName": "Edit name",
+  "nameUpdated": "Name updated.",
+  "confirmPasswordLabel": "Confirm password",
+  "passwordsDontMatch": "Passwords don't match",
+  "enterValidEmail": "Enter a valid email",
+  "atLeastSixCharacters": "At least 6 characters",
+  "signOut": "Sign out",
+  "signOutQuestion": "Sign out?",
+  "signOutWarning": "You'll continue as a guest on this phone. Sign back in anytime to see your articles again.",
+  "accountConnected": "Account connected. Your articles are safe.",
+  "signedInToAccount": "Signed in to your account.",
+  "signedOutAsGuest": "Signed out. You're a guest now.",
+  "accountDeleted": "Your account and your articles were deleted.",
+  "alreadyHaveAccountTitle": "You already have an account",
+  "alreadyHaveAccountMessage": "This sign-in already belongs to an account. Switch to it? Articles you wrote as a guest on this phone won't move with you.",
+  "switchAccount": "Switch",
+  "manageAccount": "Manage account",
+  "signedInWith": "Signed in with",
+  "guestOnThisPhone": "Guest on this phone (no account yet)",
+  "signInGoogle": "Google",
+  "signInEmailAndPassword": "Email and password",
+  "privacyPolicy": "Privacy policy",
+  "deleteMyData": "Delete my data",
+  "deleteAccount": "Delete account",
+  "deleteMyDataQuestion": "Delete my data?",
+  "deleteAccountQuestion": "Delete account?",
+  "deleteMyDataDescription": "Deletes every article you wrote on this phone, with its photos.",
+  "deleteAccountDescription": "Deletes your account, every article you wrote and their photos.",
+  "deleteMyDataWarning": "Every article you wrote on this phone and its photos will be deleted. This cannot be undone.",
+  "deleteAccountWarning": "Your account, every article you wrote and their photos will be deleted. This cannot be undone. You'll continue as a guest.",
+  "confirmItsYou": "Confirm it's you",
+  "errorWrongCredentials": "Wrong email or password.",
+  "errorDifferentAccount": "That's a different account. Choose the one you're signed in with.",
+  "errorWeakPassword": "Choose a stronger password (at least 6 characters).",
+  "errorInvalidEmail": "That email doesn't look right.",
+  "errorOtherSignInMethod": "This email already signs in another way. Try that option instead.",
+  "errorMethodNotAvailable": "This sign-in option isn't available right now.",
+  "errorNetwork": "No connection. Check your internet and try again.",
+  "errorTooManyAttempts": "Too many attempts. Wait a moment and try again.",
+  "privacyAccountTitle": "Your account",
+  "privacyAccountBody": "Every install starts with an anonymous id, so the app can tell which articles are yours without asking who you are. If you connect an account, we also keep your email and, with Google, your name and profile photo.",
+  "privacyArticlesTitle": "Articles you publish",
+  "privacyArticlesBody": "The title, summary, body, byline and cover photo of your articles are stored so they can be shown in the app. Articles are public: anyone using the app can read them.",
+  "privacySavedTitle": "Saved news",
+  "privacySavedBody": "News you save stays in a database on this phone only. It never leaves your device, and removing it from Saved deletes it.",
+  "privacyFeedTitle": "News feed",
+  "privacyFeedBody": "Headlines come from NewsAPI. The app asks it for the latest news without sending anything about you.",
+  "privacyStorageTitle": "Where it is stored",
+  "privacyStorageBody": "Your account, articles and photos are stored with Google Firebase (Authentication, Cloud Firestore and Cloud Storage).",
+  "privacyNeverTitle": "What we never do",
+  "privacyNeverBody": "No ads, no analytics or tracking, and your data is never sold or shared with anyone.",
+  "privacyDeletingTitle": "Deleting your data",
+  "privacyDeletingBody": "Profile > Manage account > Delete account removes your account, every article you wrote and their photos, right away.",
+  "latest": "LATEST",
+  "featuredStories": "FEATURED",
+  "todaysStories": "TODAY'S STORIES",
+  "readStory": "Read",
+  "shareAction": "Share",
+  "saveAction": "Save",
+  "removeFromSaved": "Remove from saved",
+  "allCaughtUp": "You're all caught up",
+  "allCaughtUpDetail": "No more news in this section for now.",
+  "newsLoadFailed": "Couldn't load the news.",
+  "tryAgain": "Try again",
+  "categoryTop": "Top",
+  "categoryBusiness": "Business",
+  "categoryTechnology": "Tech",
+  "categoryScience": "Science",
+  "categoryHealth": "Health",
+  "categorySports": "Sports",
+  "categoryEntertainment": "Entertainment",
+  "justNow": "Just now",
+  "minutesAgo": "{count} min ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count, plural, =1{Yesterday} other{{count} days ago}}",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "savedEmptyTitle": "Nothing saved yet",
+  "savedEmptyDetail": "Tap the bookmark on any story to read it later.",
+  "readFullArticle": "Read full article",
+  "fullStoryOn": "This is the start of the story. The full text is on {source}.",
+  "couldNotOpenArticle": "Couldn't open the article.",
+  "@fullStoryOn": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "welcomeTagline": "The day's news, and a place to publish your own.",
+  "welcomeSignInHint": "Sign in to keep your articles on any phone.",
+  "continueAsGuest": "Continue as guest",
+  "connectLater": "You can connect an account later from Profile.",
+  "noAccountSignUpWithEmail": "Don't have an account? Sign up with email",
+  "noNewStories": "No new stories yet",
+  "refreshFailed": "Couldn't update the news.",
+  "searchHint": "Search the news",
+  "searchAction": "Search",
+  "clearSearch": "Clear",
+  "searchPromptTitle": "Search the news",
+  "searchPromptDetail": "Find stories on any topic from thousands of sources.",
+  "noResultsFor": "No results for “{query}”",
+  "noResultsDetail": "Try other words, or fewer of them.",
+  "searchFailed": "Couldn't search right now.",
+  "@noResultsFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "recentSearches": "Recent searches",
+  "removeFromHistory": "Remove from history",
+  "offlineBanner": "Offline · news from {time}",
+  "offlineNothingUpdated": "No connection. Nothing was updated.",
+  "rateLimitedNothingUpdated": "Today's news limit was reached. Nothing was updated.",
+  "@offlineBanner": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "newsLimitReachedBanner": "Today's news limit was reached · news from {time}",
+  "@newsLimitReachedBanner": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "noPhoto": "No photo",
+  "saveDraft": "Save draft",
+  "draftsTab": "Drafts",
+  "publishedTab": "Published",
+  "untitledDraft": "Untitled draft",
+  "draftBadge": "Draft",
+  "draftsEmptyTitle": "No drafts",
+  "draftsEmptyDetail": "Articles you save without publishing show up here.",
+  "publishedEmptyTitle": "No published articles",
+  "publishedEmptyDetail": "Finish a draft and publish it to see it here.",
+  "coverPhotoSection": "Cover photo",
+  "articleDetailsSection": "Article details",
+  "readingTime": "{minutes} min read",
+  "@readingTime": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "draftAutosaved": "Draft saved",
+  "maximumCharacters": "Maximum {count} characters",
+  "@maximumCharacters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "offlineCannotSave": "You're offline. Connect to the internet to save this article.",
+  "couldNotOpenPhotos": "Couldn't open your photos.",
+  "moveToDrafts": "Move to drafts",
+  "moveToDraftsTitle": "Move to drafts?",
+  "moveToDraftsMessage": "It stops being public and goes back to your drafts, with the changes you've made. You can publish it again whenever you want.",
+  "leaveDraftTitle": "Save your changes?",
+  "leaveDraftMessage": "Save it as a draft to finish later, publish it now, or discard your changes."
+}

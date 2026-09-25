@@ -17,12 +17,14 @@ class _NewsApiService implements NewsApiService {
 
   @override
   Future<HttpResponse<List<ArticleModel>>> getNewsArticles(
-      {apiKey, country, category}) async {
+      {apiKey, country, category, page, pageSize}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'apiKey': apiKey,
       r'country': country,
-      r'category': category
+      r'category': category,
+      r'page': page,
+      r'pageSize': pageSize,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
@@ -31,6 +33,35 @@ class _NewsApiService implements NewsApiService {
         _setStreamType<HttpResponse<List<ArticleModel>>>(
             Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options, '/top-headlines',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    List<ArticleModel> value = _result.data!['articles']
+        .map<ArticleModel>((dynamic i) => ArticleModel.fromJson(i as Map<String, dynamic>))
+        .toList();
+    final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<List<ArticleModel>>> searchArticles(
+      {apiKey, query, searchIn, language, sortBy, page, pageSize}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'apiKey': apiKey,
+      r'q': query,
+      r'searchIn': searchIn,
+      r'language': language,
+      r'sortBy': sortBy,
+      r'page': page,
+      r'pageSize': pageSize,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String,dynamic>>(
+        _setStreamType<HttpResponse<List<ArticleModel>>>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(_dio.options, '/everything',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     List<ArticleModel> value = _result.data!['articles']
