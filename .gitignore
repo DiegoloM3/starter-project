@@ -1,0 +1,8 @@
+# Local CodeGraph index and daemon output
+.codegraph/
+.firebase/
+
+# Firebase Emulator Suite logs generated outside backend/.gitignore
+firebase-debug.log
+firestore-debug.log
+storage-debug.log

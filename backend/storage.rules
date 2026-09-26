@@ -2,6 +2,27 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+    // Article thumbnails are intentionally public because the community feed
+    // is public. No other Storage path is public.
+    match /media/articles/{userId}/{articleId}/{fileName} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.auth.uid == userId
+        && articleId.matches('^[A-Za-z0-9_-]{1,128}$')
+        && fileName.matches('^[A-Za-z0-9._-]{1,120}$')
+        && request.resource.size > 0
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('^image/(jpeg|png|webp)$')
+        && request.resource.metadata.keys().hasOnly(['payloadHash'])
+        && request.resource.metadata.payloadHash.matches('^[a-f0-9]{64}$');
+
+      // Published thumbnails are immutable. The client reuses a matching
+      // existing object for retries instead of attempting update/delete.
+      allow update, delete: if false;
     }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
 }

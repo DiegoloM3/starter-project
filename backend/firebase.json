@@ -1,10 +1,18 @@
 {
   "firestore": {
     "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
+    "indexes": "firestore.indexes.json",
+    "edition": "enterprise",
+    "database": "articles",
+    "location": "europe-southwest1"
   },
   "storage": {
     "rules": "storage.rules"
+  },
+  "auth": {
+    "providers": {
+      "emailPassword": true
+    }
   },
   "emulators": {
     "firestore": {
@@ -16,6 +24,9 @@
     "singleProjectMode": true,
     "storage": {
       "port": 9199
+    },
+    "auth": {
+      "port": 9099
     }
   }
 }

@@ -1,0 +1,14 @@
+{
+  "name": "case-study-symmetry-backend-tests",
+  "private": true,
+  "scripts": {
+    "test": "mocha --timeout 30000 tests/security.test.js"
+  },
+  "devDependencies": {
+    "firebase": "11.10.0",
+    "mocha": "11.8.0"
+  },
+  "dependencies": {
+    "firebase-admin": "13.5.0"
+  }
+}

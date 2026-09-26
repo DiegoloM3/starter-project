@@ -1,0 +1,229 @@
+// EMULATOR-ONLY OVERLAY. Never deploy this file.
+// It is generated from ../firestore.rules and only adds loopback Storage URL
+// origins for local browser verification.
+rules_version = '2';
+
+// ===============================================================
+// Assumed data model
+// ===============================================================
+// Collection: articles/{articleId}
+// Required fields: author, title, description, url, urlToImage, publishedAt,
+// content, thumbnailPath, payloadHash, ownerUid, createdAt, updatedAt.
+// Every accepted article is published immediately; there is no draft state.
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /articles/{articleId} {
+      // Authenticated clients may preflight a missing ID before first publish.
+      // Existing documents are public only when they satisfy the committed
+      // article contract. Loopback emulator URLs are intentionally excluded
+      // from this deployable production ruleset.
+      allow get: if resource == null
+        ? isAuthenticated()
+        : isPublishedArticle(resource.data, articleId);
+
+      // The app uses where(publishedAt <= now), orderBy(publishedAt, desc),
+      // limit(50). All accepted documents are published at creation, so the
+      // public list rule can be bounded without a time-dependent proof that
+      // Firestore cannot establish for every query result.
+      allow list: if request.query.limit <= 50;
+
+      allow create: if isAuthenticated()
+        && isSafeDocumentId(articleId)
+        && request.resource.data.keys().hasOnly([
+          'author', 'title', 'description', 'url', 'urlToImage',
+          'publishedAt', 'content', 'thumbnailPath', 'payloadHash', 'ownerUid',
+          'createdAt', 'updatedAt'
+        ])
+        && isValidArticle(request.resource.data, articleId)
+        && request.resource.data.ownerUid == request.auth.uid;
+
+      // Articles and their timestamps/thumbnails are immutable after publish.
+      allow update, delete: if false;
+
+      // Social interactions are scoped to an existing, publicly published
+      // article. Likes use the authenticated UID as their document ID, which
+      // makes one like per user a Firestore-enforced invariant.
+      match /likes/{uid} {
+        allow get: if hasPublishedArticle(database, articleId);
+        // A realtime collection listener may list all likes so the client can
+        // derive the current count without a denormalized counter field.
+        allow list: if hasPublishedArticle(database, articleId);
+
+        allow create: if hasPublishedArticle(database, articleId)
+          && isAuthenticated()
+          && uid == request.auth.uid
+          && isValidLike(request.resource.data, uid);
+
+        allow update: if false;
+        allow delete: if hasPublishedArticle(database, articleId)
+          && isAuthenticated()
+          && uid == request.auth.uid
+          && resource.data.uid == request.auth.uid;
+      }
+
+      match /comments/{commentId} {
+        allow get: if hasPublishedArticle(database, articleId);
+        // Comments are realtime too, but bound each listener to the UI's
+        // supported page size so a client cannot request an unbounded list.
+        allow list: if hasPublishedArticle(database, articleId)
+          && request.query.limit <= 100;
+
+        allow create: if hasPublishedArticle(database, articleId)
+          && isAuthenticated()
+          && isSafeDocumentId(commentId)
+          && isValidComment(request.resource.data);
+
+        allow update: if false;
+        allow delete: if hasPublishedArticle(database, articleId)
+          && isAuthenticated()
+          && resource.data.authorUid == request.auth.uid;
+      }
+    }
+
+    // Explicit default deny for every undocumented collection/path.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+
+  function isAuthenticated() {
+    return request.auth != null;
+  }
+
+  function hasPublishedArticle(database, articleId) {
+    let articlePath = /databases/$(database)/documents/articles/$(articleId);
+    return exists(articlePath)
+      ? isPublishedArticle(get(articlePath).data, articleId)
+      : false;
+  }
+
+  function isValidLike(data, uid) {
+    return data is map
+      && data.keys().hasOnly(['uid', 'createdAt'])
+      && data.keys().hasAll(['uid', 'createdAt'])
+      && data.uid is string
+      && data.uid == uid
+      && data.createdAt is timestamp
+      && data.createdAt == request.time;
+  }
+
+  function isValidComment(data) {
+    return data is map
+      && data.keys().hasOnly(['authorUid', 'authorName', 'body', 'createdAt'])
+      && data.keys().hasAll(['authorUid', 'authorName', 'body', 'createdAt'])
+      && data.authorUid is string
+      && data.authorUid.size() >= 1
+      && data.authorUid.size() <= 128
+      && data.authorUid == request.auth.uid
+      && data.authorName is string
+      && data.authorName.size() >= 1
+      && data.authorName.size() <= 100
+      && data.body is string
+      && data.body.size() >= 1
+      && data.body.size() <= 1000
+      && data.createdAt is timestamp
+      && data.createdAt == request.time;
+  }
+
+  function isSafeDocumentId(value) {
+    return value is string
+      && value.size() >= 1
+      && value.size() <= 128
+      && value.matches('^[A-Za-z0-9_-]+$');
+  }
+
+  function isPublishedArticle(data, articleId) {
+    return data is map
+      && data.keys().hasOnly([
+        'author', 'title', 'description', 'url', 'urlToImage',
+        'publishedAt', 'content', 'thumbnailPath', 'payloadHash', 'ownerUid',
+        'createdAt', 'updatedAt'
+      ])
+      && data.keys().hasAll([
+        'author', 'title', 'description', 'url', 'urlToImage',
+        'publishedAt', 'content', 'thumbnailPath', 'payloadHash', 'ownerUid',
+        'createdAt', 'updatedAt'
+      ])
+      && data.author is string
+      && data.author.size() >= 2 && data.author.size() <= 100
+      && data.title is string
+      && data.title.size() >= 5 && data.title.size() <= 120
+      && data.description is string
+      && data.description.size() >= 1 && data.description.size() <= 240
+      && data.url == ''
+      && data.urlToImage is string && data.urlToImage.size() <= 4096
+      && data.publishedAt is timestamp
+      && data.content is string
+      && data.content.size() >= 20 && data.content.size() <= 10000
+      && data.thumbnailPath is string
+      && data.thumbnailPath.matches('^media/articles/[A-Za-z0-9_-]{1,128}/[A-Za-z0-9_-]{1,128}/[A-Za-z0-9._-]{1,120}$')
+      && data.thumbnailPath.split('/').size() == 5
+      && data.thumbnailPath.split('/')[0] == 'media'
+      && data.thumbnailPath.split('/')[1] == 'articles'
+      && data.thumbnailPath.split('/')[2] == data.ownerUid
+      && data.thumbnailPath.split('/')[3] == articleId
+      && isExactThumbnailUrl(data)
+      && data.payloadHash is string
+      && data.payloadHash.matches('^[a-f0-9]{64}$')
+      && data.ownerUid is string
+      && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128
+      && data.ownerUid.matches('^[A-Za-z0-9_-]+$')
+      && data.createdAt is timestamp
+      && data.updatedAt is timestamp
+      && data.publishedAt <= request.time;
+  }
+
+  function isValidArticle(data, articleId) {
+    return data is map
+      && data.keys().hasAll([
+        'author', 'title', 'description', 'url', 'urlToImage',
+        'publishedAt', 'content', 'thumbnailPath', 'payloadHash', 'ownerUid',
+        'createdAt', 'updatedAt'
+      ])
+      && data.author is string && data.author.size() >= 2 && data.author.size() <= 100
+      && data.title is string && data.title.size() >= 5 && data.title.size() <= 120
+      && data.description is string && data.description.size() >= 1 && data.description.size() <= 240
+      && data.url == ''
+      && data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128
+      && data.ownerUid.matches('^[A-Za-z0-9_-]+$')
+      && isSafeDocumentId(articleId)
+      && data.thumbnailPath is string
+      && data.thumbnailPath.matches('^media/articles/[A-Za-z0-9_-]{1,128}/[A-Za-z0-9_-]{1,128}/[A-Za-z0-9._-]{1,120}$')
+      && data.thumbnailPath.split('/').size() == 5
+      && data.thumbnailPath.split('/')[0] == 'media'
+      && data.thumbnailPath.split('/')[1] == 'articles'
+      && data.thumbnailPath.split('/')[2] == data.ownerUid
+      && data.thumbnailPath.split('/')[3] == articleId
+      && data.urlToImage is string && data.urlToImage.size() <= 4096
+      && isExactThumbnailUrl(data)
+      && data.payloadHash is string && data.payloadHash.matches('^[a-f0-9]{64}$')
+      && data.publishedAt is timestamp && data.publishedAt == request.time
+      && data.content is string && data.content.size() >= 20 && data.content.size() <= 10000
+      && data.createdAt is timestamp && data.createdAt == request.time
+      && data.updatedAt is timestamp && data.updatedAt == request.time;
+  }
+
+  function isExactThumbnailUrl(data) {
+    // Assemble the encoded object path from validated segments instead of
+    // interpolating a filename into a regex. This makes linkage exact even
+    // when a safe filename contains a dot or hyphen.
+    let parts = data.thumbnailPath.split('/');
+    let encodedPath = parts[0] + '%2F' + parts[1] + '%2F' + parts[2]
+      + '%2F' + parts[3] + '%2F' + parts[4];
+    let productionPrefix = 'https://firebasestorage.googleapis.com/v0/b/'
+      + 'case-study-symmetry.firebasestorage.app/o/';
+    let emulatorPrefix = 'http://127.0.0.1:9199/v0/b/'
+      + 'case-study-symmetry.firebasestorage.app/o/';
+    let localhostPrefix = 'http://localhost:9199/v0/b/'
+      + 'case-study-symmetry.firebasestorage.app/o/';
+    let path = data.urlToImage.split('[?]')[0];
+    return data.urlToImage is string
+      && data.urlToImage.split('[?]').size() == 2
+      && data.urlToImage.split('[?]')[1].size() > 0
+      && (path == productionPrefix + encodedPath
+        || path == emulatorPrefix + encodedPath
+        || path == localhostPrefix + encodedPath);
+  }
+}

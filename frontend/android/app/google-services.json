@@ -1,0 +1,24 @@
+{
+  "project_info": {
+    "project_number": "779268956923",
+    "project_id": "case-study-symmetry",
+    "storage_bucket": "case-study-symmetry.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:779268956923:android:5049fc3657403c707e465e",
+        "android_client_info": {
+          "package_name": "com.example.news_app_clean_architecture"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmUusxng4efUjPTIgGgvpX0D44XYq5fSU"
+        }
+      ],
+      "services": { "appinvite_service": { "other_platform_oauth_client": [] } }
+    }
+  ],
+  "configuration_version": "1"
+}
