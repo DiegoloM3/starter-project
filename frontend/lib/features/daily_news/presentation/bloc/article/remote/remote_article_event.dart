@@ -1,7 +1,13 @@
-abstract class RemoteArticlesEvent {
+
+
+part of 'remote_article_bloc.dart';
+
+
+@immutable
+sealed class RemoteArticlesEvent {
   const RemoteArticlesEvent();
 }
 
-class GetArticles extends RemoteArticlesEvent {
-  const GetArticles();
+class GetArticlesEvent extends RemoteArticlesEvent {
+  const GetArticlesEvent();
 }

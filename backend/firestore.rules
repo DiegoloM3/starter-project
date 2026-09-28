@@ -2,6 +2,23 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    match /articles/{articleId} {
+      // Cualquiera puede LEER los artículos (como en Daily News)
+      allow read: if true;
+
+      // Solo se puede CREAR si los datos cumplen el schema exacto
+      allow create: if request.resource.data.keys().hasAll(['title', 'content', 'thumbnailUrl', 'publishedAt'])
+              && request.resource.data.title is string
+              && request.resource.data.content is string
+              && request.resource.data.thumbnailUrl is string
+              && request.resource.data.publishedAt is timestamp;
+
+      // Se puede BORRAR (ya que tu app lo permite, sin auth para restringir "solo el dueño")
+      allow delete: if true;
+
+      // No se permite EDITAR (tu app no implementa esa función)
+      allow update: if false;
+    }
   }
 }

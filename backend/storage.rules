@@ -2,6 +2,11 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+    match /media/articles/{fileName} {
+      allow read: if true;
+      allow create, update: if request.resource.contentType.matches('image/.*')
+                             && request.resource.size < 5 * 1024 * 1024;
+      allow delete: if true;
     }
+  }
 }
