@@ -1,3 +1,12 @@
+plugins {
+    id 'com.google.gms.google-services' version '4.5.0' apply false
+}
+
+// Route Gradle build outputs to Flutter's expected location (<flutter_project>/build).
+// This mirrors the original `rootProject.buildDir = '../build'` pattern, updated to
+// the modern layout.buildDirectory API required by Gradle 8+.
+rootProject.layout.buildDirectory.set(new File(rootProject.projectDir, "../build"))
+
 allprojects {
     repositories {
         google()
@@ -5,15 +14,16 @@ allprojects {
     }
 }
 
-rootProject.buildDir = '../build'
 subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    project.layout.buildDirectory.set(
+        rootProject.layout.buildDirectory.dir(project.name)
+    )
 }
+
 subprojects {
     project.evaluationDependsOn(':app')
 }
 
 tasks.register("clean", Delete) {
-    delete rootProject.buildDir
+    delete rootProject.layout.buildDirectory
 }
-

@@ -2,6 +2,79 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    match /articles/{articleId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.authorId == request.auth.uid
+        && isValidArticle(request.resource.data);
+      allow update: if request.auth != null
+        && request.auth.uid == resource.data.authorId
+        && isValidArticle(request.resource.data);
+      allow delete: if request.auth != null
+        && request.auth.uid == resource.data.authorId;
+    }
+
+    match /comments/{commentId} {
+      // Comments scale one-to-squillions: the article id lives inside
+      // each comment, so articles never carry comment arrays.
+      allow read: if true;
+      allow create: if request.auth != null
+        && isValidComment(request.resource.data, request.auth.uid);
+      allow update: if request.auth != null
+        && request.auth.uid == resource.data.authorId
+        && isValidComment(request.resource.data, request.auth.uid);
+      allow delete: if request.auth != null
+        && request.auth.uid == resource.data.authorId;
+    }
+
+    match /users/{userId} {
+      // Public profile: anyone can read names/avatars for article cards,
+      // but only the owner can create or modify their own document.
+      // NOTE: never store the email here — it stays in Firebase Auth.
+      allow read: if true;
+      allow create, update: if request.auth != null
+        && request.auth.uid == userId
+        && isValidUserProfile(request.resource.data);
+      allow delete: if false;
+    }
+
+    function isValidArticle(data) {
+      return data.keys().hasOnly([
+          'id', 'author', 'title',
+          'urlToImage', 'publishedAt', 'content', 'authorId'
+        ])
+        && isValidStringOrNull(data, 'id')
+        && isValidStringOrNull(data, 'author')
+        && isValidStringOrNull(data, 'title')
+        && isValidStringOrNull(data, 'urlToImage')
+        && isValidStringOrNull(data, 'publishedAt')
+        && isValidStringOrNull(data, 'content')
+        && isValidStringOrNull(data, 'authorId');
+    }
+
+    function isValidComment(data, uid) {
+      return data.keys().hasOnly([
+          'id', 'articleId', 'authorId',
+          'authorDisplayName', 'content', 'createdAt'
+        ])
+        && data.authorId == uid
+        && data.articleId is string
+        && data.content is string
+        && data.createdAt is string
+        && isValidStringOrNull(data, 'id')
+        && isValidStringOrNull(data, 'authorDisplayName');
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasOnly(['id', 'displayName', 'photoUrl'])
+        && isValidStringOrNull(data, 'id')
+        && isValidStringOrNull(data, 'displayName')
+        && isValidStringOrNull(data, 'photoUrl');
+    }
+
+    function isValidStringOrNull(data, field) {
+      return !(field in data) || data[field] == null || data[field] is string;
+    }
   }
 }

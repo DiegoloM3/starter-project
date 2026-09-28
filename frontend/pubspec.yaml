@@ -6,7 +6,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.16.1 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -14,53 +14,83 @@ dependencies:
 
   cupertino_icons: ^1.0.2
 
-  #icon
-  ionicons: ^0.1.2
+  # Sidebar
+  awesome_drawer_bar: ^1.2.1
 
-  #state management
-  flutter_bloc: ^8.1.2
+  # icon
+  ionicons: ^0.2.3
 
-  #comparing dart objects
-  equatable: ^2.0.5
+  # state management
+  flutter_bloc: ^9.1.1
 
-  #service locator
-  get_it: ^7.6.0
-  
-  #dateFormat
-  intl: ^0.18.1
+  # comparing dart objects
+  equatable: ^2.1.0
 
-  #Database
-  floor: any
+  # service locator
+  get_it: ^9.3.0
+  injectable: ^2.3.2
 
-  #make request to api
-  retrofit: ^3.0.1
+  # dateFormat
+  intl: ^0.20.3
+
+  # Database
+  drift: ^2.22.1
+  sqlite3_flutter_libs: ^0.5.0
+  path_provider: ^2.1.0
+  path: ^1.9.0
+
+  # http client
+  dio: ^5.8.0+1
+
+  # make request to api (runtime only; generated code is kept in source control)
+  retrofit: ^4.10.0
 
   # Firebase
-  firebase_core: ^2.24.0
-  cloud_firestore: ^4.13.3
-  firebase_storage: ^11.5.5
+  firebase_core: ^4.15.0
+  cloud_firestore: ^6.10.0
+  firebase_storage: ^13.6.0
 
+  # Hooks
+  flutter_hooks: ^0.21.3+1
 
-  #Hooks
-  flutter_hooks: ^0.18.3
+  # cached image
+  cached_network_image: ^4.0.2
+  firebase_auth: ^6.7.0
 
-  #chached image 
-  cached_network_image: ^3.2.0
+  # logging
+  logging: ^1.2.0
+
+  # JSON serialization
+  json_annotation: ^4.9.0
+  image_picker: ^1.2.3
+  gpt_markdown: ^1.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.0
-  retrofit_generator: 3.0.1+1
-  floor_generator: 1.2.0
-  build_runner: 2.1.2
-  
+  flutter_lints: ^6.0.0
+  firebase_auth_mocks: ^0.15.2
+  injectable_generator: ^2.6.1
+  build_runner: ^2.4.13
+  flutter_launcher_icons: ^0.14.3
+  mockito: ^5.4.4
+  bloc_test: ^10.0.0
+  json_serializable: ^6.9.0
+  drift_dev: ^2.22.1
+  retrofit_generator: ^10.2.9
+
+
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/icon.png"
+  min_sdk_android: 21
 
 flutter:
 
   uses-material-design: true
 
- 
   fonts:
     - family: Muli
       fonts:
