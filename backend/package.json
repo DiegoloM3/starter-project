@@ -1,0 +1,19 @@
+{
+  "name": "news-app-backend",
+  "private": true,
+  "type": "module",
+  "description": "Firebase backend tooling for the Symmetry news app: seed data and security rules tests.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "emulators": "firebase emulators:start --only firestore,storage",
+    "seed:emulator": "node scripts/seed.mjs --target=emulator",
+    "seed:production": "node scripts/seed.mjs --target=production",
+    "test:rules": "node --test --test-reporter=spec --test-concurrency=1 \"test/**/*.test.mjs\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "firebase": "^12.19.0"
+  }
+}

@@ -1,5 +1,8 @@
 plugins {
     id "com.android.application"
+    // START: FlutterFire Configuration
+    id 'com.google.gms.google-services'
+    // END: FlutterFire Configuration
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
@@ -44,7 +47,8 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.news_app_clean_architecture"
-        minSdkVersion flutter.minSdkVersion
+        // Android 7.0+: required by flutter_tts (read articles aloud). Flutter's default is 21.
+        minSdkVersion 24
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -66,7 +70,7 @@ flutter {
 }
 
 ext {
-    kotlin_version="1.6.10"
+    kotlin_version="2.1.20"
 }
 
 dependencies {

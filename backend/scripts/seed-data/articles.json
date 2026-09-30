@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Breaking News: Journalists can now publish from the app",
+    "author": "Daily News Staff",
+    "image": "breaking-news.jpg",
+    "content": "## A newsroom in your pocket\n\nStarting today, **any journalist** can write and publish an article directly from the Daily News app.\n\n### How it works\n\n1. Tap the **+** button on the home screen.\n2. Write a title, attach a thumbnail from your gallery and write your story.\n3. Press **Publish Article**.\n\nArticles support *Markdown*, so you can use **bold text**, headings and lists to structure your story."
+  },
+  {
+    "title": "Neighbours turn an empty lot into a community garden",
+    "author": "Local Desk",
+    "image": "community-garden.png",
+    "content": "## From concrete to tomatoes\n\nWhat used to be an abandoned parking lot is now home to **seven fruit trees** and more than forty vegetable beds.\n\n### Get involved\n\n- Volunteer sessions run every *Saturday morning*.\n- Tools and seeds are provided.\n- Everyone is welcome, no experience needed.\n\n> \"We wanted a place where kids could see where food comes from\", said one of the organisers."
+  }
+]

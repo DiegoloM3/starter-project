@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: 3.27.4 # keep in sync with frontend/.fvmrc
+  FIREBASE_TOOLS: firebase-tools@15
+  FIREBASE_PROJECT: backend-news-symmetry
+
+jobs:
+  flutter:
+    name: Analyze and unit/widget tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+  security-rules:
+    name: Firestore and Storage rules tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - uses: actions/setup-java@v4 # the Firebase emulators run on the JVM
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: >
+          npx --yes ${{ env.FIREBASE_TOOLS }} emulators:exec
+          --only firestore,storage --project ${{ env.FIREBASE_PROJECT }}
+          "npm run test:rules"
+
+  integration:
+    name: Publish journey on an Android emulator
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable KVM for the Android emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: actions/setup-java@v4 # Gradle 8.7 / AGP 8.3 and the Firebase emulators
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Start the Firebase emulators with the real security rules
+        working-directory: backend
+        run: |
+          npm ci
+          npx --yes ${{ env.FIREBASE_TOOLS }} emulators:start --only firestore,storage \
+            --project ${{ env.FIREBASE_PROJECT }} > emulators.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            curl -s -o /dev/null http://127.0.0.1:8080 && curl -s -o /dev/null http://127.0.0.1:9199 && exit 0
+            sleep 2
+          done
+          cat emulators.log
+          exit 1
+      - run: flutter pub get
+        working-directory: frontend
+      - name: Run the integration test (the app reaches the emulators at 10.0.2.2)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          arch: x86_64
+          target: google_apis
+          profile: pixel_6
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: true
+          working-directory: frontend
+          script: flutter test integration_test --dart-define=USE_FIREBASE_EMULATORS=true
+      - name: Firebase emulators log
+        if: failure()
+        run: cat backend/emulators.log

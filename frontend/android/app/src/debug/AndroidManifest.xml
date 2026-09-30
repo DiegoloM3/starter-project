@@ -4,4 +4,7 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- The Firebase Storage emulator (http://10.0.2.2:9199) is plain HTTP.
+         Debug builds only: release builds keep Android's cleartext block. -->
+    <application android:usesCleartextTraffic="true"/>
 </manifest>

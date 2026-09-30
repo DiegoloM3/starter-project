@@ -1,7 +1,52 @@
 rules_version = '2';
 
+// Enforces the thumbnail constraints documented in docs/DB_SCHEMA.md.
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+
+    match /media/articles/{fileName} {
+      allow read: if true;
+      // Re-uploading an existing path is evaluated as 'create', so it must be checked explicitly.
+      allow create: if resource == null
+        && isThumbnailFileName(fileName)
+        && isValidThumbnailUpload(fileName)
+        && !isPublishedArticle(articleIdOf(fileName));
+      // A thumbnail can never be replaced or have its metadata changed...
+      allow update: if false;
+      // ...or deleted. Only orphaned uploads (no article document) can be removed.
+      allow delete: if isThumbnailFileName(fileName)
+        && !isPublishedArticle(articleIdOf(fileName));
     }
+
+    // ---------- File name: {articleId}.{extension} ----------
+
+    function isThumbnailFileName(fileName) {
+      return fileName.matches('[A-Za-z0-9]{20}[.](jpg|png|webp)');
+    }
+
+    function articleIdOf(fileName) {
+      return fileName.split('[.]')[0];
+    }
+
+    function extensionOf(fileName) {
+      return fileName.split('[.]')[1];
+    }
+
+    // ---------- Upload ----------
+
+    function isValidThumbnailUpload(fileName) {
+      return request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType == contentTypeFor(extensionOf(fileName));
+    }
+
+    function contentTypeFor(extension) {
+      return extension == 'jpg' ? 'image/jpeg' : 'image/' + extension;
+    }
+
+    // ---------- Cross-service check with Firestore ----------
+
+    function isPublishedArticle(articleId) {
+      return firestore.exists(/databases/(default)/documents/articles/$(articleId));
+    }
+  }
 }

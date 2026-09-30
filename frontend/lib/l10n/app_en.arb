@@ -1,0 +1,82 @@
+{
+  "@@locale": "en",
+
+  "topNewsTab": "Top news",
+  "communityTab": "Community",
+  "publishAnArticle": "Publish an article",
+  "savedArticles": "Saved articles",
+  "savedArticlesTitle": "Saved Articles",
+  "noSavedArticles": "NO SAVED ARTICLES",
+  "tryAgain": "Try again",
+  "back": "Back",
+  "articlePublished": "Your article has been published.",
+  "articleSaved": "Article saved successfully.",
+
+  "articlesCouldNotLoad": "The articles could not be loaded.",
+  "noArticlesYet": "No articles yet. Be the first journalist to publish one!",
+  "writeAnArticle": "Write an article",
+  "readingTime": "{minutes} min read",
+  "@readingTime": {
+    "description": "Estimated time to read an article, next to its author and date.",
+    "placeholders": {"minutes": {"type": "int"}}
+  },
+
+  "listenToArticle": "Listen to this article",
+  "stopReading": "Stop reading",
+  "readingProgress": "Reading progress",
+  "cannotReadAloud": "This device cannot read aloud. Check the text-to-speech settings of your phone.",
+
+  "publishArticle": "Publish Article",
+  "publishing": "Publishing…",
+  "titleLabel": "Title",
+  "titleHint": "Write your title here…",
+  "authorLabel": "Written by",
+  "authorHint": "Your name",
+  "contentHint": "Add article here… Use the toolbar for **bold** text and ## subtitles.",
+  "write": "Write",
+  "preview": "Preview",
+  "nothingToPreview": "*Nothing to preview yet.*",
+  "@nothingToPreview": {"description": "Markdown shown in the preview while the article is empty."},
+  "bold": "Bold",
+  "italic": "Italic",
+  "subtitle": "Subtitle",
+  "bulletedList": "Bulleted list",
+  "writingStats": "{words, plural, =1{1 word} other{{words} words}} · {minutes} min read",
+  "@writingStats": {
+    "description": "Live statistics under the article being written.",
+    "placeholders": {"words": {"type": "int"}, "minutes": {"type": "int"}}
+  },
+  "charactersUsed": "{length} of {maxLength} characters used",
+  "@charactersUsed": {
+    "description": "What screen readers say for the 12/100 counter of a text field.",
+    "placeholders": {"length": {"type": "int"}, "maxLength": {"type": "int"}}
+  },
+  "attachImage": "Attach Image",
+  "changeImage": "Change image",
+  "articleImageHint": "Article image. Double tap to choose another one.",
+
+  "draftRestored": "We restored the article you left unfinished.",
+  "startOver": "Start over",
+  "saveDraftQuestion": "Save this article as a draft?",
+  "saveDraftExplanation": "You can finish it the next time you tap +.",
+  "keepWriting": "Keep writing",
+  "discard": "Discard",
+  "saveDraft": "Save draft",
+  "publishFailed": "Your article could not be published. Check your connection and try again.",
+  "galleryUnavailable": "The gallery could not be opened. Check the app permissions and try again.",
+  "retry": "Retry",
+
+  "titleEmpty": "Add a title for your article.",
+  "titleTooLong": "The title can have up to {maxLength} characters.",
+  "@titleTooLong": {"placeholders": {"maxLength": {"type": "int", "format": "decimalPattern"}}},
+  "authorEmpty": "Sign the article with your name.",
+  "authorTooLong": "Your name can have up to {maxLength} characters.",
+  "@authorTooLong": {"placeholders": {"maxLength": {"type": "int", "format": "decimalPattern"}}},
+  "contentEmpty": "Write your article before publishing it.",
+  "contentTooLong": "The article can have up to {maxLength} characters.",
+  "@contentTooLong": {"placeholders": {"maxLength": {"type": "int", "format": "decimalPattern"}}},
+  "thumbnailMissing": "Attach an image to illustrate your article.",
+  "thumbnailUnsupportedFormat": "Choose a JPG, PNG or WebP image.",
+  "thumbnailTooLarge": "Choose an image of {megabytes} MB or less.",
+  "@thumbnailTooLarge": {"placeholders": {"megabytes": {"type": "int"}}}
+}

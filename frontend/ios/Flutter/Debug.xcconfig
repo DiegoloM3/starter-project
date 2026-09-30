@@ -1,0 +1,6 @@
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
+#include "Generated.xcconfig"
+
+// firebase_storage 11.x includes <Firebase/Firebase.h> from its framework module; Xcode 16+
+// rejects that when the app imports the module unless non-modular includes are allowed.
+CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES

@@ -1,4 +1,28 @@
 # Applicant Showcase App
+[![CI](https://github.com/LuisJrDev/starter-project/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/LuisJrDev/starter-project/actions/workflows/ci.yml)
+
+> ## Submission: journalists publish their own articles
+> A journalist writes an article in Markdown, attaches a thumbnail from the gallery and publishes
+> it to Firebase (Firestore and Cloud Storage), and everyone reads it in the new *Community* tab.
+>
+> | | |
+> |---|---|
+> | **Report** (in Spanish) | [`docs/REPORT.md`](./docs/REPORT.md): experience, challenges, extras and decisions |
+> | **Demo video** (3:33, with captions) | [`docs/media/demo.mp4`](./docs/media/demo.mp4): every feature on an iPhone, minute by minute in the report |
+> | **Schema** | [`backend/docs/DB_SCHEMA.md`](./backend/docs/DB_SCHEMA.md) |
+> | **Security rules** | [`firestore.rules`](./backend/firestore.rules) and [`storage.rules`](./backend/storage.rules), covered by 66 tests |
+> | **Feature code** | [`frontend/lib/features/journalist_articles`](./frontend/lib/features/journalist_articles) (domain, data, presentation) |
+> | **Run the app** | [`frontend/README.md`](./frontend/README.md): against the real project or the local emulators, on Android or iOS |
+> | **Backend and its tests** | [`backend/README.md`](./backend/README.md), including the [security notes](./backend/README.md#security) |
+>
+> ```
+> cd frontend && fvm flutter test                  # 355 unit, widget and accessibility tests
+> cd backend && npm install && npx firebase-tools@15 emulators:exec --only firestore,storage "npm run test:rules"
+> cd frontend && fvm flutter run                   # the app, on the real Firebase project
+> ```
+>
+> The original instructions of the test follow, unchanged.
+
 Welcome to the repository for our Applicant Showcase App - an application designed for job applicants of Symmetry to showcase their capacity to learn and program good code.
 
 ## Who will see this project?

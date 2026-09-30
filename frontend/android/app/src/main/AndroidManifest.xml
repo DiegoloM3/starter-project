@@ -33,4 +33,11 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+    <!-- Android 11+ package visibility: lets the app find the text-to-speech engine
+         used to read articles aloud (flutter_tts). -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
 </manifest>

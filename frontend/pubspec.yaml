@@ -6,10 +6,13 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.16.1 <3.0.0"
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
+    sdk: flutter
+  #texts of the app in English and Spanish, following the phone's language
+  flutter_localizations:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
@@ -27,13 +30,15 @@ dependencies:
   get_it: ^7.6.0
   
   #dateFormat
-  intl: ^0.18.1
+  intl: ^0.19.0
 
   #Database
   floor: any
+  sqflite: ^2.3.2
 
   #make request to api
   retrofit: ^3.0.1
+  dio: ^4.0.6
 
   # Firebase
   firebase_core: ^2.24.0
@@ -47,18 +52,45 @@ dependencies:
   #chached image 
   cached_network_image: ^3.2.0
 
+  #pick article thumbnails from the gallery
+  image_picker: ^1.2.0
+
+  #remember the journalist's signature and unfinished draft between sessions
+  shared_preferences: ^2.5.3
+
+  #folder where the unfinished draft keeps a copy of its thumbnail
+  path_provider: ^2.1.2
+
+  #read articles aloud with the device's text-to-speech engine (no network, no API key)
+  flutter_tts: ^4.2.5
+
+  #render article content (flutter_markdown is discontinued, this is its official successor)
+  flutter_markdown_plus: ^1.0.3
+
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  #end-to-end tests of user journeys on a device (see integration_test/)
+  integration_test:
     sdk: flutter
   flutter_lints: ^1.0.0
   retrofit_generator: 3.0.1+1
   floor_generator: 1.2.0
   build_runner: 2.1.2
+  #mocks for unit tests (bloc_test is incompatible with retrofit_generator's analyzer ^2.0.0)
+  mocktail: ^1.0.5
+  #controls time in tests of delayed work, like saving the draft after a pause in the typing
+  fake_async: ^1.3.1
+  #in-memory Firestore and Storage for data source tests
+  fake_cloud_firestore: ^2.5.2
+  firebase_storage_mocks: ^0.6.1
   
 
 flutter:
 
   uses-material-design: true
+  # Generates AppLocalizations from lib/l10n/*.arb (see l10n.yaml).
+  generate: true
 
  
   fonts:
