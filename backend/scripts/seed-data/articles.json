@@ -1,0 +1,73 @@
+[
+  {
+    "title": "Local startup brings clean water to 10,000 homes",
+    "description": "A team of engineers has designed a low-cost filter that is already running in three rural towns.",
+    "content": "When the first prototype was installed last spring, nobody expected it to last through the summer.\n\nSix months later, the filter has processed more than two million litres of water and the team is preparing to install it in seven more towns before the end of the year.\n\n\"The key was designing something that the neighbours themselves can repair\", explains the project lead.",
+    "author": "Jane Doe",
+    "thumbnailColors": [
+      [
+        14,
+        116,
+        144
+      ],
+      [
+        103,
+        232,
+        249
+      ]
+    ],
+    "comments": [
+      {
+        "author": "John Smith",
+        "content": "Great news for the rural towns. Do you know if the filters will reach the north of the region too?"
+      },
+      {
+        "author": "Jane Doe",
+        "content": "Thanks! The team plans to reach the north next spring, and I will cover it."
+      }
+    ]
+  },
+  {
+    "title": "The city library opens its doors 24 hours a day",
+    "description": "After a two-month pilot, the central library will stay open around the clock during the exam season.",
+    "content": "Students queued outside the central library at midnight on Monday to celebrate the start of the new schedule.\n\nThe pilot showed that almost a third of the visits happened between 10 p.m. and 6 a.m., so the city council decided to make the change permanent during the exam season.\n\nThe library will add security staff and a quiet room with extra power outlets.",
+    "author": "John Smith",
+    "thumbnailColors": [
+      [
+        124,
+        45,
+        18
+      ],
+      [
+        251,
+        191,
+        36
+      ]
+    ],
+    "comments": []
+  },
+  {
+    "title": "Community gardens double in size across the region",
+    "description": "More than 400 neighbours now grow their own vegetables in plots that used to be empty lots.",
+    "content": "What started as a single garden behind a school has become a network of forty plots across the region.\n\nThe gardens are managed by the neighbours, who share tools, seeds and a rota for watering during the summer.\n\nThe next step is a small market where the gardeners will sell the vegetables they cannot eat themselves.",
+    "author": "Jane Doe",
+    "thumbnailColors": [
+      [
+        20,
+        83,
+        45
+      ],
+      [
+        163,
+        230,
+        53
+      ]
+    ],
+    "comments": [
+      {
+        "author": "John Smith",
+        "content": "The plot next to the train station looks amazing now. Is there a waiting list to join?"
+      }
+    ]
+  }
+]

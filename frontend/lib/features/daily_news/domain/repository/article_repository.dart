@@ -6,9 +6,11 @@ abstract class ArticleRepository {
   Future<DataState<List<ArticleEntity>>> getNewsArticles();
 
   // Database methods
-  Future < List < ArticleEntity >> getSavedArticles();
+  Future<DataState<List<ArticleEntity>>> getSavedArticles();
 
   Future < void > saveArticle(ArticleEntity article);
+
+  Future<DataState<bool>> isArticleSaved(ArticleEntity article);
 
   Future < void > removeArticle(ArticleEntity article);
 }

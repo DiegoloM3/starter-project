@@ -1,6 +1,6 @@
-import 'package:equatable/equatable.dart';
+import 'package:news_app_clean_architecture/core/util/value_equality.dart';
 
-class ArticleEntity extends Equatable{
+class ArticleEntity with ValueEquality {
   final int ? id;
   final String ? author;
   final String ? title;

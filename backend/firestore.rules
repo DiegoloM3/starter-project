@@ -1,7 +1,102 @@
 rules_version = '2';
 
+// Enforces the schema documented in docs/DB_SCHEMA.md.
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    match /articles/{articleId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && isGeneratedDocumentId(articleId)
+        && isValidArticle(request.resource.data, articleId);
+      // Articles are immutable: editing and deleting them is left as a future improvement.
+      allow update, delete: if false;
+
+      // Reading also allows counting the comments of an article (count() queries).
+      match /comments/{commentId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn()
+          && isGeneratedDocumentId(commentId)
+          && exists(/databases/$(database)/documents/articles/$(articleId))
+          && isValidComment(request.resource.data);
+        // Comments are immutable too: editing and deleting them is left as a future improvement.
+        allow update, delete: if false;
+      }
+    }
+
+    // Each journalist's own list of saved articles: one document per saved article, named after it.
+    match /users/{userId}/savedArticles/{articleId} {
+      allow read, delete: if isTheSignedInUser(userId);
+      allow create: if isTheSignedInUser(userId)
+        && exists(/databases/$(database)/documents/articles/$(articleId))
+        && isValidSavedArticle(request.resource.data);
+      // Saving an article twice is not needed: the app removes it or keeps it.
+      allow update: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Alphanumeric, like the IDs Firestore generates.
+    function isGeneratedDocumentId(documentId) {
+      return documentId.matches('[A-Za-z0-9]+');
+    }
+
+    function isValidArticle(article, articleId) {
+      return hasExactlyArticleFields(article)
+        && isNonBlankStringUpTo(article.title, 150)
+        && isNonBlankStringUpTo(article.description, 300)
+        && isNonBlankStringUpTo(article.content, 20000)
+        && isWrittenByTheSignedInUser(article)
+        && isArticleThumbnailURL(article.thumbnailURL, articleId)
+        && article.publishedAt == request.time;
+    }
+
+    function hasExactlyArticleFields(article) {
+      let fields = ['title', 'description', 'content', 'author', 'authorId', 'thumbnailURL', 'publishedAt'];
+      return article.keys().hasAll(fields) && article.keys().hasOnly(fields);
+    }
+
+    function isTheSignedInUser(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidSavedArticle(savedArticle) {
+      return savedArticle.keys().hasOnly(['savedAt']) && savedArticle.keys().hasAll(['savedAt'])
+        && savedArticle.savedAt == request.time;
+    }
+
+    function isValidComment(comment) {
+      let fields = ['content', 'author', 'authorId', 'createdAt'];
+      return comment.keys().hasAll(fields) && comment.keys().hasOnly(fields)
+        && isNonBlankStringUpTo(comment.content, 1000)
+        && isWrittenByTheSignedInUser(comment)
+        && comment.createdAt == request.time;
+    }
+
+    // The author of an article or a comment is the account that writes it: its ID and the name of the account.
+    function isWrittenByTheSignedInUser(document) {
+      return document.authorId == request.auth.uid
+        && isNonBlankStringUpTo(document.author, 100)
+        && document.author == request.auth.token.name;
+    }
+
+    function isNonBlankStringUpTo(value, maxLength) {
+      return value is string
+        && value.size() <= maxLength
+        && value.matches('(?s).*\\S.*');
+    }
+
+    // Download URL of media/articles/{articleId}.{extension} in this project's bucket, served by
+    // Cloud Storage or by the Storage emulator (localhost / Android emulator host).
+    // The bucket is fixed so a thumbnail cannot point to a bucket where storage.rules do not apply.
+    function isArticleThumbnailURL(url, articleId) {
+      let storageHost = '(https://firebasestorage\\.googleapis\\.com|http://(localhost|127\\.0\\.0\\.1|10\\.0\\.2\\.2):9199)';
+      let storageBucket = 'symmetry-news-1d028\\.firebasestorage\\.app';
+      let thumbnailPath = '/v0/b/' + storageBucket + '/o/media%2Farticles%2F' + articleId + '\\.(jpg|jpeg|png|webp)';
+      let downloadQuery = '\\?alt=media(&token=[0-9a-f-]+)?';
+      return url is string && url.matches(storageHost + thumbnailPath + downloadQuery);
+    }
   }
 }

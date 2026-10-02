@@ -1,7 +1,23 @@
 rules_version = '2';
 
+// Enforces the Cloud Storage part of the schema documented in docs/DB_SCHEMA.md.
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+
+    match /media/articles/{fileName} {
+      allow read: if request.auth != null;
+      // Uploading over an existing file is evaluated as a create, so it is blocked explicitly.
+      allow create: if request.auth != null
+        && resource == null
+        && isValidThumbnail(fileName, request.resource);
+      // Thumbnails are immutable, like the articles they belong to.
+      allow update, delete: if false;
     }
+
+    function isValidThumbnail(fileName, file) {
+      return fileName.matches('[A-Za-z0-9]+\\.(jpg|jpeg|png|webp)')
+        && file.size <= 5 * 1024 * 1024
+        && file.contentType.matches('image/(jpeg|png|webp)');
+    }
+  }
 }

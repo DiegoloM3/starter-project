@@ -1,0 +1,17 @@
+# Splash shown while the app starts (`dart run flutter_native_splash:create`). Android and iOS show it before
+# Flutter runs, so it follows the light or dark mode of the phone, not the theme chosen in Settings.
+flutter_native_splash:
+  color: "#F5F7FA"
+  color_dark: "#101418"
+  image: assets/branding/splash_logo.png
+  # From Android 12 the system shows the icon inside a circle: it has the color of the background,
+  # so only the logo can be seen.
+  android_12:
+    image: assets/branding/splash_logo_android12.png
+    color: "#F5F7FA"
+    color_dark: "#101418"
+    icon_background_color: "#F5F7FA"
+    icon_background_color_dark: "#101418"
+  android: true
+  ios: true
+  web: false

@@ -2,3 +2,4 @@
 node_modules/
 *.log
 venv/
+emulator-data/
