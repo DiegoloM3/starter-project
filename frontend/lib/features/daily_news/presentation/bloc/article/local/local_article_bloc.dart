@@ -2,9 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_state.dart';
 
-import '../../../../domain/usecases/get_saved_article.dart';
-import '../../../../domain/usecases/remove_article.dart';
-import '../../../../domain/usecases/save_article.dart';
+import '../../../../domain/use_cases/get_saved_article.dart';
+import '../../../../domain/use_cases/remove_article.dart';
+import '../../../../domain/use_cases/save_article.dart';
 
 class LocalArticleBloc extends Bloc<LocalArticlesEvent,LocalArticlesState> {
   final GetSavedArticleUseCase _getSavedArticleUseCase;

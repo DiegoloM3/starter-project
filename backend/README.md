@@ -3,7 +3,26 @@ In this folder are all the [Firebase Firestore](https://firebase.google.com/docs
 You will use this folder to add the schema of the *Articles* you want to upload for the app and to add the rules that enforce this schema. 
 
 ## DB Schema
-**TODO: ADD YOUR DB SCHEMA (SCHEMA FOR "ARTICLES" AND ANY OTHER SCHEMAS) HERE**
+The full schema is documented in [docs/DB_SCHEMA.md](docs/DB_SCHEMA.md). In short:
+
+| Collection | Field | Type | Constraints |
+|---|---|---|---|
+| `articles/{articleId}` | `title` | `string` | 1–100 characters |
+| | `content` | `string` | 1–5000 characters |
+| | `thumbnailURL` | `string` | Path `media/articles/{articleId}.{jpg\|jpeg\|png\|webp}` in Cloud Storage |
+| | `publishedAt` | `timestamp` | Server time of the write |
+
+Thumbnails are stored in Cloud Storage under `media/articles/` (images only, 5 MB max).
+Articles and thumbnails can be read by anyone and created when they match the schema; they cannot be updated or deleted.
+
+## Testing the rules
+The Firestore and Cloud Storage rules are covered by tests that run against the Local Emulator Suite, using a `demo-` project so nothing reaches the real Firebase project.
+Requirements: Node.js, the Firebase CLI and Java 11 or newer (for the emulators).
+
+```
+npm install
+npm test
+```
 
 ## Getting Started
 Before starting to work on the backend, you must have a Firebase project with the [Firebase Firestore](https://firebase.google.com/docs/firestore), [Firebase Cloud Storage](https://firebase.google.com/docs/storage) and [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite) technologies enabled.

@@ -1,7 +1,20 @@
 rules_version = '2';
 
+// Schema: backend/docs/DB_SCHEMA.md
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+
+    match /media/articles/{fileName} {
+      allow read: if true;
+      allow create: if resource == null
+        && isValidThumbnailUpload(fileName, request.resource);
+      allow update, delete: if false;
     }
+
+    function isValidThumbnailUpload(fileName, file) {
+      return fileName.matches('[A-Za-z0-9]+[.](jpg|jpeg|png|webp)')
+        && file.contentType.matches('image/(jpeg|png|webp)')
+        && file.size <= 5 * 1024 * 1024;
+    }
+  }
 }

@@ -8,7 +8,7 @@ abstract class LocalArticlesState extends Equatable {
   const LocalArticlesState({this.articles});
 
   @override
-  List<Object> get props => [articles!];
+  List<Object?> get props => [articles];
 }
 
 class LocalArticlesLoading extends LocalArticlesState {

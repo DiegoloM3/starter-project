@@ -1,7 +1,38 @@
 rules_version = '2';
 
+// Schema: backend/docs/DB_SCHEMA.md
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    match /articles/{articleId} {
+      allow read: if true;
+      allow create: if isValidNewArticle(articleId, request.resource.data);
+      allow update, delete: if false;
+    }
+
+    function isValidNewArticle(articleId, article) {
+      return hasExactlyArticleFields(article)
+        && isNonBlankStringWithMaxLength(article.title, 100)
+        && isNonBlankStringWithMaxLength(article.content, 5000)
+        && isThumbnailPathOfArticle(article.thumbnailURL, articleId)
+        && article.publishedAt == request.time;
+    }
+
+    function hasExactlyArticleFields(article) {
+      let articleFields = ['title', 'content', 'thumbnailURL', 'publishedAt'];
+      return article.keys().hasAll(articleFields)
+        && article.keys().hasOnly(articleFields);
+    }
+
+    function isNonBlankStringWithMaxLength(value, maxLength) {
+      return value is string
+        && value.trim().size() > 0
+        && value.size() <= maxLength;
+    }
+
+    function isThumbnailPathOfArticle(path, articleId) {
+      return path is string
+        && path.matches('media/articles/' + articleId + '[.](jpg|jpeg|png|webp)');
+    }
   }
 }

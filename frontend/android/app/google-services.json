@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "830891513976",
+    "project_id": "symmetry-news-challenge-pug",
+    "storage_bucket": "symmetry-news-challenge-pug.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:830891513976:android:6d4ffbb4cea58804ccf58d",
+        "android_client_info": {
+          "package_name": "com.example.news_app_clean_architecture"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpBT7313Xq4LQ3BN4hTe9H1PP_TWiDKEo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

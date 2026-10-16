@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../domain/entities/article.dart';
+import 'article_byline.dart';
+import 'article_image_placeholder.dart';
 
 class ArticleWidget extends StatelessWidget {
   final ArticleEntity? article;
@@ -38,50 +40,37 @@ class ArticleWidget extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context) {
+    final imageUrl = article!.urlToImage;
+    if (imageUrl == null || imageUrl.isEmpty) {
+      return _buildImageFrame(context, const ArticleImagePlaceholder());
+    }
     return CachedNetworkImage(
-        imageUrl: article!.urlToImage!,
-        imageBuilder: (context, imageProvider) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.08),
-                      image: DecorationImage(
-                          image: imageProvider, fit: BoxFit.cover)),
-                ),
-              ),
-            ),
-        progressIndicatorBuilder: (context, url, downloadProgress) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  child: CupertinoActivityIndicator(),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
-                  ),
-                ),
-              ),
-            ),
-        errorWidget: (context, url, error) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  child: Icon(Icons.error),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
-                  ),
-                ),
-              ),
-            ));
+      imageUrl: imageUrl,
+      imageBuilder: (context, imageProvider) =>
+          _buildImageFrame(context, Image(image: imageProvider, fit: BoxFit.cover)),
+      progressIndicatorBuilder: (context, url, downloadProgress) => _buildImageFrame(
+        context,
+        const ColoredBox(
+          color: ArticleImagePlaceholder.backgroundColor,
+          child: CupertinoActivityIndicator(),
+        ),
+      ),
+      errorWidget: (context, url, error) => _buildImageFrame(context, const ArticleImagePlaceholder()),
+    );
+  }
+
+  Widget _buildImageFrame(BuildContext context, Widget image) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(end: 14),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20.0),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width / 3,
+          height: double.maxFinite,
+          child: image,
+        ),
+      ),
+    );
   }
 
   Widget _buildTitleAndDescription() {
@@ -116,19 +105,7 @@ class ArticleWidget extends StatelessWidget {
               ),
             ),
 
-            // Datetime
-            Row(
-              children: [
-                const Icon(Icons.timeline_outlined, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  article!.publishedAt!,
-                  style: const TextStyle(
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
+            ArticleByline(article: article!, dateIcon: Icons.timeline_outlined),
           ],
         ),
       ),

@@ -1,0 +1,12 @@
+# Only the local database is generated. The news API client
+# (news_api_service.g.dart) was generated with retrofit_generator 3, which
+# no longer runs with Dart 3, and is kept as committed.
+targets:
+  $default:
+    builders:
+      floor_generator:
+        generate_for:
+          - lib/features/daily_news/data/data_sources/local/app_database.dart
+      source_gen:combining_builder:
+        generate_for:
+          - lib/features/daily_news/data/data_sources/local/app_database.dart

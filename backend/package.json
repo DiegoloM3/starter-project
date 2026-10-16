@@ -1,0 +1,12 @@
+{
+  "name": "symmetry-news-backend",
+  "private": true,
+  "description": "Firestore and Cloud Storage security rules for the Symmetry news app",
+  "scripts": {
+    "test": "firebase emulators:exec --only firestore,storage --project demo-symmetry-news \"node --test --test-concurrency=1 test/*.test.mjs\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "5.0.2",
+    "firebase": "12.19.0"
+  }
+}
