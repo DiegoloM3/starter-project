@@ -2,6 +2,39 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    match /articles/{articleId} {
+      allow read: if true;
+      allow create: if isValidNewArticle(request.resource.data);
+      // Articles are immutable until authentication identifies their owner.
+      allow update, delete: if false;
+    }
+
+    function isValidNewArticle(article) {
+      return hasExactlyArticleFields(article)
+        && isStringWithLength(article.title, 1, 150)
+        && isStringWithLength(article.description, 1, 300)
+        && isStringWithLength(article.content, 1, 20000)
+        && isStringWithLength(article.authorName, 1, 80)
+        && isArticleThumbnailURL(article.thumbnailURL)
+        && article.publishedAt == request.time;
+    }
+
+    function hasExactlyArticleFields(article) {
+      let articleFields = ['title', 'description', 'content', 'authorName', 'thumbnailURL', 'publishedAt'];
+      return article.keys().hasAll(articleFields) && article.keys().hasOnly(articleFields);
+    }
+
+    function isStringWithLength(value, minLength, maxLength) {
+      return value is string
+        && value.size() >= minLength
+        && value.size() <= maxLength;
+    }
+
+    // Download URL of a file inside the media/articles folder of this project's bucket.
+    function isArticleThumbnailURL(value) {
+      return value is string
+        && value.matches('^https://firebasestorage[.]googleapis[.]com/v0/b/symmetry-technical-test-6230c[.]firebasestorage[.]app/o/media%2Farticles%2F[^/?]+[?].*$');
+    }
   }
 }

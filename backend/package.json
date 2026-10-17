@@ -1,0 +1,12 @@
+{
+  "name": "news-app-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "firebase emulators:exec --only firestore,storage \"$npm_node_execpath --test --test-concurrency=1 'test/**/*.test.js'\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "firebase": "^11.10.0"
+  }
+}

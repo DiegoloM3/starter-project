@@ -43,6 +43,14 @@ firebase deploy
 This will deploy all the rules you write in `firestore.rules` to your Firebase Firestore project.
 Be careful becasuse it will overwrite the existing firestore.rules file of your project.
 
+## Testing the security rules
+The Firestore and Cloud Storage rules are covered by tests in the `test` folder, which run against the local emulators:
+
+```
+npm install
+npm test
+```
+
 ## Running the project in a local emulator
 To run the application locally, use the following command:
 
