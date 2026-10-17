@@ -14,9 +14,6 @@ dependencies:
 
   cupertino_icons: ^1.0.2
 
-  #icon
-  ionicons: ^0.1.2
-
   #state management
   flutter_bloc: ^8.1.2
 
