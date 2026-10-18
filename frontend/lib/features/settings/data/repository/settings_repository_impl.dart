@@ -10,21 +10,12 @@ class SettingsRepositoryImpl implements SettingsRepository {
   SettingsRepositoryImpl(this._localDataSource);
 
   @override
-  Future<DataState<Appearance>> getAppearance() async {
-    try {
-      return DataSuccess(Appearance.fromId(_localDataSource.readAppearanceId()));
-    } on Exception catch (error) {
-      return DataFailed(error);
-    }
+  Future<DataState<Appearance>> getAppearance() {
+    return runAsDataState(() async => Appearance.fromId(_localDataSource.readAppearanceId()));
   }
 
   @override
-  Future<DataState<void>> saveAppearance(Appearance appearance) async {
-    try {
-      await _localDataSource.writeAppearanceId(appearance.id);
-      return const DataSuccess(null);
-    } on Exception catch (error) {
-      return DataFailed(error);
-    }
+  Future<DataState<void>> saveAppearance(Appearance appearance) {
+    return runAsDataState(() => _localDataSource.writeAppearanceId(appearance.id));
   }
 }

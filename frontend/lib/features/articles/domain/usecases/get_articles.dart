@@ -1,13 +1,14 @@
 import '../../../../core/resources/data_state.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../entities/article.dart';
-import 'mock/mock_articles.dart';
+import '../repository/article_repository.dart';
 
+/// Newest first.
 class GetArticlesUseCase implements UseCase<DataState<List<ArticleEntity>>, NoParams> {
+  final ArticleRepository _articleRepository;
+
+  GetArticlesUseCase(this._articleRepository);
+
   @override
-  Future<DataState<List<ArticleEntity>>> call(NoParams params) async {
-    await Future.delayed(mockNetworkDelay);
-    final newestFirst = [...mockArticles]..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
-    return DataSuccess(newestFirst);
-  }
+  Future<DataState<List<ArticleEntity>>> call(NoParams params) => _articleRepository.getArticles();
 }

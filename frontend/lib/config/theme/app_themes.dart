@@ -135,15 +135,23 @@ ButtonStyle _outlinedButtonStyle({required Color ink}) {
   );
 }
 
+/// Selected chips are filled with ink, so their label switches to paper. Chips disabled because the
+/// limit of topics was reached are faded.
 ChipThemeData _chipTheme({required Color ink, required Color paper}) {
+  final fadedInk = ink.withValues(alpha: 0.35);
   return ChipThemeData(
-    backgroundColor: paper,
-    selectedColor: ink,
-    disabledColor: paper,
+    color: WidgetStateProperty.resolveWith((states) => states.contains(WidgetState.selected) ? ink : paper),
     checkmarkColor: paper,
-    side: BorderSide(color: ink),
+    side: WidgetStateBorderSide.resolveWith(
+      (states) => BorderSide(color: states.contains(WidgetState.disabled) ? fadedInk : ink),
+    ),
     shape: const RoundedRectangleBorder(borderRadius: _squareCorners),
-    labelStyle: TextStyle(color: ink, fontFamily: 'Muli'),
-    secondaryLabelStyle: TextStyle(color: paper, fontFamily: 'Muli'),
+    labelStyle: TextStyle(
+      fontFamily: 'Muli',
+      color: WidgetStateColor.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return paper;
+        return states.contains(WidgetState.disabled) ? fadedInk : ink;
+      }),
+    ),
   );
 }

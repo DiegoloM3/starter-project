@@ -4,16 +4,18 @@ import '../../../domain/params/auth_validation.dart';
 
 enum AuthFormStatus { idle, submitting, success, failure }
 
+/// Why a submission failed, when it was not because of the validation errors.
+enum AuthFormFailure { invalidCredentials, emailAlreadyInUse, unexpected }
+
 class AuthFormState extends Equatable {
   final AuthFormStatus status;
-
-  /// Empty on a failure means that something unexpected happened.
   final Set<AuthValidationError> validationErrors;
+  final AuthFormFailure? failure;
 
-  const AuthFormState({this.status = AuthFormStatus.idle, this.validationErrors = const {}});
+  const AuthFormState({this.status = AuthFormStatus.idle, this.validationErrors = const {}, this.failure});
 
   bool get isSubmitting => status == AuthFormStatus.submitting;
 
   @override
-  List<Object?> get props => [status, validationErrors];
+  List<Object?> get props => [status, validationErrors, failure];
 }

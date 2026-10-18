@@ -1,15 +1,13 @@
 import '../../../../core/resources/data_state.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../entities/article.dart';
-import '../exceptions/article_exceptions.dart';
-import 'mock/mock_articles.dart';
+import '../repository/article_repository.dart';
 
 class GetArticleUseCase implements UseCase<DataState<ArticleEntity>, String> {
+  final ArticleRepository _articleRepository;
+
+  GetArticleUseCase(this._articleRepository);
+
   @override
-  Future<DataState<ArticleEntity>> call(String articleId) async {
-    await Future.delayed(mockNetworkDelay);
-    final article = findMockArticle(articleId);
-    if (article == null) return DataFailed(ArticleNotFoundException(articleId));
-    return DataSuccess(article);
-  }
+  Future<DataState<ArticleEntity>> call(String articleId) => _articleRepository.getArticle(articleId);
 }

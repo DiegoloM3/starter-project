@@ -70,8 +70,6 @@ class _SignInScreenState extends State<SignInScreen> {
           onPressed: () => Navigator.of(context).pushNamed(AppRoutes.signUp),
           child: const Text('¿No tienes cuenta? Regístrate'),
         ),
-        const SizedBox(height: 24),
-        const _DemoAccountsHint(),
       ],
     );
   }
@@ -82,24 +80,7 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _onStateChanged(BuildContext context, AuthFormState state) {
-    if (state.status == AuthFormStatus.failure && state.validationErrors.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(unexpectedErrorMessage)));
-    }
-  }
-}
-
-/// Temporary help while the use cases return mock data.
-class _DemoAccountsHint extends StatelessWidget {
-  const _DemoAccountsHint();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Text(
-      'Modo demo: entra con journalist@symmetry.com para publicar como periodista, '
-      'o con cualquier otro email como lector.',
-      textAlign: TextAlign.center,
-      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-    );
+    final failure = state.failure;
+    if (failure != null) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
   }
 }

@@ -1,7 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
+import 'features/articles/data/data_sources/remote/article_image_remote_data_source.dart';
+import 'features/articles/data/data_sources/remote/article_remote_data_source.dart';
+import 'features/articles/data/data_sources/remote/saved_articles_remote_data_source.dart';
+import 'features/articles/data/repository/article_repository_impl.dart';
+import 'features/articles/data/repository/saved_articles_repository_impl.dart';
 import 'features/articles/domain/entities/article.dart';
+import 'features/articles/domain/repository/article_repository.dart';
+import 'features/articles/domain/repository/saved_articles_repository.dart';
 import 'features/articles/domain/usecases/delete_article.dart';
 import 'features/articles/domain/usecases/get_article.dart';
 import 'features/articles/domain/usecases/get_articles.dart';
@@ -15,6 +26,10 @@ import 'features/articles/presentation/bloc/article_detail/article_detail_cubit.
 import 'features/articles/presentation/bloc/article_editor/article_editor_cubit.dart';
 import 'features/articles/presentation/bloc/articles/articles_cubit.dart';
 import 'features/articles/presentation/bloc/saved_articles/saved_articles_cubit.dart';
+import 'features/auth/data/data_sources/remote/auth_remote_data_source.dart';
+import 'features/auth/data/data_sources/remote/user_profile_remote_data_source.dart';
+import 'features/auth/data/repository/auth_repository_impl.dart';
+import 'features/auth/domain/repository/auth_repository.dart';
 import 'features/auth/domain/usecases/sign_in.dart';
 import 'features/auth/domain/usecases/sign_out.dart';
 import 'features/auth/domain/usecases/sign_up.dart';
@@ -30,13 +45,21 @@ import 'features/settings/presentation/bloc/appearance/appearance_cubit.dart';
 
 final sl = GetIt.instance;
 
-// The data sources and repositories of auth and articles are registered here once the data layer
-// connects their use cases to Firebase.
 Future<void> initializeDependencies() async {
   final preferences = await SharedPreferences.getInstance();
+  _registerProviders();
   _registerSettings(preferences);
   _registerAuth();
   _registerArticles();
+}
+
+/// The Firebase services are registered once, so the data sources receive them instead of creating them.
+void _registerProviders() {
+  sl
+    ..registerLazySingleton(() => FirebaseAuth.instance)
+    ..registerLazySingleton(() => FirebaseFirestore.instance)
+    ..registerLazySingleton(() => FirebaseStorage.instance)
+    ..registerLazySingleton(Uuid.new);
 }
 
 void _registerSettings(SharedPreferences preferences) {
@@ -50,25 +73,33 @@ void _registerSettings(SharedPreferences preferences) {
 
 void _registerAuth() {
   sl
-    ..registerLazySingleton(SignInUseCase.new)
-    ..registerLazySingleton(SignUpUseCase.new)
-    ..registerLazySingleton(SignOutUseCase.new)
-    ..registerLazySingleton(WatchCurrentUserUseCase.new)
+    ..registerLazySingleton(() => AuthRemoteDataSource(sl()))
+    ..registerLazySingleton(() => UserProfileRemoteDataSource(sl()))
+    ..registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl(), sl()))
+    ..registerLazySingleton(() => SignInUseCase(sl()))
+    ..registerLazySingleton(() => SignUpUseCase(sl()))
+    ..registerLazySingleton(() => SignOutUseCase(sl()))
+    ..registerLazySingleton(() => WatchCurrentUserUseCase(sl()))
     ..registerFactory(() => AuthCubit(sl(), sl()))
     ..registerFactory(() => AuthFormCubit(sl(), sl()));
 }
 
 void _registerArticles() {
   sl
-    ..registerLazySingleton(GetArticlesUseCase.new)
-    ..registerLazySingleton(GetArticleUseCase.new)
-    ..registerLazySingleton(PublishArticleUseCase.new)
-    ..registerLazySingleton(UpdateArticleUseCase.new)
-    ..registerLazySingleton(DeleteArticleUseCase.new)
-    ..registerLazySingleton(UploadArticleImageUseCase.new)
-    ..registerLazySingleton(GetSavedArticlesUseCase.new)
-    ..registerLazySingleton(SaveArticleUseCase.new)
-    ..registerLazySingleton(RemoveSavedArticleUseCase.new)
+    ..registerLazySingleton(() => ArticleRemoteDataSource(sl(), sl()))
+    ..registerLazySingleton(() => ArticleImageRemoteDataSource(sl(), sl(), sl()))
+    ..registerLazySingleton(() => SavedArticlesRemoteDataSource(sl(), sl()))
+    ..registerLazySingleton<ArticleRepository>(() => ArticleRepositoryImpl(sl(), sl()))
+    ..registerLazySingleton<SavedArticlesRepository>(() => SavedArticlesRepositoryImpl(sl(), sl()))
+    ..registerLazySingleton(() => GetArticlesUseCase(sl()))
+    ..registerLazySingleton(() => GetArticleUseCase(sl()))
+    ..registerLazySingleton(() => PublishArticleUseCase(sl()))
+    ..registerLazySingleton(() => UpdateArticleUseCase(sl()))
+    ..registerLazySingleton(() => DeleteArticleUseCase(sl()))
+    ..registerLazySingleton(() => UploadArticleImageUseCase(sl()))
+    ..registerLazySingleton(() => GetSavedArticlesUseCase(sl()))
+    ..registerLazySingleton(() => SaveArticleUseCase(sl()))
+    ..registerLazySingleton(() => RemoveSavedArticleUseCase(sl()))
     ..registerFactory(() => ArticlesCubit(sl()))
     ..registerFactory(() => SavedArticlesCubit(sl(), sl(), sl()))
     ..registerFactory(() => ArticleEditorCubit(sl(), sl(), sl()))

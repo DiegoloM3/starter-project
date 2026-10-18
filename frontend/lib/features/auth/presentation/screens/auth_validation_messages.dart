@@ -1,4 +1,5 @@
 import '../../domain/params/auth_validation.dart';
+import '../bloc/auth_form/auth_form_state.dart';
 
 extension AuthValidationMessage on AuthValidationError {
   String get message => switch (this) {
@@ -25,4 +26,10 @@ const lastNameErrors = {AuthValidationError.lastNameEmpty, AuthValidationError.l
 const emailErrors = {AuthValidationError.emailInvalid};
 const passwordErrors = {AuthValidationError.passwordEmpty, AuthValidationError.passwordTooShort};
 
-const String unexpectedErrorMessage = 'Algo salió mal. Revisa tu conexión e inténtalo de nuevo.';
+extension AuthFormFailureMessage on AuthFormFailure {
+  String get message => switch (this) {
+    AuthFormFailure.invalidCredentials => 'El email o la contraseña no son correctos.',
+    AuthFormFailure.emailAlreadyInUse => 'Ya existe una cuenta con ese email.',
+    AuthFormFailure.unexpected => 'Algo salió mal. Revisa tu conexión e inténtalo de nuevo.',
+  };
+}

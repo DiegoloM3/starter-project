@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/resources/data_state.dart';
 import '../../../domain/entities/user.dart';
 import '../../../domain/exceptions/auth_exceptions.dart';
-import '../../../domain/params/auth_validation.dart';
 import '../../../domain/params/sign_in_params.dart';
 import '../../../domain/params/sign_up_params.dart';
 import '../../../domain/usecases/sign_in.dart';
@@ -38,9 +37,14 @@ class AuthFormCubit extends Cubit<AuthFormState> {
   }
 
   AuthFormState _stateFor(DataState<UserEntity> result) {
-    final error = result.error;
-    if (error == null) return const AuthFormState(status: AuthFormStatus.success);
-    final validationErrors = error is AuthValidationException ? error.errors : <AuthValidationError>{};
-    return AuthFormState(status: AuthFormStatus.failure, validationErrors: validationErrors);
+    return switch (result.error) {
+      null => const AuthFormState(status: AuthFormStatus.success),
+      AuthValidationException(:final errors) => AuthFormState(status: AuthFormStatus.failure, validationErrors: errors),
+      InvalidCredentialsException() => _failure(AuthFormFailure.invalidCredentials),
+      EmailAlreadyInUseException() => _failure(AuthFormFailure.emailAlreadyInUse),
+      _ => _failure(AuthFormFailure.unexpected),
+    };
   }
+
+  AuthFormState _failure(AuthFormFailure failure) => AuthFormState(status: AuthFormStatus.failure, failure: failure);
 }

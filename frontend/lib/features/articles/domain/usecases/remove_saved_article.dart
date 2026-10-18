@@ -1,12 +1,12 @@
 import '../../../../core/resources/data_state.dart';
 import '../../../../core/usecase/usecase.dart';
-import 'mock/mock_articles.dart';
+import '../repository/saved_articles_repository.dart';
 
 class RemoveSavedArticleUseCase implements UseCase<DataState<void>, String> {
+  final SavedArticlesRepository _savedArticlesRepository;
+
+  RemoveSavedArticleUseCase(this._savedArticlesRepository);
+
   @override
-  Future<DataState<void>> call(String articleId) async {
-    await Future.delayed(mockNetworkDelay);
-    mockSavedArticleIds.remove(articleId);
-    return const DataSuccess(null);
-  }
+  Future<DataState<void>> call(String articleId) => _savedArticlesRepository.removeSavedArticle(articleId);
 }

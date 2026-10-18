@@ -60,12 +60,27 @@ void main() {
     );
 
     blocTest<AuthFormCubit, AuthFormState>(
-      'fails without validation errors when something unexpected happens',
+      'fails when the email or the password is wrong',
+      setUp: () => when(() => signIn(any())).thenAnswer((_) async => const DataFailed(InvalidCredentialsException())),
+      build: buildCubit,
+      act: (cubit) => cubit.signIn(email: 'jane@test.com', password: 'wrong'),
+      expect:
+          () => const [
+            AuthFormState(status: AuthFormStatus.submitting),
+            AuthFormState(status: AuthFormStatus.failure, failure: AuthFormFailure.invalidCredentials),
+          ],
+    );
+
+    blocTest<AuthFormCubit, AuthFormState>(
+      'fails as unexpected when something else happens',
       setUp: () => when(() => signIn(any())).thenAnswer((_) async => DataFailed(Exception('offline'))),
       build: buildCubit,
       act: (cubit) => cubit.signIn(email: 'jane@test.com', password: 'password'),
       expect:
-          () => const [AuthFormState(status: AuthFormStatus.submitting), AuthFormState(status: AuthFormStatus.failure)],
+          () => const [
+            AuthFormState(status: AuthFormStatus.submitting),
+            AuthFormState(status: AuthFormStatus.failure, failure: AuthFormFailure.unexpected),
+          ],
     );
   });
 
@@ -82,6 +97,18 @@ void main() {
         expect(params.firstName, 'Jane');
         expect(params.lastName, 'Doe');
       },
+    );
+
+    blocTest<AuthFormCubit, AuthFormState>(
+      'fails when the email already has an account',
+      setUp: () => when(() => signUp(any())).thenAnswer((_) async => const DataFailed(EmailAlreadyInUseException())),
+      build: buildCubit,
+      act: (cubit) => cubit.signUp(firstName: 'Jane', lastName: 'Doe', email: 'jane@test.com', password: 'password'),
+      expect:
+          () => const [
+            AuthFormState(status: AuthFormStatus.submitting),
+            AuthFormState(status: AuthFormStatus.failure, failure: AuthFormFailure.emailAlreadyInUse),
+          ],
     );
   });
 }

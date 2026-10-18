@@ -95,8 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _onStateChanged(BuildContext context, AuthFormState state) {
-    if (state.status == AuthFormStatus.failure && state.validationErrors.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(unexpectedErrorMessage)));
-    }
+    final failure = state.failure;
+    if (failure != null) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
   }
 }

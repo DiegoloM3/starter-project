@@ -45,6 +45,12 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  #stream operators, such as switchMap
+  rxdart: ^0.28.0
+
+  #unique names for uploaded files
+  uuid: ^4.6.0
+
   #local settings
   shared_preferences: ^2.5.6
 
