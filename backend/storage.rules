@@ -5,8 +5,13 @@ service firebase.storage {
 
     match /media/articles/{fileName} {
       allow read: if true;
-      allow create: if isNewFile() && isImage() && isSmallerThanMegabytes(5);
+      allow create: if isJournalist() && isNewFile() && isImage() && isSmallerThanMegabytes(5);
       allow update, delete: if false;
+    }
+
+    // The role is a custom claim that only the Admin SDK can set.
+    function isJournalist() {
+      return request.auth != null && request.auth.token.get('role', '') == 'journalist';
     }
 
     // Prevents overwriting an existing thumbnail.

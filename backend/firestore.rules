@@ -3,32 +3,104 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    match /articles/{articleId} {
-      allow read: if true;
-      allow create: if isValidNewArticle(request.resource.data);
-      // Articles are immutable until authentication identifies their owner.
-      allow update, delete: if false;
+    match /users/{uid} {
+      allow read: if isSignedInAs(uid);
+      allow create: if isSignedInAs(uid) && isValidNewProfile(request.resource.data);
+      allow update: if isSignedInAs(uid)
+        && changesOnly(['name'])
+        && isStringWithLength(request.resource.data.name, 1, 80);
+      allow delete: if false;
+
+      match /savedArticles/{articleId} {
+        allow read, delete: if isSignedInAs(uid);
+        allow create: if isSignedInAs(uid)
+          && articleExists(articleId)
+          && hasExactlyFields(request.resource.data, ['savedAt'])
+          && request.resource.data.savedAt == request.time;
+        allow update: if false;
+      }
     }
 
-    function isValidNewArticle(article) {
-      return hasExactlyArticleFields(article)
+    match /articles/{articleId} {
+      allow read: if true;
+      allow create: if isJournalist()
+        && isValidArticle(request.resource.data)
+        && isSignedByAuthor(request.resource.data)
+        && request.resource.data.publishedAt == request.time;
+      allow update: if isJournalist()
+        && isSignedInAs(resource.data.authorId)
+        && changesOnly(['title', 'description', 'content', 'thumbnailURL'])
+        && isValidArticle(request.resource.data);
+      allow delete: if isJournalist() && isSignedInAs(resource.data.authorId);
+
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if articleExists(articleId) && isValidNewComment(request.resource.data);
+        // Comments cannot be edited: authors delete them and write a new one.
+        allow update: if false;
+        allow delete: if isSignedInAs(resource.data.authorId);
+      }
+    }
+
+    // ---------- Authentication ----------
+
+    function isSignedInAs(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // The role is a custom claim that only the Admin SDK can set, so users cannot grant it to themselves.
+    function isJournalist() {
+      return request.auth != null && request.auth.token.get('role', '') == 'journalist';
+    }
+
+    // Prevents impersonation: authorName must match the author's profile name.
+    function isSignedByAuthor(data) {
+      return isSignedInAs(data.authorId)
+        && data.authorName == get(/databases/$(database)/documents/users/$(data.authorId)).data.name;
+    }
+
+    // ---------- Validation ----------
+
+    function isValidNewProfile(profile) {
+      return hasExactlyFields(profile, ['name', 'email', 'createdAt'])
+        && isStringWithLength(profile.name, 1, 80)
+        && profile.email == request.auth.token.email
+        && profile.createdAt == request.time;
+    }
+
+    function isValidArticle(article) {
+      return hasExactlyFields(article, ['title', 'description', 'content', 'thumbnailURL', 'publishedAt', 'authorId', 'authorName'])
         && isStringWithLength(article.title, 1, 150)
         && isStringWithLength(article.description, 1, 300)
         && isStringWithLength(article.content, 1, 20000)
-        && isStringWithLength(article.authorName, 1, 80)
-        && isArticleThumbnailURL(article.thumbnailURL)
-        && article.publishedAt == request.time;
+        && isArticleThumbnailURL(article.thumbnailURL);
     }
 
-    function hasExactlyArticleFields(article) {
-      let articleFields = ['title', 'description', 'content', 'authorName', 'thumbnailURL', 'publishedAt'];
-      return article.keys().hasAll(articleFields) && article.keys().hasOnly(articleFields);
+    function isValidNewComment(comment) {
+      return hasExactlyFields(comment, ['authorId', 'authorName', 'text', 'createdAt'])
+        && isSignedByAuthor(comment)
+        && isStringWithLength(comment.text, 1, 500)
+        && comment.createdAt == request.time;
+    }
+
+    // ---------- Helpers ----------
+
+    function hasExactlyFields(data, fields) {
+      return data.keys().hasAll(fields) && data.keys().hasOnly(fields);
+    }
+
+    function changesOnly(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
     }
 
     function isStringWithLength(value, minLength, maxLength) {
       return value is string
         && value.size() >= minLength
         && value.size() <= maxLength;
+    }
+
+    function articleExists(articleId) {
+      return exists(/databases/$(database)/documents/articles/$(articleId));
     }
 
     // Download URL of a file inside the media/articles folder of this project's bucket.
