@@ -43,6 +43,18 @@ firebase deploy
 This will deploy all the rules you write in `firestore.rules` to your Firebase Firestore project.
 Be careful becasuse it will overwrite the existing firestore.rules file of your project.
 
+## Assigning roles
+Every registered user is a *reader*. To promote a user to *journalist* (or back to *reader*), run the `set-role` script with a [service account key](https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments):
+
+```
+npm install
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json npm run set-role -- user@email.com journalist
+```
+
+The user must sign in again for the new role to take effect.
+
+**Never commit the service account key**: it grants admin access to the whole Firebase project. Keep it outside the repository.
+
 ## Testing the security rules
 The Firestore and Cloud Storage rules are covered by tests in the `test` folder, which run against the local emulators:
 
