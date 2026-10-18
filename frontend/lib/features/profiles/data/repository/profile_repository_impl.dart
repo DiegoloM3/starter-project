@@ -2,14 +2,17 @@ import '../../../../core/resources/data_state.dart';
 import '../../../../shared/users/data/data_sources/remote/user_profile_remote_data_source.dart';
 import '../../../../shared/users/domain/entities/user.dart';
 import '../../domain/entities/follow_stats.dart';
+import '../../domain/params/update_profile_params.dart';
 import '../../domain/repository/profile_repository.dart';
 import '../data_sources/remote/follow_remote_data_source.dart';
+import '../data_sources/remote/user_photo_remote_data_source.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
   final UserProfileRemoteDataSource _profileDataSource;
   final FollowRemoteDataSource _followDataSource;
+  final UserPhotoRemoteDataSource _photoDataSource;
 
-  ProfileRepositoryImpl(this._profileDataSource, this._followDataSource);
+  ProfileRepositoryImpl(this._profileDataSource, this._followDataSource, this._photoDataSource);
 
   @override
   Future<DataState<UserEntity>> getProfile(String uid) {
@@ -37,4 +40,25 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<DataState<List<String>>> getFollowedUserIds() => runAsDataState(_followDataSource.getFollowedUserIds);
+
+  /// A new photo is uploaded first, because the profile must be saved with its URL. The old
+  /// photo is deleted only after the profile points to the new one.
+  @override
+  Future<DataState<UserEntity>> updateProfile(UpdateProfileParams params) {
+    return runAsDataState(() async {
+      final uid = _photoDataSource.signedInUserId;
+      final oldPhotoURL = (await _profileDataSource.getProfile(uid)).photoURL;
+      final newPhoto = params.newPhoto;
+      final photoURL = newPhoto == null ? oldPhotoURL : await _photoDataSource.uploadPhoto(uid, newPhoto);
+      await _profileDataSource.updateProfile(
+        uid,
+        firstName: params.firstName,
+        lastName: params.lastName,
+        bio: params.bio,
+        photoURL: photoURL,
+      );
+      if (oldPhotoURL != null && photoURL != oldPhotoURL) await _photoDataSource.deletePhoto(oldPhotoURL);
+      return (await _profileDataSource.getProfile(uid)).toEntity();
+    });
+  }
 }

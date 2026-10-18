@@ -34,6 +34,14 @@ class ArticleRepositoryImpl implements ArticleRepository {
     });
   }
 
+  @override
+  Future<DataState<List<ArticleEntity>>> getArticlesPublishedSince(DateTime since) {
+    return runAsDataState(() async {
+      final articles = await _articleDataSource.getArticlesPublishedSince(since);
+      return articles.map((article) => article.toEntity()).toList();
+    });
+  }
+
   /// The thumbnail is uploaded first, because the article must be saved with its URL.
   @override
   Future<DataState<ArticleEntity>> publishArticle(PublishArticleParams params) {

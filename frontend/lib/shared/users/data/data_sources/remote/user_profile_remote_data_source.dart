@@ -37,11 +37,41 @@ class UserProfileRemoteDataSource {
     return UserModel.fromRawData(uid, snapshot.data() ?? const {});
   }
 
+  /// Only the fields that the security rules let the owner change.
+  Future<void> updateProfile(
+    String uid, {
+    required String firstName,
+    required String lastName,
+    required String bio,
+    required String? photoURL,
+  }) {
+    return _profiles.doc(uid).update({'firstName': firstName, 'lastName': lastName, 'bio': bio, 'photoURL': photoURL});
+  }
+
   /// Emits null while the profile does not exist, for example right after creating the account.
   Stream<UserModel?> watchProfile(String uid) {
     return _profiles.doc(uid).snapshots().map((snapshot) {
       final data = snapshot.data();
       return data == null ? null : UserModel.fromRawData(uid, data);
     });
+  }
+
+  /// Deletes the profile and the private data of the user, and the follows they made, in a
+  /// single batch. The security rules only let followers delete follows, so the follows of
+  /// other users to this user remain.
+  Future<void> deleteUserData(String uid) async {
+    final profile = _profiles.doc(uid);
+    final privateDocuments = await Future.wait([
+      profile.collection('private').get(),
+      profile.collection('savedArticles').get(),
+      profile.collection('history').get(),
+      _firestore.collection('follows').where('followerId', isEqualTo: uid).get(),
+    ]);
+    final batch = _firestore.batch();
+    for (final document in privateDocuments.expand((snapshot) => snapshot.docs)) {
+      batch.delete(document.reference);
+    }
+    batch.delete(profile);
+    await batch.commit();
   }
 }

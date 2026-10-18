@@ -69,6 +69,15 @@ void main() {
     expect(result.data, [article.toEntity()]);
   });
 
+  test('gets the articles published since a date as entities', () async {
+    final since = DateTime(2026, 10, 11);
+    when(() => articleDataSource.getArticlesPublishedSince(since)).thenAnswer((_) async => [article]);
+
+    final result = await repository.getArticlesPublishedSince(since);
+
+    expect(result.data, [article.toEntity()]);
+  });
+
   test('fails with the exception of the data source', () async {
     final error = Exception('offline');
     when(() => articleDataSource.getArticles()).thenThrow(error);

@@ -103,6 +103,36 @@ void main() {
     expect(result, isA<DataSuccess>());
   });
 
+  group('deleteAccount', () {
+    setUp(() {
+      when(() => authDataSource.signedInUserId).thenReturn('user-1');
+      when(() => authDataSource.reauthenticate('password')).thenAnswer((_) async {});
+      when(() => profileDataSource.deleteUserData('user-1')).thenAnswer((_) async {});
+      when(() => authDataSource.deleteSignedInAccount()).thenAnswer((_) async {});
+    });
+
+    test('confirms the password, deletes the data of the user and then the account', () async {
+      final result = await repository.deleteAccount('password');
+
+      expect(result, isA<DataSuccess>());
+      verifyInOrder([
+        () => authDataSource.reauthenticate('password'),
+        () => profileDataSource.deleteUserData('user-1'),
+        () => authDataSource.deleteSignedInAccount(),
+      ]);
+    });
+
+    test('keeps everything when the password is wrong', () async {
+      when(() => authDataSource.reauthenticate('password')).thenThrow(const InvalidCredentialsException());
+
+      final result = await repository.deleteAccount('password');
+
+      expect(result.error, isA<InvalidCredentialsException>());
+      verifyNever(() => profileDataSource.deleteUserData(any()));
+      verifyNever(() => authDataSource.deleteSignedInAccount());
+    });
+  });
+
   group('watchCurrentUser', () {
     late StreamController<String?> signedInUserIds;
     late StreamController<UserModel?> profiles;

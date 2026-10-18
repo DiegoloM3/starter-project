@@ -11,6 +11,9 @@ class ArticleRemoteDataSource {
   /// Enough for the feed until it is paginated.
   static const int _feedLimit = 50;
 
+  /// Enough articles to compute the trends of a week.
+  static const int _periodLimit = 300;
+
   /// Maximum number of values that a Firestore `whereIn` filter accepts.
   static const int _whereInLimit = 30;
 
@@ -47,6 +50,17 @@ class ArticleRemoteDataSource {
         (await Future.wait(queries)).expand((snapshot) => snapshot.docs).map(_toModel).toList()
           ..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
     return articles.take(_feedLimit).toList();
+  }
+
+  /// Newest first, up to [_periodLimit] articles.
+  Future<List<ArticleModel>> getArticlesPublishedSince(DateTime since) async {
+    final snapshot =
+        await _articles
+            .where('publishedAt', isGreaterThanOrEqualTo: Timestamp.fromDate(since))
+            .orderBy('publishedAt', descending: true)
+            .limit(_periodLimit)
+            .get();
+    return snapshot.docs.map(_toModel).toList();
   }
 
   /// Articles that no longer exist are not returned. The order is not guaranteed.

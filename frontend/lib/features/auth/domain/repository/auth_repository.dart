@@ -11,6 +11,10 @@ abstract class AuthRepository {
 
   Future<DataState<void>> signOut();
 
+  /// Deletes the account and the private data of the user after confirming their password.
+  /// Their articles and comments are kept.
+  Future<DataState<void>> deleteAccount(String password);
+
   /// Emits the signed in user, or null when nobody is signed in.
   Stream<UserEntity?> watchCurrentUser();
 }

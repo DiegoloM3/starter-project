@@ -12,6 +12,9 @@ abstract class ArticleRepository {
   /// Newest first.
   Future<DataState<List<ArticleEntity>>> getArticlesByAuthors(List<String> authorIds);
 
+  /// Newest first.
+  Future<DataState<List<ArticleEntity>>> getArticlesPublishedSince(DateTime since);
+
   /// Publishes the article in the name of the signed in journalist.
   Future<DataState<ArticleEntity>> publishArticle(PublishArticleParams params);
 

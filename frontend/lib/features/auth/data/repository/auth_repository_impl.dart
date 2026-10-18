@@ -47,6 +47,17 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<DataState<void>> signOut() => runAsDataState(_authDataSource.signOut);
 
+  /// The account is deleted last: if anything fails before, the user can still sign in and retry.
+  @override
+  Future<DataState<void>> deleteAccount(String password) {
+    return runAsDataState(() async {
+      final uid = _authDataSource.signedInUserId;
+      await _authDataSource.reauthenticate(password);
+      await _profileDataSource.deleteUserData(uid);
+      await _authDataSource.deleteSignedInAccount();
+    });
+  }
+
   /// Follows the profile of the signed in user, so changes such as a new role show up at once.
   /// If the profile cannot be read, the app treats the user as signed out.
   @override

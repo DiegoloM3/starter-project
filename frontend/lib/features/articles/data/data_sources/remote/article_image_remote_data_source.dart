@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 
-import 'image_format.dart';
+import '../../../../../core/resources/image_format.dart';
 
 /// Images of the articles in Cloud Storage, at `media/articles/{fileName}`.
 class ArticleImageRemoteDataSource {

@@ -6,6 +6,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:news_app_clean_architecture/features/articles/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/bloc/articles/articles_cubit.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/bloc/reading_history/reading_history_cubit.dart';
+import 'package:news_app_clean_architecture/features/articles/presentation/bloc/trends/trends_cubit.dart';
+import 'package:news_app_clean_architecture/features/articles/presentation/bloc/trends/trends_state.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/bloc/articles/articles_state.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/bloc/saved_articles/saved_articles_cubit.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/bloc/saved_articles/saved_articles_state.dart';
@@ -26,6 +28,8 @@ class MockSavedArticlesCubit extends MockCubit<SavedArticlesState> implements Sa
 class MockUserProfileCubit extends MockCubit<UserProfileState> implements UserProfileCubit {}
 
 class MockReadingHistoryCubit extends MockCubit<List<ArticleEntity>> implements ReadingHistoryCubit {}
+
+class MockTrendsCubit extends MockCubit<TrendsState> implements TrendsCubit {}
 
 UserEntity buildUser(UserRole role) {
   return UserEntity(uid: 'user-1', firstName: 'Jane', lastName: 'Doe', bio: '', role: role);
@@ -49,6 +53,11 @@ void main() {
     when(readingHistoryCubit.load).thenAnswer((_) async {});
     whenListen(readingHistoryCubit, const Stream<List<ArticleEntity>>.empty(), initialState: const <ArticleEntity>[]);
     sl.registerFactory<ReadingHistoryCubit>(() => readingHistoryCubit);
+
+    final trendsCubit = MockTrendsCubit();
+    when(trendsCubit.load).thenAnswer((_) async {});
+    whenListen(trendsCubit, const Stream<TrendsState>.empty(), initialState: const TrendsState());
+    sl.registerFactory<TrendsCubit>(() => trendsCubit);
   }
 
   Future<void> pumpHomeScreen(WidgetTester tester, UserEntity user) {

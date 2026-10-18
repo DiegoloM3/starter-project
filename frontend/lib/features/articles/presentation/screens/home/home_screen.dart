@@ -6,6 +6,7 @@ import '../../../../../shared/users/domain/entities/user.dart';
 import '../../../../../injection_container.dart';
 import '../../../../profiles/presentation/bloc/user_profile/user_profile_cubit.dart';
 import '../../bloc/reading_history/reading_history_cubit.dart';
+import '../../bloc/trends/trends_cubit.dart';
 import '../../../../profiles/presentation/screens/profile/profile_screen.dart';
 import '../../bloc/saved_articles/saved_articles_cubit.dart';
 import '../../bloc/saved_articles/saved_articles_state.dart';
@@ -33,11 +34,13 @@ class _HomeScreenState extends State<HomeScreen> {
   /// following someone from another screen.
   late final UserProfileCubit _ownProfileCubit = sl<UserProfileCubit>(param1: widget.user.uid)..load();
   late final ReadingHistoryCubit _readingHistoryCubit = sl<ReadingHistoryCubit>()..load();
+  late final TrendsCubit _trendsCubit = sl<TrendsCubit>()..load();
 
   @override
   void dispose() {
     _ownProfileCubit.close();
     _readingHistoryCubit.close();
+    _trendsCubit.close();
     super.dispose();
   }
 
@@ -72,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
       Navigator.of(context).pushNamed(AppRoutes.articleEditor);
     } else {
       if (tab == _HomeTab.profile) _refreshProfile();
+      if (tab == _HomeTab.trends) _trendsCubit.load();
       setState(() => _currentTab = tab);
     }
   }
@@ -83,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildTabContent(_HomeTab tab) => switch (tab) {
     _HomeTab.news => const FeedScreen(),
-    _HomeTab.trends => const TrendsScreen(),
+    _HomeTab.trends => BlocProvider.value(value: _trendsCubit, child: const TrendsScreen()),
     _HomeTab.publish => const SizedBox.shrink(),
     _HomeTab.saved => const SavedScreen(),
     _HomeTab.profile => MultiBlocProvider(

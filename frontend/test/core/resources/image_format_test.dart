@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:news_app_clean_architecture/features/articles/data/data_sources/remote/image_format.dart';
+import 'package:news_app_clean_architecture/core/resources/image_format.dart';
 
 void main() {
   Uint8List bytesOf(List<int> header) => Uint8List.fromList([...header, 0, 0, 0, 0, 0, 0, 0, 0]);

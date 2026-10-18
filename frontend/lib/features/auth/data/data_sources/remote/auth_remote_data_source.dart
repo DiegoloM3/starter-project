@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../../../../core/resources/exceptions.dart';
 import '../../../domain/exceptions/auth_exceptions.dart';
 import '../../../domain/params/auth_validation.dart';
 
@@ -31,7 +32,17 @@ class AuthRemoteDataSource {
 
   Future<void> signOut() => _auth.signOut();
 
-  Future<void> deleteSignedInAccount() async => _auth.currentUser?.delete();
+  String get signedInUserId => _auth.currentUser?.uid ?? (throw const NotSignedInException());
+
+  /// Firebase only deletes accounts that signed in recently, so the password is confirmed first.
+  Future<void> reauthenticate(String password) {
+    return _translateErrors(() async {
+      final user = _auth.currentUser ?? (throw const NotSignedInException());
+      await user.reauthenticateWithCredential(EmailAuthProvider.credential(email: user.email!, password: password));
+    });
+  }
+
+  Future<void> deleteSignedInAccount() => _translateErrors(() async => _auth.currentUser?.delete());
 
   Future<T> _translateErrors<T>(Future<T> Function() request) async {
     try {

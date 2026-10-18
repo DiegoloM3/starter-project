@@ -7,6 +7,7 @@ import 'package:news_app_clean_architecture/features/auth/domain/exceptions/auth
 import 'package:news_app_clean_architecture/features/auth/domain/params/auth_validation.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/params/sign_in_params.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/params/sign_up_params.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/usecases/delete_account.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_in.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_up.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth_form/auth_form_cubit.dart';
@@ -16,11 +17,14 @@ class MockSignInUseCase extends Mock implements SignInUseCase {}
 
 class MockSignUpUseCase extends Mock implements SignUpUseCase {}
 
+class MockDeleteAccountUseCase extends Mock implements DeleteAccountUseCase {}
+
 const testUser = UserEntity(uid: 'user-1', firstName: 'Jane', lastName: 'Doe', bio: '', role: UserRole.reader);
 
 void main() {
   late MockSignInUseCase signIn;
   late MockSignUpUseCase signUp;
+  late MockDeleteAccountUseCase deleteAccount;
 
   setUpAll(() {
     registerFallbackValue(SignInParams(email: '', password: ''));
@@ -30,9 +34,10 @@ void main() {
   setUp(() {
     signIn = MockSignInUseCase();
     signUp = MockSignUpUseCase();
+    deleteAccount = MockDeleteAccountUseCase();
   });
 
-  AuthFormCubit buildCubit() => AuthFormCubit(signIn, signUp);
+  AuthFormCubit buildCubit() => AuthFormCubit(signIn, signUp, deleteAccount);
 
   group('signIn', () {
     blocTest<AuthFormCubit, AuthFormState>(
@@ -108,6 +113,32 @@ void main() {
           () => const [
             AuthFormState(status: AuthFormStatus.submitting),
             AuthFormState(status: AuthFormStatus.failure, failure: AuthFormFailure.emailAlreadyInUse),
+          ],
+    );
+  });
+
+  group('deleteAccount', () {
+    blocTest<AuthFormCubit, AuthFormState>(
+      'deletes the account',
+      setUp: () => when(() => deleteAccount('password')).thenAnswer((_) async => const DataSuccess(null)),
+      build: buildCubit,
+      act: (cubit) => cubit.deleteAccount('password'),
+      expect:
+          () => const [AuthFormState(status: AuthFormStatus.submitting), AuthFormState(status: AuthFormStatus.success)],
+    );
+
+    blocTest<AuthFormCubit, AuthFormState>(
+      'fails when the password is wrong',
+      setUp:
+          () => when(
+            () => deleteAccount('wrong'),
+          ).thenAnswer((_) async => const DataFailed(InvalidCredentialsException())),
+      build: buildCubit,
+      act: (cubit) => cubit.deleteAccount('wrong'),
+      expect:
+          () => const [
+            AuthFormState(status: AuthFormStatus.submitting),
+            AuthFormState(status: AuthFormStatus.failure, failure: AuthFormFailure.invalidCredentials),
           ],
     );
   });

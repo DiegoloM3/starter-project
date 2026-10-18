@@ -15,7 +15,9 @@ import 'features/articles/domain/repository/article_repository.dart';
 import 'features/articles/domain/repository/saved_articles_repository.dart';
 import 'features/articles/domain/usecases/delete_article.dart';
 import 'features/articles/domain/usecases/get_article.dart';
-import 'features/articles/domain/usecases/get_articles.dart';
+import 'features/articles/domain/usecases/get_for_you_articles.dart';
+import 'features/articles/domain/usecases/get_trending_topics.dart';
+import 'features/articles/presentation/bloc/trends/trends_cubit.dart';
 import 'features/articles/domain/usecases/get_saved_articles.dart';
 import 'features/articles/domain/usecases/publish_article.dart';
 import 'features/articles/domain/usecases/remove_saved_article.dart';
@@ -30,6 +32,7 @@ import 'features/auth/data/data_sources/remote/auth_remote_data_source.dart';
 import 'shared/users/data/data_sources/remote/user_profile_remote_data_source.dart';
 import 'features/auth/data/repository/auth_repository_impl.dart';
 import 'features/auth/domain/repository/auth_repository.dart';
+import 'features/auth/domain/usecases/delete_account.dart';
 import 'features/auth/domain/usecases/sign_in.dart';
 import 'features/auth/domain/usecases/sign_out.dart';
 import 'features/auth/domain/usecases/sign_up.dart';
@@ -51,6 +54,9 @@ import 'features/articles/domain/usecases/get_reading_history.dart';
 import 'features/articles/domain/usecases/record_article_view.dart';
 import 'features/articles/presentation/bloc/reading_history/reading_history_cubit.dart';
 import 'features/profiles/data/data_sources/remote/follow_remote_data_source.dart';
+import 'features/profiles/data/data_sources/remote/user_photo_remote_data_source.dart';
+import 'features/profiles/domain/usecases/update_profile.dart';
+import 'features/profiles/presentation/bloc/edit_profile/edit_profile_cubit.dart';
 import 'features/profiles/data/repository/profile_repository_impl.dart';
 import 'features/profiles/domain/repository/profile_repository.dart';
 import 'features/profiles/domain/usecases/follow_user.dart';
@@ -61,6 +67,12 @@ import 'features/profiles/domain/usecases/is_following.dart';
 import 'features/profiles/domain/usecases/unfollow_user.dart';
 import 'features/profiles/presentation/bloc/user_profile/user_profile_cubit.dart';
 import 'features/settings/data/data_sources/local/settings_local_data_source.dart';
+import 'features/settings/data/data_sources/remote/account_settings_remote_data_source.dart';
+import 'features/settings/data/repository/account_settings_repository_impl.dart';
+import 'features/settings/domain/repository/account_settings_repository.dart';
+import 'features/settings/domain/usecases/get_notifications_enabled.dart';
+import 'features/settings/domain/usecases/set_notifications_enabled.dart';
+import 'features/settings/presentation/bloc/notifications/notifications_cubit.dart';
 import 'features/settings/data/repository/settings_repository_impl.dart';
 import 'features/settings/domain/repository/settings_repository.dart';
 import 'features/settings/domain/usecases/get_appearance.dart';
@@ -94,7 +106,12 @@ void _registerSettings(SharedPreferences preferences) {
     ..registerLazySingleton<SettingsRepository>(() => SettingsRepositoryImpl(sl()))
     ..registerLazySingleton(() => GetAppearanceUseCase(sl()))
     ..registerLazySingleton(() => SaveAppearanceUseCase(sl()))
-    ..registerFactory(() => AppearanceCubit(sl(), sl()));
+    ..registerFactory(() => AppearanceCubit(sl(), sl()))
+    ..registerLazySingleton(() => AccountSettingsRemoteDataSource(sl(), sl()))
+    ..registerLazySingleton<AccountSettingsRepository>(() => AccountSettingsRepositoryImpl(sl()))
+    ..registerLazySingleton(() => GetNotificationsEnabledUseCase(sl()))
+    ..registerLazySingleton(() => SetNotificationsEnabledUseCase(sl()))
+    ..registerFactory(() => NotificationsCubit(sl(), sl()));
 }
 
 void _registerAuth() {
@@ -107,7 +124,8 @@ void _registerAuth() {
     ..registerLazySingleton(() => SignOutUseCase(sl()))
     ..registerLazySingleton(() => WatchCurrentUserUseCase(sl()))
     ..registerFactory(() => AuthCubit(sl(), sl()))
-    ..registerFactory(() => AuthFormCubit(sl(), sl()));
+    ..registerLazySingleton(() => DeleteAccountUseCase(sl()))
+    ..registerFactory(() => AuthFormCubit(sl(), sl(), sl()));
 }
 
 void _registerArticles() {
@@ -119,7 +137,8 @@ void _registerArticles() {
     ..registerLazySingleton<ArticleRepository>(() => ArticleRepositoryImpl(sl(), sl()))
     ..registerLazySingleton<SavedArticlesRepository>(() => SavedArticlesRepositoryImpl(sl(), sl()))
     ..registerLazySingleton<ReadingHistoryRepository>(() => ReadingHistoryRepositoryImpl(sl(), sl()))
-    ..registerLazySingleton(() => GetArticlesUseCase(sl()))
+    ..registerLazySingleton(() => GetForYouArticlesUseCase(sl()))
+    ..registerLazySingleton(() => GetTrendingTopicsUseCase(sl()))
     ..registerLazySingleton(() => GetArticleUseCase(sl()))
     ..registerLazySingleton(() => GetArticlesByAuthorsUseCase(sl()))
     ..registerLazySingleton(() => PublishArticleUseCase(sl()))
@@ -131,10 +150,11 @@ void _registerArticles() {
     ..registerLazySingleton(() => RemoveSavedArticleUseCase(sl()))
     ..registerLazySingleton(() => RecordArticleViewUseCase(sl()))
     ..registerLazySingleton(() => GetReadingHistoryUseCase(sl()))
-    ..registerFactory(() => ArticlesCubit(sl()))
+    ..registerFactory(() => ArticlesCubit(sl(), sl(), sl()))
     ..registerFactory(() => SavedArticlesCubit(sl(), sl(), sl()))
     ..registerFactory(() => ArticleEditorCubit(sl(), sl(), sl()))
     ..registerFactory(() => ReadingHistoryCubit(sl()))
+    ..registerFactory(() => TrendsCubit(sl()))
     ..registerFactoryParam<ArticleDetailCubit, ArticleEntity, void>(
       (article, _) => ArticleDetailCubit(article, sl(), sl(), sl()),
     );
@@ -153,7 +173,10 @@ void _registerComments() {
 void _registerProfiles() {
   sl
     ..registerLazySingleton(() => FollowRemoteDataSource(sl(), sl()))
-    ..registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(sl(), sl()))
+    ..registerLazySingleton(() => UserPhotoRemoteDataSource(sl(), sl(), sl()))
+    ..registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(sl(), sl(), sl()))
+    ..registerLazySingleton(() => UpdateProfileUseCase(sl()))
+    ..registerFactory(() => EditProfileCubit(sl()))
     ..registerLazySingleton(() => GetUserProfileUseCase(sl()))
     ..registerLazySingleton(() => GetFollowStatsUseCase(sl()))
     ..registerLazySingleton(() => IsFollowingUseCase(sl()))
