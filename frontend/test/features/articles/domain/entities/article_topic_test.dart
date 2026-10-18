@@ -7,8 +7,16 @@ void main() {
       final ids = ArticleTopic.values.map((topic) => topic.id).toSet();
 
       expect(ids, {
-        'technology', 'sports', 'gaming', 'politics', 'economy',
-        'science', 'health', 'entertainment', 'culture', 'world',
+        'technology',
+        'sports',
+        'gaming',
+        'politics',
+        'economy',
+        'science',
+        'health',
+        'entertainment',
+        'culture',
+        'world',
       });
     });
 

@@ -2,11 +2,13 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
+import 'package:news_app_clean_architecture/core/usecase/usecase.dart';
 import 'package:news_app_clean_architecture/features/articles/domain/entities/article_topic.dart';
 import 'package:news_app_clean_architecture/features/articles/domain/exceptions/article_exceptions.dart';
 import 'package:news_app_clean_architecture/features/articles/domain/params/article_draft.dart';
 import 'package:news_app_clean_architecture/features/articles/domain/params/article_image.dart';
 import 'package:news_app_clean_architecture/features/articles/domain/params/publish_article_params.dart';
+import 'package:news_app_clean_architecture/features/articles/domain/usecases/get_articles.dart';
 import 'package:news_app_clean_architecture/features/articles/domain/usecases/publish_article.dart';
 
 import 'article_test_data.dart';
@@ -23,6 +25,15 @@ void main() {
     expect(result.data!.id, isNotEmpty);
     expect(result.data!.title, 'New title');
     expect(result.data!.topics, [ArticleTopic.sports]);
+  });
+
+  test('adds the published article to the list of articles', () async {
+    final params = PublishArticleParams(draft: buildValidDraft(), thumbnail: buildValidImage());
+
+    final published = (await publishArticle(params)).data!;
+
+    final articles = (await GetArticlesUseCase().call(const NoParams())).data!;
+    expect(articles.first, published);
   });
 
   test('fails with the validation errors of an invalid draft', () async {

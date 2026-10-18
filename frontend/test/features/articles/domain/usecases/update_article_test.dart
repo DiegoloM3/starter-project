@@ -15,8 +15,7 @@ import 'article_test_data.dart';
 void main() {
   final updateArticle = UpdateArticleUseCase();
 
-  Future<String> existingArticleId() async =>
-      (await GetArticlesUseCase().call(const NoParams())).data!.first.id;
+  Future<String> existingArticleId() async => (await GetArticlesUseCase().call(const NoParams())).data!.first.id;
 
   test('updates the editable fields and keeps the authorship and publication date', () async {
     final original = (await GetArticlesUseCase().call(const NoParams())).data!.first;
@@ -29,6 +28,15 @@ void main() {
     expect(result.data!.authorId, original.authorId);
     expect(result.data!.publishedAt, original.publishedAt);
     expect(result.data!.thumbnailURL, original.thumbnailURL);
+  });
+
+  test('replaces the article in the list of articles', () async {
+    final params = UpdateArticleParams(articleId: await existingArticleId(), draft: buildValidDraft(title: 'Edited'));
+
+    final updated = (await updateArticle(params)).data!;
+
+    final articles = (await GetArticlesUseCase().call(const NoParams())).data!;
+    expect(articles, contains(updated));
   });
 
   test('fails with the validation errors of an invalid draft', () async {

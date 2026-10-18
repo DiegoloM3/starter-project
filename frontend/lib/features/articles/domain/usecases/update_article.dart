@@ -14,7 +14,9 @@ class UpdateArticleUseCase implements UseCase<DataState<ArticleEntity>, UpdateAr
     await Future.delayed(mockNetworkDelay);
     final original = findMockArticle(params.articleId);
     if (original == null) return DataFailed(ArticleNotFoundException(params.articleId));
-    return DataSuccess(_applyChanges(original, params));
+    final updated = _applyChanges(original, params);
+    replaceMockArticle(updated);
+    return DataSuccess(updated);
   }
 
   ArticleEntity _applyChanges(ArticleEntity original, UpdateArticleParams params) {

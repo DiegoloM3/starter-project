@@ -6,21 +6,17 @@ class SignUpParams {
   final String email;
   final String password;
 
-  SignUpParams({
-    required String firstName,
-    required String lastName,
-    required String email,
-    required this.password,
-  })  : firstName = firstName.trim(),
-        lastName = lastName.trim(),
-        email = email.trim();
+  SignUpParams({required String firstName, required String lastName, required String email, required this.password})
+    : firstName = firstName.trim(),
+      lastName = lastName.trim(),
+      email = email.trim();
 
   Set<AuthValidationError> get validationErrors => {
-        ..._firstNameErrors(),
-        ..._lastNameErrors(),
-        if (!isValidEmail(email)) AuthValidationError.emailInvalid,
-        if (password.length < AuthLimits.passwordMinLength) AuthValidationError.passwordTooShort,
-      };
+    ..._firstNameErrors(),
+    ..._lastNameErrors(),
+    if (!isValidEmail(email)) AuthValidationError.emailInvalid,
+    if (password.length < AuthLimits.passwordMinLength) AuthValidationError.passwordTooShort,
+  };
 
   Iterable<AuthValidationError> _firstNameErrors() sync* {
     if (firstName.isEmpty) yield AuthValidationError.firstNameEmpty;

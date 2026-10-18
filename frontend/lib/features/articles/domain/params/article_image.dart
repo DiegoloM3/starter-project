@@ -9,7 +9,7 @@ class ArticleImage {
   const ArticleImage(this.bytes);
 
   Set<ArticleValidationError> get validationErrors => {
-        if (bytes.isEmpty) ArticleValidationError.imageEmpty,
-        if (bytes.length >= ArticleLimits.imageMaxBytes) ArticleValidationError.imageTooLarge,
-      };
+    if (bytes.isEmpty) ArticleValidationError.imageEmpty,
+    if (bytes.length >= ArticleLimits.imageMaxBytes) ArticleValidationError.imageTooLarge,
+  };
 }

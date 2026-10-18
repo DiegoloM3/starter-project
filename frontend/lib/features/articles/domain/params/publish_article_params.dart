@@ -7,8 +7,5 @@ class PublishArticleParams {
 
   const PublishArticleParams({required this.draft, required this.thumbnail});
 
-  Set<ArticleValidationError> get validationErrors => {
-        ...draft.validationErrors,
-        ...thumbnail.validationErrors,
-      };
+  Set<ArticleValidationError> get validationErrors => {...draft.validationErrors, ...thumbnail.validationErrors};
 }

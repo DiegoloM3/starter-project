@@ -6,25 +6,25 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.7.0
 
 dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^2.0.0
 
   #state management
-  flutter_bloc: ^8.1.2
+  flutter_bloc: ^9.1.1
 
   #comparing dart objects
-  equatable: ^2.0.5
+  equatable: ^3.0.0
 
   #service locator
-  get_it: ^7.6.0
+  get_it: ^9.3.0
   
   #dateFormat
-  intl: ^0.18.1
+  intl: ^0.20.2
 
   # Firebase
   firebase_core: ^5.0.0
@@ -33,12 +33,27 @@ dependencies:
   firebase_auth: ^7.0.0
 
   #cached image
-  cached_network_image: ^3.2.0
+  cached_network_image: ^4.0.3
+
+  #rich text editor
+  flutter_quill: ^11.6.0
+
+  #gallery images
+  image_picker: ^1.2.4
+
+  #translations of material and editor widgets
+  flutter_localizations:
+    sdk: flutter
+
+  #local settings
+  shared_preferences: ^2.5.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  bloc_test: ^10.0.0
+  mocktail: ^1.0.5
 
 flutter:
 

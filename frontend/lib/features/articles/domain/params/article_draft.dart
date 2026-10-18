@@ -30,20 +30,16 @@ class ArticleDraft {
   final ArticleContent content;
   final Set<ArticleTopic> topics;
 
-  ArticleDraft({
-    required String title,
-    required String description,
-    required this.content,
-    required this.topics,
-  })  : title = title.trim(),
-        description = description.trim();
+  ArticleDraft({required String title, required String description, required this.content, required this.topics})
+    : title = title.trim(),
+      description = description.trim();
 
   Set<ArticleValidationError> get validationErrors => {
-        ..._titleErrors(),
-        ..._descriptionErrors(),
-        ..._contentErrors(),
-        ..._topicErrors(),
-      };
+    ..._titleErrors(),
+    ..._descriptionErrors(),
+    ..._contentErrors(),
+    ..._topicErrors(),
+  };
 
   Iterable<ArticleValidationError> _titleErrors() sync* {
     if (title.isEmpty) yield ArticleValidationError.titleEmpty;

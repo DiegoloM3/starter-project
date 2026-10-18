@@ -1,4 +1,5 @@
-// Mock data used by the use cases until the data layer connects them to Firebase.
+// In-memory mock data that the use cases read and change until the data layer
+// connects them to Firebase. Changes last until the app is closed.
 
 import '../../entities/article.dart';
 import '../../entities/article_content.dart';
@@ -11,7 +12,7 @@ const String mockJournalistId = 'mock-journalist';
 const String mockJournalistName = 'Jane Doe';
 const String mockImageURL = 'https://picsum.photos/seed/symmetry/800/450';
 
-final List<ArticleEntity> mockArticles = List.unmodifiable([
+final List<ArticleEntity> mockArticles = [
   _buildMockArticle(
     id: 'mock-article-1',
     title: 'The indie games that surprised everyone this year',
@@ -35,15 +36,26 @@ final List<ArticleEntity> mockArticles = List.unmodifiable([
     authorId: 'mock-journalist-2',
     authorName: 'Omar Ruiz',
   ),
-]);
+];
 
-const List<String> mockSavedArticleIds = ['mock-article-2'];
+/// Ids in the order they were saved.
+final Set<String> mockSavedArticleIds = {'mock-article-2'};
 
 ArticleEntity? findMockArticle(String articleId) {
   for (final article in mockArticles) {
     if (article.id == articleId) return article;
   }
   return null;
+}
+
+void replaceMockArticle(ArticleEntity updatedArticle) {
+  final index = mockArticles.indexWhere((article) => article.id == updatedArticle.id);
+  mockArticles[index] = updatedArticle;
+}
+
+void removeMockArticle(String articleId) {
+  mockArticles.removeWhere((article) => article.id == articleId);
+  mockSavedArticleIds.remove(articleId);
 }
 
 ArticleEntity _buildMockArticle({

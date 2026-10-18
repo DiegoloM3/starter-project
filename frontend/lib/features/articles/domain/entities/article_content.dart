@@ -13,9 +13,11 @@ class ArticleContent extends Equatable {
   const ArticleContent(this.deltaJson);
 
   factory ArticleContent.fromPlainText(String text) {
-    return ArticleContent(jsonEncode([
-      {'insert': '$text\n'},
-    ]));
+    return ArticleContent(
+      jsonEncode([
+        {'insert': '$text\n'},
+      ]),
+    );
   }
 
   String get plainText => _textInserts().join();

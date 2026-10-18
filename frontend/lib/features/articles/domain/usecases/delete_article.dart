@@ -8,6 +8,7 @@ class DeleteArticleUseCase implements UseCase<DataState<void>, String> {
   Future<DataState<void>> call(String articleId) async {
     await Future.delayed(mockNetworkDelay);
     if (findMockArticle(articleId) == null) return DataFailed(ArticleNotFoundException(articleId));
+    removeMockArticle(articleId);
     return const DataSuccess(null);
   }
 }

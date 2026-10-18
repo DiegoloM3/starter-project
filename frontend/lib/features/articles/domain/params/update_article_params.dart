@@ -10,8 +10,5 @@ class UpdateArticleParams {
 
   const UpdateArticleParams({required this.articleId, required this.draft, this.newThumbnail});
 
-  Set<ArticleValidationError> get validationErrors => {
-        ...draft.validationErrors,
-        ...?newThumbnail?.validationErrors,
-      };
+  Set<ArticleValidationError> get validationErrors => {...draft.validationErrors, ...?newThumbnail?.validationErrors};
 }

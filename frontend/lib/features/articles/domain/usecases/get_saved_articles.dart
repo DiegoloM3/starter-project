@@ -7,7 +7,8 @@ class GetSavedArticlesUseCase implements UseCase<DataState<List<ArticleEntity>>,
   @override
   Future<DataState<List<ArticleEntity>>> call(NoParams params) async {
     await Future.delayed(mockNetworkDelay);
-    final savedArticles = mockSavedArticleIds.map(findMockArticle).whereType<ArticleEntity>().toList();
+    final mostRecentFirst = mockSavedArticleIds.toList().reversed;
+    final savedArticles = mostRecentFirst.map(findMockArticle).whereType<ArticleEntity>().toList();
     return DataSuccess(savedArticles);
   }
 }

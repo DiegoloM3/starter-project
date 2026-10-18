@@ -6,6 +6,7 @@ class RemoveSavedArticleUseCase implements UseCase<DataState<void>, String> {
   @override
   Future<DataState<void>> call(String articleId) async {
     await Future.delayed(mockNetworkDelay);
+    mockSavedArticleIds.remove(articleId);
     return const DataSuccess(null);
   }
 }

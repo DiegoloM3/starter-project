@@ -13,6 +13,7 @@ class SignInUseCase implements UseCase<DataState<UserEntity>, SignInParams> {
 
     await Future.delayed(mockNetworkDelay);
     final user = params.email == mockJournalistEmail ? mockJournalist : mockReader;
+    mockSession.change(user);
     return DataSuccess(user);
   }
 }

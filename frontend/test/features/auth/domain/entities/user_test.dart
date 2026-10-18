@@ -2,13 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/entities/user.dart';
 
 UserEntity buildUser({UserRole role = UserRole.reader}) {
-  return UserEntity(
-    uid: 'user-1',
-    firstName: 'Jane',
-    lastName: 'Doe',
-    bio: '',
-    role: role,
-  );
+  return UserEntity(uid: 'user-1', firstName: 'Jane', lastName: 'Doe', bio: '', role: role);
 }
 
 void main() {

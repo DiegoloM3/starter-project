@@ -12,12 +12,18 @@ class SignUpUseCase implements UseCase<DataState<UserEntity>, SignUpParams> {
     if (errors.isNotEmpty) return DataFailed(AuthValidationException(errors));
 
     await Future.delayed(mockNetworkDelay);
-    return DataSuccess(UserEntity(
+    final user = _buildReader(params);
+    mockSession.change(user);
+    return DataSuccess(user);
+  }
+
+  UserEntity _buildReader(SignUpParams params) {
+    return UserEntity(
       uid: 'mock-user-${DateTime.now().microsecondsSinceEpoch}',
       firstName: params.firstName,
       lastName: params.lastName,
       bio: '',
       role: UserRole.reader,
-    ));
+    );
   }
 }

@@ -20,7 +20,12 @@ void main() {
   });
 
   test('removes surrounding spaces from the names', () async {
-    final params = SignUpParams(firstName: ' Jane ', lastName: ' Doe ', email: 'jane@test.com', password: 'password123');
+    final params = SignUpParams(
+      firstName: ' Jane ',
+      lastName: ' Doe ',
+      email: 'jane@test.com',
+      password: 'password123',
+    );
 
     final result = await signUp(params);
 

@@ -7,7 +7,7 @@ class SignInParams {
   SignInParams({required String email, required this.password}) : email = email.trim();
 
   Set<AuthValidationError> get validationErrors => {
-        if (!isValidEmail(email)) AuthValidationError.emailInvalid,
-        if (password.isEmpty) AuthValidationError.passwordEmpty,
-      };
+    if (!isValidEmail(email)) AuthValidationError.emailInvalid,
+    if (password.isEmpty) AuthValidationError.passwordEmpty,
+  };
 }

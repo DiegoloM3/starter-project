@@ -12,7 +12,9 @@ class PublishArticleUseCase implements UseCase<DataState<ArticleEntity>, Publish
     if (errors.isNotEmpty) return DataFailed(ArticleValidationException(errors));
 
     await Future.delayed(mockNetworkDelay);
-    return DataSuccess(_buildPublishedArticle(params));
+    final article = _buildPublishedArticle(params);
+    mockArticles.add(article);
+    return DataSuccess(article);
   }
 
   ArticleEntity _buildPublishedArticle(PublishArticleParams params) {

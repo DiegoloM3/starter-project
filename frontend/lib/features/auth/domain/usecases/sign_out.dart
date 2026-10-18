@@ -6,6 +6,7 @@ class SignOutUseCase implements UseCase<DataState<void>, NoParams> {
   @override
   Future<DataState<void>> call(NoParams params) async {
     await Future.delayed(mockNetworkDelay);
+    mockSession.change(null);
     return const DataSuccess(null);
   }
 }
