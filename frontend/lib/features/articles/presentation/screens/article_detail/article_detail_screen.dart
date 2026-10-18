@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../config/routes/routes.dart';
 import '../../../../auth/presentation/bloc/auth/auth_cubit.dart';
 import '../../../../auth/presentation/bloc/auth/auth_state.dart';
+import '../../../../comments/presentation/widgets/comments_section.dart';
 import '../../../domain/entities/article.dart';
 import '../../bloc/article_detail/article_detail_cubit.dart';
 import '../../bloc/article_detail/article_detail_state.dart';
@@ -70,13 +71,29 @@ class _ArticleBody extends StatelessWidget {
         const SizedBox(height: 12),
         Text(article.description, style: textTheme.titleMedium?.copyWith(height: 1.4)),
         const SizedBox(height: 16),
-        ArticleMetaText(article: article),
+        ArticleMetaText(article: article, onAuthorTap: () => _openProfile(context, article.authorId)),
         const SizedBox(height: 16),
         ArticleThumbnail(imageURL: article.thumbnailURL),
         const SizedBox(height: 24),
         ArticleContentViewer(content: article.content),
+        const SizedBox(height: 32),
+        const Divider(),
+        const SizedBox(height: 24),
+        CommentsSection(
+          currentUserId: _currentUserId(context),
+          onAuthorTap: (authorId) => _openProfile(context, authorId),
+        ),
       ],
     );
+  }
+
+  void _openProfile(BuildContext context, String uid) {
+    Navigator.of(context).pushNamed(AppRoutes.userProfile, arguments: uid);
+  }
+
+  String? _currentUserId(BuildContext context) {
+    final authState = context.watch<AuthCubit>().state;
+    return authState is AuthAuthenticated ? authState.user.uid : null;
   }
 }
 

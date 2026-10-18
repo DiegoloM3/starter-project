@@ -1,13 +1,13 @@
 import 'package:rxdart/rxdart.dart';
 
 import '../../../../core/resources/data_state.dart';
-import '../../domain/entities/user.dart';
+import '../../../../shared/users/domain/entities/user.dart';
 import '../../domain/params/sign_in_params.dart';
 import '../../domain/params/sign_up_params.dart';
 import '../../domain/repository/auth_repository.dart';
 import '../data_sources/remote/auth_remote_data_source.dart';
-import '../data_sources/remote/user_profile_remote_data_source.dart';
-import '../models/user_model.dart';
+import '../../../../shared/users/data/data_sources/remote/user_profile_remote_data_source.dart';
+import '../../../../shared/users/data/models/user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _authDataSource;

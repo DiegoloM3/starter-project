@@ -1,5 +1,5 @@
 import '../../../../core/resources/data_state.dart';
-import '../entities/user.dart';
+import '../../../../shared/users/domain/entities/user.dart';
 import '../params/sign_in_params.dart';
 import '../params/sign_up_params.dart';
 

@@ -61,6 +61,14 @@ void main() {
     expect(result.data, [article.toEntity()]);
   });
 
+  test('gets the articles of the authors as entities', () async {
+    when(() => articleDataSource.getArticlesByAuthors(['journalist-1'])).thenAnswer((_) async => [article]);
+
+    final result = await repository.getArticlesByAuthors(['journalist-1']);
+
+    expect(result.data, [article.toEntity()]);
+  });
+
   test('fails with the exception of the data source', () async {
     final error = Exception('offline');
     when(() => articleDataSource.getArticles()).thenThrow(error);

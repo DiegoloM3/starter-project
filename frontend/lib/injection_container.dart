@@ -27,7 +27,7 @@ import 'features/articles/presentation/bloc/article_editor/article_editor_cubit.
 import 'features/articles/presentation/bloc/articles/articles_cubit.dart';
 import 'features/articles/presentation/bloc/saved_articles/saved_articles_cubit.dart';
 import 'features/auth/data/data_sources/remote/auth_remote_data_source.dart';
-import 'features/auth/data/data_sources/remote/user_profile_remote_data_source.dart';
+import 'shared/users/data/data_sources/remote/user_profile_remote_data_source.dart';
 import 'features/auth/data/repository/auth_repository_impl.dart';
 import 'features/auth/domain/repository/auth_repository.dart';
 import 'features/auth/domain/usecases/sign_in.dart';
@@ -36,6 +36,24 @@ import 'features/auth/domain/usecases/sign_up.dart';
 import 'features/auth/domain/usecases/watch_current_user.dart';
 import 'features/auth/presentation/bloc/auth/auth_cubit.dart';
 import 'features/auth/presentation/bloc/auth_form/auth_form_cubit.dart';
+import 'features/comments/data/data_sources/remote/comment_remote_data_source.dart';
+import 'features/comments/data/repository/comment_repository_impl.dart';
+import 'features/comments/domain/repository/comment_repository.dart';
+import 'features/comments/domain/usecases/add_comment.dart';
+import 'features/comments/domain/usecases/delete_comment.dart';
+import 'features/comments/domain/usecases/get_comments.dart';
+import 'features/comments/presentation/bloc/comments/comments_cubit.dart';
+import 'features/articles/domain/usecases/get_articles_by_authors.dart';
+import 'features/profiles/data/data_sources/remote/follow_remote_data_source.dart';
+import 'features/profiles/data/repository/profile_repository_impl.dart';
+import 'features/profiles/domain/repository/profile_repository.dart';
+import 'features/profiles/domain/usecases/follow_user.dart';
+import 'features/profiles/domain/usecases/get_follow_stats.dart';
+import 'features/profiles/domain/usecases/get_followed_user_ids.dart';
+import 'features/profiles/domain/usecases/get_user_profile.dart';
+import 'features/profiles/domain/usecases/is_following.dart';
+import 'features/profiles/domain/usecases/unfollow_user.dart';
+import 'features/profiles/presentation/bloc/user_profile/user_profile_cubit.dart';
 import 'features/settings/data/data_sources/local/settings_local_data_source.dart';
 import 'features/settings/data/repository/settings_repository_impl.dart';
 import 'features/settings/domain/repository/settings_repository.dart';
@@ -51,6 +69,8 @@ Future<void> initializeDependencies() async {
   _registerSettings(preferences);
   _registerAuth();
   _registerArticles();
+  _registerComments();
+  _registerProfiles();
 }
 
 /// The Firebase services are registered once, so the data sources receive them instead of creating them.
@@ -93,6 +113,7 @@ void _registerArticles() {
     ..registerLazySingleton<SavedArticlesRepository>(() => SavedArticlesRepositoryImpl(sl(), sl()))
     ..registerLazySingleton(() => GetArticlesUseCase(sl()))
     ..registerLazySingleton(() => GetArticleUseCase(sl()))
+    ..registerLazySingleton(() => GetArticlesByAuthorsUseCase(sl()))
     ..registerLazySingleton(() => PublishArticleUseCase(sl()))
     ..registerLazySingleton(() => UpdateArticleUseCase(sl()))
     ..registerLazySingleton(() => DeleteArticleUseCase(sl()))
@@ -105,5 +126,30 @@ void _registerArticles() {
     ..registerFactory(() => ArticleEditorCubit(sl(), sl(), sl()))
     ..registerFactoryParam<ArticleDetailCubit, ArticleEntity, void>(
       (article, _) => ArticleDetailCubit(article, sl(), sl()),
+    );
+}
+
+void _registerComments() {
+  sl
+    ..registerLazySingleton(() => CommentRemoteDataSource(sl(), sl()))
+    ..registerLazySingleton<CommentRepository>(() => CommentRepositoryImpl(sl()))
+    ..registerLazySingleton(() => GetCommentsUseCase(sl()))
+    ..registerLazySingleton(() => AddCommentUseCase(sl()))
+    ..registerLazySingleton(() => DeleteCommentUseCase(sl()))
+    ..registerFactoryParam<CommentsCubit, String, void>((articleId, _) => CommentsCubit(articleId, sl(), sl(), sl()));
+}
+
+void _registerProfiles() {
+  sl
+    ..registerLazySingleton(() => FollowRemoteDataSource(sl(), sl()))
+    ..registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(sl(), sl()))
+    ..registerLazySingleton(() => GetUserProfileUseCase(sl()))
+    ..registerLazySingleton(() => GetFollowStatsUseCase(sl()))
+    ..registerLazySingleton(() => IsFollowingUseCase(sl()))
+    ..registerLazySingleton(() => FollowUserUseCase(sl()))
+    ..registerLazySingleton(() => UnfollowUserUseCase(sl()))
+    ..registerLazySingleton(() => GetFollowedUserIdsUseCase(sl()))
+    ..registerFactoryParam<UserProfileCubit, String, void>(
+      (uid, _) => UserProfileCubit(uid, sl(), sl(), sl(), sl(), sl(), sl()),
     );
 }

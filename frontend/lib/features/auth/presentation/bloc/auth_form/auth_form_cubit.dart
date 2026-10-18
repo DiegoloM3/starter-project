@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/resources/data_state.dart';
-import '../../../domain/entities/user.dart';
+import '../../../../../shared/users/domain/entities/user.dart';
 import '../../../domain/exceptions/auth_exceptions.dart';
 import '../../../domain/params/sign_in_params.dart';
 import '../../../domain/params/sign_up_params.dart';

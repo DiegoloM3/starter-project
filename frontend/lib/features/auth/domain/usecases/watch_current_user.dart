@@ -1,5 +1,5 @@
 import '../../../../core/usecase/usecase.dart';
-import '../entities/user.dart';
+import '../../../../shared/users/domain/entities/user.dart';
 import '../repository/auth_repository.dart';
 
 /// Emits the signed in user, or null when nobody is signed in.

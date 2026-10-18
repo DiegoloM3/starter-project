@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:news_app_clean_architecture/features/auth/data/models/user_model.dart';
-import 'package:news_app_clean_architecture/features/auth/domain/entities/user.dart';
+import 'package:news_app_clean_architecture/shared/users/data/models/user_model.dart';
+import 'package:news_app_clean_architecture/shared/users/domain/entities/user.dart';
 
 void main() {
   test('parses a profile document', () {

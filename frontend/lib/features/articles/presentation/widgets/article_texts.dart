@@ -20,18 +20,34 @@ class ArticleTopicsText extends StatelessWidget {
 }
 
 /// Author, date and reading time, e.g. "Jane Doe · 16 oct 2026 · 2 min".
+/// With [onAuthorTap], the author name is bold and opens their profile.
 class ArticleMetaText extends StatelessWidget {
   final ArticleEntity article;
+  final VoidCallback? onAuthorTap;
 
-  const ArticleMetaText({super.key, required this.article});
+  const ArticleMetaText({super.key, required this.article, this.onAuthorTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final date = DateFormat.yMMMd().format(article.publishedAt);
-    return Text(
-      '${article.authorName} · $date · ${article.readingTimeInMinutes} min',
-      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+    final style = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant);
+    final details = '${DateFormat.yMMMd().format(article.publishedAt)} · ${article.readingTimeInMinutes} min';
+    if (onAuthorTap == null) return Text('${article.authorName} · $details', style: style);
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        InkWell(
+          onTap: onAuthorTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Text(
+              article.authorName,
+              style: style?.copyWith(color: theme.colorScheme.onSurface, fontWeight: FontWeight.w700),
+            ),
+          ),
+        ),
+        Text(' · $details', style: style),
+      ],
     );
   }
 }

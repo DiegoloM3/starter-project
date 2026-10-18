@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../../domain/exceptions/article_exceptions.dart';
+import '../../../../../core/resources/exceptions.dart';
 
 /// Saved articles of the signed in user, at `users/{uid}/savedArticles/{articleId}`.
 class SavedArticlesRemoteDataSource {

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/usecase/usecase.dart';
-import '../../../domain/entities/user.dart';
+import '../../../../../shared/users/domain/entities/user.dart';
 import '../../../domain/usecases/sign_out.dart';
 import '../../../domain/usecases/watch_current_user.dart';
 import 'auth_state.dart';

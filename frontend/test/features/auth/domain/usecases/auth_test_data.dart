@@ -1,5 +1,5 @@
 import 'package:mocktail/mocktail.dart';
-import 'package:news_app_clean_architecture/features/auth/domain/entities/user.dart';
+import 'package:news_app_clean_architecture/shared/users/domain/entities/user.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/repository/auth_repository.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}

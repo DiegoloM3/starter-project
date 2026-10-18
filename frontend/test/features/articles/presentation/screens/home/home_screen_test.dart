@@ -2,14 +2,18 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/bloc/articles/articles_cubit.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/bloc/articles/articles_state.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/bloc/saved_articles/saved_articles_cubit.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/bloc/saved_articles/saved_articles_state.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/screens/home/home_screen.dart';
-import 'package:news_app_clean_architecture/features/auth/domain/entities/user.dart';
+import 'package:news_app_clean_architecture/shared/users/domain/entities/user.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/auth_cubit.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/auth_state.dart';
+import 'package:news_app_clean_architecture/features/profiles/presentation/bloc/user_profile/user_profile_cubit.dart';
+import 'package:news_app_clean_architecture/features/profiles/presentation/bloc/user_profile/user_profile_state.dart';
+import 'package:news_app_clean_architecture/injection_container.dart';
 
 class MockAuthCubit extends MockCubit<AuthState> implements AuthCubit {}
 
@@ -17,12 +21,29 @@ class MockArticlesCubit extends MockCubit<ArticlesState> implements ArticlesCubi
 
 class MockSavedArticlesCubit extends MockCubit<SavedArticlesState> implements SavedArticlesCubit {}
 
+class MockUserProfileCubit extends MockCubit<UserProfileState> implements UserProfileCubit {}
+
 UserEntity buildUser(UserRole role) {
   return UserEntity(uid: 'user-1', firstName: 'Jane', lastName: 'Doe', bio: '', role: role);
 }
 
 void main() {
+  tearDown(() => sl.reset());
+
+  /// The home screen creates the cubit of the own profile through the service locator.
+  void registerOwnProfileCubit(UserEntity user) {
+    final profileCubit = MockUserProfileCubit();
+    when(profileCubit.load).thenAnswer((_) async {});
+    whenListen(
+      profileCubit,
+      const Stream<UserProfileState>.empty(),
+      initialState: UserProfileState(status: UserProfileStatus.success, user: user),
+    );
+    sl.registerFactoryParam<UserProfileCubit, String, void>((_, _) => profileCubit);
+  }
+
   Future<void> pumpHomeScreen(WidgetTester tester, UserEntity user) {
+    registerOwnProfileCubit(user);
     final authCubit = MockAuthCubit();
     final articlesCubit = MockArticlesCubit();
     final savedArticlesCubit = MockSavedArticlesCubit();

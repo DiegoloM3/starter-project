@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../config/routes/routes.dart';
-import '../../../../auth/domain/entities/user.dart';
-import '../../../../auth/presentation/screens/profile/profile_screen.dart';
+import '../../../../../shared/users/domain/entities/user.dart';
+import '../../../../../injection_container.dart';
+import '../../../../profiles/presentation/bloc/user_profile/user_profile_cubit.dart';
+import '../../../../profiles/presentation/screens/profile/profile_screen.dart';
 import '../../bloc/saved_articles/saved_articles_cubit.dart';
 import '../../bloc/saved_articles/saved_articles_state.dart';
 import '../feed/feed_screen.dart';
@@ -25,6 +27,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   _HomeTab _currentTab = _HomeTab.news;
+
+  /// Kept here so the profile is refreshed every time its tab is opened, for example after
+  /// following someone from another screen.
+  late final UserProfileCubit _ownProfileCubit = sl<UserProfileCubit>(param1: widget.user.uid)..load();
+
+  @override
+  void dispose() {
+    _ownProfileCubit.close();
+    super.dispose();
+  }
 
   List<_HomeTab> get _tabs =>
       _HomeTab.values.where((tab) => tab != _HomeTab.publish || widget.user.canPublishArticles).toList();
@@ -56,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (tab == _HomeTab.publish) {
       Navigator.of(context).pushNamed(AppRoutes.articleEditor);
     } else {
+      if (tab == _HomeTab.profile) _ownProfileCubit.load();
       setState(() => _currentTab = tab);
     }
   }
@@ -65,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _HomeTab.trends => const TrendsScreen(),
     _HomeTab.publish => const SizedBox.shrink(),
     _HomeTab.saved => const SavedScreen(),
-    _HomeTab.profile => ProfileScreen(user: widget.user),
+    _HomeTab.profile => BlocProvider.value(value: _ownProfileCubit, child: const ProfileScreen()),
   };
 
   NavigationDestination _buildDestination(_HomeTab tab) => switch (tab) {

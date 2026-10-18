@@ -11,8 +11,3 @@ class ArticleNotFoundException implements Exception {
 
   const ArticleNotFoundException(this.articleId);
 }
-
-/// Saving or publishing requires a signed in user.
-class NotSignedInException implements Exception {
-  const NotSignedInException();
-}

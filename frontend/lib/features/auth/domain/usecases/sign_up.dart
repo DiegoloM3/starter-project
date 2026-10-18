@@ -1,6 +1,6 @@
 import '../../../../core/resources/data_state.dart';
 import '../../../../core/usecase/usecase.dart';
-import '../entities/user.dart';
+import '../../../../shared/users/domain/entities/user.dart';
 import '../exceptions/auth_exceptions.dart';
 import '../params/sign_up_params.dart';
 import '../repository/auth_repository.dart';
