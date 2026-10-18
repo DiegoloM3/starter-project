@@ -45,7 +45,7 @@ class AppRoutes {
   static Widget _buildArticleDetail(ArticleEntity article) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => sl<ArticleDetailCubit>(param1: article)),
+        BlocProvider(create: (_) => sl<ArticleDetailCubit>(param1: article)..recordView()),
         BlocProvider(create: (_) => sl<CommentsCubit>(param1: article.id)..load()),
       ],
       child: const ArticleDetailScreen(),

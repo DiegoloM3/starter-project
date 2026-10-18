@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:news_app_clean_architecture/features/articles/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/bloc/articles/articles_cubit.dart';
+import 'package:news_app_clean_architecture/features/articles/presentation/bloc/reading_history/reading_history_cubit.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/bloc/articles/articles_state.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/bloc/saved_articles/saved_articles_cubit.dart';
 import 'package:news_app_clean_architecture/features/articles/presentation/bloc/saved_articles/saved_articles_state.dart';
@@ -23,6 +25,8 @@ class MockSavedArticlesCubit extends MockCubit<SavedArticlesState> implements Sa
 
 class MockUserProfileCubit extends MockCubit<UserProfileState> implements UserProfileCubit {}
 
+class MockReadingHistoryCubit extends MockCubit<List<ArticleEntity>> implements ReadingHistoryCubit {}
+
 UserEntity buildUser(UserRole role) {
   return UserEntity(uid: 'user-1', firstName: 'Jane', lastName: 'Doe', bio: '', role: role);
 }
@@ -40,6 +44,11 @@ void main() {
       initialState: UserProfileState(status: UserProfileStatus.success, user: user),
     );
     sl.registerFactoryParam<UserProfileCubit, String, void>((_, _) => profileCubit);
+
+    final readingHistoryCubit = MockReadingHistoryCubit();
+    when(readingHistoryCubit.load).thenAnswer((_) async {});
+    whenListen(readingHistoryCubit, const Stream<List<ArticleEntity>>.empty(), initialState: const <ArticleEntity>[]);
+    sl.registerFactory<ReadingHistoryCubit>(() => readingHistoryCubit);
   }
 
   Future<void> pumpHomeScreen(WidgetTester tester, UserEntity user) {

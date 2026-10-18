@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "test": "firebase emulators:exec --only firestore,storage \"$npm_node_execpath --test --test-concurrency=1 'test/**/*.test.js'\"",
-    "set-role": "node scripts/set_role.js"
+    "set-role": "node scripts/set_role.js",
+    "seed": "node scripts/seed_demo_data.js"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^4.0.1",

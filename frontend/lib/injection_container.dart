@@ -43,7 +43,13 @@ import 'features/comments/domain/usecases/add_comment.dart';
 import 'features/comments/domain/usecases/delete_comment.dart';
 import 'features/comments/domain/usecases/get_comments.dart';
 import 'features/comments/presentation/bloc/comments/comments_cubit.dart';
+import 'features/articles/data/data_sources/remote/reading_history_remote_data_source.dart';
+import 'features/articles/data/repository/reading_history_repository_impl.dart';
+import 'features/articles/domain/repository/reading_history_repository.dart';
 import 'features/articles/domain/usecases/get_articles_by_authors.dart';
+import 'features/articles/domain/usecases/get_reading_history.dart';
+import 'features/articles/domain/usecases/record_article_view.dart';
+import 'features/articles/presentation/bloc/reading_history/reading_history_cubit.dart';
 import 'features/profiles/data/data_sources/remote/follow_remote_data_source.dart';
 import 'features/profiles/data/repository/profile_repository_impl.dart';
 import 'features/profiles/domain/repository/profile_repository.dart';
@@ -109,8 +115,10 @@ void _registerArticles() {
     ..registerLazySingleton(() => ArticleRemoteDataSource(sl(), sl()))
     ..registerLazySingleton(() => ArticleImageRemoteDataSource(sl(), sl(), sl()))
     ..registerLazySingleton(() => SavedArticlesRemoteDataSource(sl(), sl()))
+    ..registerLazySingleton(() => ReadingHistoryRemoteDataSource(sl(), sl()))
     ..registerLazySingleton<ArticleRepository>(() => ArticleRepositoryImpl(sl(), sl()))
     ..registerLazySingleton<SavedArticlesRepository>(() => SavedArticlesRepositoryImpl(sl(), sl()))
+    ..registerLazySingleton<ReadingHistoryRepository>(() => ReadingHistoryRepositoryImpl(sl(), sl()))
     ..registerLazySingleton(() => GetArticlesUseCase(sl()))
     ..registerLazySingleton(() => GetArticleUseCase(sl()))
     ..registerLazySingleton(() => GetArticlesByAuthorsUseCase(sl()))
@@ -121,11 +129,14 @@ void _registerArticles() {
     ..registerLazySingleton(() => GetSavedArticlesUseCase(sl()))
     ..registerLazySingleton(() => SaveArticleUseCase(sl()))
     ..registerLazySingleton(() => RemoveSavedArticleUseCase(sl()))
+    ..registerLazySingleton(() => RecordArticleViewUseCase(sl()))
+    ..registerLazySingleton(() => GetReadingHistoryUseCase(sl()))
     ..registerFactory(() => ArticlesCubit(sl()))
     ..registerFactory(() => SavedArticlesCubit(sl(), sl(), sl()))
     ..registerFactory(() => ArticleEditorCubit(sl(), sl(), sl()))
+    ..registerFactory(() => ReadingHistoryCubit(sl()))
     ..registerFactoryParam<ArticleDetailCubit, ArticleEntity, void>(
-      (article, _) => ArticleDetailCubit(article, sl(), sl()),
+      (article, _) => ArticleDetailCubit(article, sl(), sl(), sl()),
     );
 }
 

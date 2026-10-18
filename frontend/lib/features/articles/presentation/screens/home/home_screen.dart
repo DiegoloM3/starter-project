@@ -5,6 +5,7 @@ import '../../../../../config/routes/routes.dart';
 import '../../../../../shared/users/domain/entities/user.dart';
 import '../../../../../injection_container.dart';
 import '../../../../profiles/presentation/bloc/user_profile/user_profile_cubit.dart';
+import '../../bloc/reading_history/reading_history_cubit.dart';
 import '../../../../profiles/presentation/screens/profile/profile_screen.dart';
 import '../../bloc/saved_articles/saved_articles_cubit.dart';
 import '../../bloc/saved_articles/saved_articles_state.dart';
@@ -31,10 +32,12 @@ class _HomeScreenState extends State<HomeScreen> {
   /// Kept here so the profile is refreshed every time its tab is opened, for example after
   /// following someone from another screen.
   late final UserProfileCubit _ownProfileCubit = sl<UserProfileCubit>(param1: widget.user.uid)..load();
+  late final ReadingHistoryCubit _readingHistoryCubit = sl<ReadingHistoryCubit>()..load();
 
   @override
   void dispose() {
     _ownProfileCubit.close();
+    _readingHistoryCubit.close();
     super.dispose();
   }
 
@@ -68,9 +71,14 @@ class _HomeScreenState extends State<HomeScreen> {
     if (tab == _HomeTab.publish) {
       Navigator.of(context).pushNamed(AppRoutes.articleEditor);
     } else {
-      if (tab == _HomeTab.profile) _ownProfileCubit.load();
+      if (tab == _HomeTab.profile) _refreshProfile();
       setState(() => _currentTab = tab);
     }
+  }
+
+  void _refreshProfile() {
+    _ownProfileCubit.load();
+    _readingHistoryCubit.load();
   }
 
   Widget _buildTabContent(_HomeTab tab) => switch (tab) {
@@ -78,7 +86,10 @@ class _HomeScreenState extends State<HomeScreen> {
     _HomeTab.trends => const TrendsScreen(),
     _HomeTab.publish => const SizedBox.shrink(),
     _HomeTab.saved => const SavedScreen(),
-    _HomeTab.profile => BlocProvider.value(value: _ownProfileCubit, child: const ProfileScreen()),
+    _HomeTab.profile => MultiBlocProvider(
+      providers: [BlocProvider.value(value: _ownProfileCubit), BlocProvider.value(value: _readingHistoryCubit)],
+      child: const ProfileScreen(),
+    ),
   };
 
   NavigationDestination _buildDestination(_HomeTab tab) => switch (tab) {

@@ -8,11 +8,12 @@ import '../bloc/user_profile/user_profile_state.dart';
 import 'profile_header.dart';
 
 /// Body shared by the own profile and the profiles of other users. [action] goes below the
-/// header, such as the follow button.
+/// header, such as the follow button, and [extraSection] above the articles.
 class ProfileContent extends StatelessWidget {
   final Widget? action;
+  final Widget? extraSection;
 
-  const ProfileContent({super.key, this.action});
+  const ProfileContent({super.key, this.action, this.extraSection});
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +55,7 @@ class ProfileContent extends StatelessWidget {
           child: ProfileHeader(user: user, stats: state.stats),
         ),
         if (action != null) ...[const SizedBox(height: 20), Center(child: action)],
+        if (extraSection != null) extraSection!,
         if (state.articles.isNotEmpty) ..._buildArticles(context, state),
       ],
     );

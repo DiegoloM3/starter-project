@@ -55,6 +55,19 @@ The user must sign in again for the new role to take effect.
 
 **Never commit the service account key**: it grants admin access to the whole Firebase project. Keep it outside the repository.
 
+## Demo data
+The `seed` script creates demo data so the app can be tried right away: 4 journalists with 10 articles, 3 readers, comments and follows. All demo accounts use `@example.com` emails and the password `Demo1234!`.
+
+```
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json npm run seed
+```
+
+The ids are fixed, so running it again updates the demo data instead of duplicating it. To remove all of it, including the follows of other users to demo accounts:
+
+```
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json npm run seed -- --remove
+```
+
 ## Testing the security rules
 The Firestore and Cloud Storage rules are covered by tests in the `test` folder, which run against the local emulators:
 
