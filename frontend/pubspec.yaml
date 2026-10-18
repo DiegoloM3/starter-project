@@ -26,33 +26,19 @@ dependencies:
   #dateFormat
   intl: ^0.18.1
 
-  #Database
-  floor: any
-
-  #make request to api
-  retrofit: ^3.0.1
-
   # Firebase
-  firebase_core: ^4.7.0
-  cloud_firestore: ^6.3.0
-  firebase_storage: ^13.1.0
+  firebase_core: ^5.0.0
+  cloud_firestore: ^7.0.0
+  firebase_storage: ^14.0.0
+  firebase_auth: ^7.0.0
 
-
-  #Hooks
-  flutter_hooks: ^0.18.3
-
-  #chached image 
+  #cached image
   cached_network_image: ^3.2.0
-  firebase_auth: ^6.4.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
-  retrofit_generator: 3.0.1+1
-  floor_generator: 1.2.0
-  build_runner: 2.1.2
-  
 
 flutter:
 
