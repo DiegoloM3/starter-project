@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../features/daily_news/presentation/pages/home/daily_news.dart';
+import '../../features/articles/presentation/screens/home/home_screen.dart';
 
 class AppRoutes {
   static Route onGenerateRoutes(RouteSettings settings) {
     switch (settings.name) {
       default:
-        return _materialRoute(const DailyNews());
+        return _materialRoute(const HomeScreen());
     }
   }
 
