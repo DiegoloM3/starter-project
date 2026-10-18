@@ -1,14 +1,19 @@
-// Assigns a role to a registered user through a custom claim.
+// Assigns a role to a registered user.
 //
 // Usage:
 //   GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json \
 //     npm run set-role -- <email> <journalist|reader>
 //
+// The role is written in two places:
+// - The custom claim, which the security rules trust to grant permissions.
+// - The public profile, so the app can show the role to other users.
+//
 // The user must sign out and sign in again (or refresh their ID token)
-// for the new role to take effect.
+// for the new permissions to take effect.
 
 import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 
 const ROLES = ['journalist', 'reader'];
 
@@ -19,6 +24,7 @@ async function main() {
   initializeApp();
   const user = await getAuth().getUserByEmail(email);
   await getAuth().setCustomUserClaims(user.uid, buildClaimsFor(role));
+  await getFirestore().doc(`users/${user.uid}`).update({ role });
 
   console.log(`${email} is now a ${role}. They must sign in again to apply the change.`);
 }

@@ -4,11 +4,16 @@ import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 export const PROJECT_ID = 'symmetry-technical-test-6230c';
 export const STORAGE_BUCKET = `${PROJECT_ID}.firebasestorage.app`;
-export const VALID_THUMBNAIL_URL = `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o/media%2Farticles%2F123.jpg?alt=media&token=abc`;
+const STORAGE_URL_PREFIX = `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o/`;
 
-export const READER = { uid: 'reader', name: 'Reader', email: 'reader@test.com' };
-export const JOURNALIST = { uid: 'journalist', name: 'Journalist', email: 'journalist@test.com', role: 'journalist' };
-export const OTHER_JOURNALIST = { uid: 'otherJournalist', name: 'Other Journalist', email: 'other@test.com', role: 'journalist' };
+export const VALID_THUMBNAIL_URL = `${STORAGE_URL_PREFIX}media%2Farticles%2F123.jpg?alt=media&token=abc`;
+export const userPhotoURLOf = (user) => `${STORAGE_URL_PREFIX}media%2Fusers%2F${user.uid}%2Fphoto.jpg?alt=media&token=abc`;
+
+export const READER = { uid: 'reader', firstName: 'Rita', lastName: 'Reader', email: 'reader@test.com' };
+export const JOURNALIST = { uid: 'journalist', firstName: 'Jane', lastName: 'Journalist', email: 'journalist@test.com', role: 'journalist' };
+export const OTHER_JOURNALIST = { uid: 'otherJournalist', firstName: 'Omar', lastName: 'Other', email: 'other@test.com', role: 'journalist' };
+
+export const fullNameOf = (user) => `${user.firstName} ${user.lastName}`;
 
 export function createTestEnvironment() {
   return initializeTestEnvironment({
@@ -40,26 +45,35 @@ function contextFor(testEnvironment, user) {
   return testEnvironment.authenticatedContext(user.uid, { email: user.email, ...customClaims });
 }
 
+export function buildValidProfile(user = READER) {
+  return {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    bio: '',
+    photoURL: null,
+    role: 'reader',
+    createdAt: serverTimestamp(),
+  };
+}
+
 export function buildValidArticle(author = JOURNALIST) {
   return {
     title: 'Title',
     description: 'Description',
-    content: 'Content',
+    content: '[{"insert":"Content\\n"}]',
     thumbnailURL: VALID_THUMBNAIL_URL,
+    topics: ['gaming', 'technology'],
     publishedAt: serverTimestamp(),
     authorId: author.uid,
-    authorName: author.name,
+    authorName: fullNameOf(author),
   };
 }
 
 export async function seedUserProfiles(testEnvironment) {
   await testEnvironment.withSecurityRulesDisabled(async (context) => {
     for (const user of [READER, JOURNALIST, OTHER_JOURNALIST]) {
-      await setDoc(doc(context.firestore(), 'users', user.uid), {
-        name: user.name,
-        email: user.email,
-        createdAt: serverTimestamp(),
-      });
+      const profile = { ...buildValidProfile(user), role: user.role ?? 'reader' };
+      await setDoc(doc(context.firestore(), 'users', user.uid), profile);
     }
   });
 }

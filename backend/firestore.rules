@@ -3,22 +3,49 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Public profile: anyone can read it, so it must never contain private data.
     match /users/{uid} {
-      allow read: if isSignedInAs(uid);
-      allow create: if isSignedInAs(uid) && isValidNewProfile(request.resource.data);
+      allow read: if true;
+      allow create: if isSignedInAs(uid) && isValidNewProfile(uid, request.resource.data);
       allow update: if isSignedInAs(uid)
-        && changesOnly(['name'])
-        && isStringWithLength(request.resource.data.name, 1, 80);
-      allow delete: if false;
+        && changesOnly(['firstName', 'lastName', 'bio', 'photoURL'])
+        && isValidProfile(uid, request.resource.data);
+      allow delete: if isSignedInAs(uid);
+
+      match /private/{documentId} {
+        allow read, delete: if isSignedInAs(uid);
+        allow create: if isSignedInAs(uid)
+          && documentId == 'account'
+          && isValidNewAccount(request.resource.data);
+        allow update: if isSignedInAs(uid)
+          && changesOnly(['notificationsEnabled'])
+          && request.resource.data.notificationsEnabled is bool;
+      }
 
       match /savedArticles/{articleId} {
         allow read, delete: if isSignedInAs(uid);
         allow create: if isSignedInAs(uid)
           && articleExists(articleId)
-          && hasExactlyFields(request.resource.data, ['savedAt'])
-          && request.resource.data.savedAt == request.time;
+          && hasOnlyServerTimestamp(request.resource.data, 'savedAt');
         allow update: if false;
       }
+
+      // Viewing an article again updates its date, so both create and update are allowed.
+      match /history/{articleId} {
+        allow read, delete: if isSignedInAs(uid);
+        allow create, update: if isSignedInAs(uid)
+          && articleExists(articleId)
+          && hasOnlyServerTimestamp(request.resource.data, 'viewedAt');
+      }
+    }
+
+    // Any user can follow any other user. Public so that followers can be counted.
+    // The id is "{followerId}_{followedId}", which makes it impossible to follow the same user twice.
+    match /follows/{followId} {
+      allow read: if true;
+      allow create: if isValidNewFollow(followId, request.resource.data);
+      allow update: if false;
+      allow delete: if isSignedInAs(resource.data.followerId);
     }
 
     match /articles/{articleId} {
@@ -29,7 +56,7 @@ service cloud.firestore {
         && request.resource.data.publishedAt == request.time;
       allow update: if isJournalist()
         && isSignedInAs(resource.data.authorId)
-        && changesOnly(['title', 'description', 'content', 'thumbnailURL'])
+        && changesOnly(['title', 'description', 'content', 'thumbnailURL', 'topics'])
         && isValidArticle(request.resource.data);
       allow delete: if isJournalist() && isSignedInAs(resource.data.authorId);
 
@@ -53,27 +80,64 @@ service cloud.firestore {
       return request.auth != null && request.auth.token.get('role', '') == 'journalist';
     }
 
-    // Prevents impersonation: authorName must match the author's profile name.
+    // Prevents impersonation: authorName must match the author's full name in their profile.
     function isSignedByAuthor(data) {
-      return isSignedInAs(data.authorId)
-        && data.authorName == get(/databases/$(database)/documents/users/$(data.authorId)).data.name;
+      return isSignedInAs(data.authorId) && data.authorName == fullNameOf(data.authorId);
+    }
+
+    function fullNameOf(uid) {
+      let profile = get(/databases/$(database)/documents/users/$(uid)).data;
+      return profile.firstName + ' ' + profile.lastName;
     }
 
     // ---------- Validation ----------
 
-    function isValidNewProfile(profile) {
-      return hasExactlyFields(profile, ['name', 'email', 'createdAt'])
-        && isStringWithLength(profile.name, 1, 80)
-        && profile.email == request.auth.token.email
+    // Every new user is a reader; only the Admin SDK can promote them to journalist.
+    function isValidNewProfile(uid, profile) {
+      return isValidProfile(uid, profile)
+        && profile.role == 'reader'
         && profile.createdAt == request.time;
     }
 
+    function isValidProfile(uid, profile) {
+      return hasExactlyFields(profile, ['firstName', 'lastName', 'bio', 'photoURL', 'role', 'createdAt'])
+        && isStringWithLength(profile.firstName, 1, 40)
+        && isStringWithLength(profile.lastName, 1, 40)
+        && isStringWithLength(profile.bio, 0, 300)
+        && (profile.photoURL == null || isUserPhotoURL(uid, profile.photoURL));
+    }
+
+    function isValidNewAccount(account) {
+      return hasExactlyFields(account, ['email', 'notificationsEnabled'])
+        && account.email == request.auth.token.email
+        && account.notificationsEnabled is bool;
+    }
+
+    function isValidNewFollow(followId, follow) {
+      return hasExactlyFields(follow, ['followerId', 'followedId', 'createdAt'])
+        && isSignedInAs(follow.followerId)
+        && followId == follow.followerId + '_' + follow.followedId
+        && follow.followerId != follow.followedId
+        && exists(/databases/$(database)/documents/users/$(follow.followedId))
+        && follow.createdAt == request.time;
+    }
+
     function isValidArticle(article) {
-      return hasExactlyFields(article, ['title', 'description', 'content', 'thumbnailURL', 'publishedAt', 'authorId', 'authorName'])
+      return hasExactlyFields(article, ['title', 'description', 'content', 'thumbnailURL', 'topics', 'publishedAt', 'authorId', 'authorName'])
         && isStringWithLength(article.title, 1, 150)
         && isStringWithLength(article.description, 1, 300)
-        && isStringWithLength(article.content, 1, 20000)
-        && isArticleThumbnailURL(article.thumbnailURL);
+        && isStringWithLength(article.content, 1, 100000)
+        && isArticleThumbnailURL(article.thumbnailURL)
+        && areValidTopics(article.topics);
+    }
+
+    // 1 to 3 different topics from a fixed list, so trends are not split by spelling variations.
+    function areValidTopics(topics) {
+      return topics is list
+        && topics.size() >= 1
+        && topics.size() <= 3
+        && topics.toSet().size() == topics.size()
+        && topics.hasOnly(['technology', 'sports', 'gaming', 'politics', 'economy', 'science', 'health', 'entertainment', 'culture', 'world']);
     }
 
     function isValidNewComment(comment) {
@@ -87,6 +151,10 @@ service cloud.firestore {
 
     function hasExactlyFields(data, fields) {
       return data.keys().hasAll(fields) && data.keys().hasOnly(fields);
+    }
+
+    function hasOnlyServerTimestamp(data, field) {
+      return hasExactlyFields(data, [field]) && data[field] == request.time;
     }
 
     function changesOnly(fields) {
@@ -103,10 +171,17 @@ service cloud.firestore {
       return exists(/databases/$(database)/documents/articles/$(articleId));
     }
 
-    // Download URL of a file inside the media/articles folder of this project's bucket.
-    function isArticleThumbnailURL(value) {
+    function isStorageDownloadURL(value, encodedFolder) {
       return value is string
-        && value.matches('^https://firebasestorage[.]googleapis[.]com/v0/b/symmetry-technical-test-6230c[.]firebasestorage[.]app/o/media%2Farticles%2F[^/?]+[?].*$');
+        && value.matches('^https://firebasestorage[.]googleapis[.]com/v0/b/symmetry-technical-test-6230c[.]firebasestorage[.]app/o/' + encodedFolder + '[^/?]+[?].*$');
+    }
+
+    function isArticleThumbnailURL(value) {
+      return isStorageDownloadURL(value, 'media%2Farticles%2F');
+    }
+
+    function isUserPhotoURL(uid, value) {
+      return isStorageDownloadURL(value, 'media%2Fusers%2F' + uid + '%2F');
     }
   }
 }

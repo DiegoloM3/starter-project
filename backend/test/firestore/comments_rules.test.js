@@ -2,13 +2,13 @@ import { after, before, beforeEach, describe, it } from 'node:test';
 import { assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
 import { deleteDoc, doc, getDoc, serverTimestamp, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import {
-  createTestEnvironment, firestoreAs, JOURNALIST, READER, seedArticle, seedUserProfiles,
+  createTestEnvironment, firestoreAs, fullNameOf, JOURNALIST, READER, seedArticle, seedUserProfiles,
 } from '../test_environment.js';
 
 function buildValidComment(author = READER) {
   return {
     authorId: author.uid,
-    authorName: author.name,
+    authorName: fullNameOf(author),
     text: 'Great article!',
     createdAt: serverTimestamp(),
   };

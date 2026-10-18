@@ -3,96 +3,130 @@
 Firestore (NoSQL, document-based). Project: `symmetry-technical-test-6230c`.
 
 ```
-users/{uid}
-  └── savedArticles/{articleId}
-articles/{articleId}
-  └── comments/{commentId}
+users/{uid}                         public profile
+  ├── private/account               private account data
+  ├── savedArticles/{articleId}     private
+  └── history/{articleId}           private
+follows/{followerId}_{followedId}   public
+articles/{articleId}                public
+  └── comments/{commentId}          public
 ```
 
 ## Roles
 Users sign in with Firebase Authentication (email and password).
 
-| Role       | How it is assigned                                              | Permissions                                              |
-|------------|-----------------------------------------------------------------|----------------------------------------------------------|
-| Visitor    | Not signed in                                                   | Read articles and comments                               |
-| Reader     | Default role of every registered user                           | Visitor permissions + save articles and comment          |
-| Journalist | Custom claim `role: 'journalist'`, set only with the Admin SDK  | Reader permissions + publish, edit and delete own articles |
+| Role       | How it is assigned                                                 | Permissions                                                       |
+|------------|--------------------------------------------------------------------|-------------------------------------------------------------------|
+| Visitor    | Not signed in                                                      | Read articles, comments and public profiles                       |
+| Reader     | Default role of every registered user                              | Visitor permissions + save, comment, follow users, history        |
+| Journalist | `npm run set-role` script (Admin SDK), see the backend README      | Reader permissions + publish, edit and delete own articles        |
 
-The role is stored as a **custom claim** in the authentication token, not in Firestore. Only the Admin SDK can set custom claims, so users cannot grant themselves the journalist role.
+The role is stored in two places, both written only by the Admin SDK:
+- A **custom claim** `role` in the authentication token. The security rules trust only this one, because users cannot modify their token.
+- The `role` field of the public profile, so the app can show a "Journalist" badge to other users.
 
 ## Collection: `users`
-One document per registered user. The document ID is the Firebase Auth `uid`.
+Public profile of every registered user. The document ID is the Firebase Auth `uid`. Anyone can read it, so it never contains private data such as the email.
 
-| Field       | Type      | Constraints                                   |
-|-------------|-----------|-----------------------------------------------|
-| `name`      | string    | 1–80 characters                               |
-| `email`     | string    | Must match the email of the signed in account |
-| `createdAt` | timestamp | Set by the server on creation                 |
+| Field       | Type           | Constraints                                                      |
+|-------------|----------------|------------------------------------------------------------------|
+| `firstName` | string         | 1–40 characters                                                  |
+| `lastName`  | string         | 1–40 characters                                                  |
+| `bio`       | string         | 0–300 characters                                                 |
+| `photoURL`  | string \| null | Download URL of a file in `media/users/{uid}/`                   |
+| `role`      | string         | `reader` on creation; only the Admin SDK can set `journalist`    |
+| `createdAt` | timestamp      | Set by the server on creation                                    |
 
-- Only the owner can read their profile, create it and change their `name`.
-- Profiles cannot be deleted from the client.
+- Only the owner can create, delete and edit their `firstName`, `lastName`, `bio` and `photoURL`.
+
+### Subcollection: `users/{uid}/private`
+Only one document is allowed, `account`. Only the owner can read, create, edit and delete it.
+
+| Field                  | Type    | Constraints                                    |
+|------------------------|---------|------------------------------------------------|
+| `email`                | string  | Must match the email of the signed in account  |
+| `notificationsEnabled` | boolean | The only field that can be edited              |
 
 ### Subcollection: `users/{uid}/savedArticles`
-Articles bookmarked by the user. The document ID is the ID of the saved article, so an article cannot be saved twice.
+Articles bookmarked by the user. The document ID is the ID of the saved article, so an article cannot be saved twice. Only the owner can read, save and remove them.
 
 | Field     | Type      | Constraints                   |
 |-----------|-----------|-------------------------------|
 | `savedAt` | timestamp | Set by the server on creation |
 
-- Only the owner can read, save and remove their saved articles.
-- An article can only be saved if it exists.
+### Subcollection: `users/{uid}/history`
+Articles viewed by the user. The document ID is the ID of the viewed article, so viewing it again only updates `viewedAt`. Only the owner can read, write and delete it. The app shows the 10 most recent entries and deletes the older ones.
+
+| Field      | Type      | Constraints                       |
+|------------|-----------|-----------------------------------|
+| `viewedAt` | timestamp | Set by the server on every write  |
+
+## Collection: `follows`
+One document per user following another user. Any user can follow any other user, journalist or reader. The document ID is `{followerId}_{followedId}`, so a user cannot be followed twice. It is public so that followers and following can be counted with `count()` queries.
+
+| Field          | Type      | Constraints                                        |
+|----------------|-----------|----------------------------------------------------|
+| `followerId`   | string    | `uid` of the signed in user                        |
+| `followedId`   | string    | `uid` of an existing user                          |
+| `createdAt`    | timestamp | Set by the server on creation                      |
+
+- Users cannot follow themselves.
+- Follows cannot be edited; only the follower can delete them (unfollow).
 
 ## Collection: `articles`
 One document per article published by a journalist. The document ID is auto-generated by Firestore.
 
-| Field          | Type      | Constraints                                         |
-|----------------|-----------|-----------------------------------------------------|
-| `title`        | string    | 1–150 characters                                    |
-| `description`  | string    | 1–300 characters                                    |
-| `content`      | string    | 1–20,000 characters                                 |
-| `thumbnailURL` | string    | Download URL of a file in `media/articles/`         |
-| `publishedAt`  | timestamp | Set by the server on creation                       |
-| `authorId`     | string    | `uid` of the journalist who published it            |
-| `authorName`   | string    | Must match the author's profile `name`              |
+| Field          | Type          | Constraints                                                   |
+|----------------|---------------|---------------------------------------------------------------|
+| `title`        | string        | 1–150 characters                                              |
+| `description`  | string        | 1–300 characters                                              |
+| `content`      | string        | 1–100,000 characters. Rich text as Quill Delta JSON           |
+| `thumbnailURL` | string        | Download URL of a file in `media/articles/`                   |
+| `topics`       | list<string>  | 1–3 different topics from the allowed list                    |
+| `publishedAt`  | timestamp     | Set by the server on creation                                 |
+| `authorId`     | string        | `uid` of the journalist who published it                      |
+| `authorName`   | string        | Must match `"{firstName} {lastName}"` of the author's profile |
+
+Allowed topics: `technology`, `sports`, `gaming`, `politics`, `economy`, `science`, `health`, `entertainment`, `culture`, `world`.
 
 - Anyone can read articles.
 - Only journalists can publish, and only in their own name.
-- Only the author can edit `title`, `description`, `content` and `thumbnailURL`, or delete the article.
+- Only the author can edit `title`, `description`, `content`, `thumbnailURL` and `topics`, or delete the article.
 
 ### Subcollection: `articles/{articleId}/comments`
 
-| Field        | Type      | Constraints                              |
-|--------------|-----------|------------------------------------------|
-| `authorId`   | string    | `uid` of the user who wrote it           |
-| `authorName` | string    | Must match the author's profile `name`   |
-| `text`       | string    | 1–500 characters                         |
-| `createdAt`  | timestamp | Set by the server on creation            |
+| Field        | Type      | Constraints                                                   |
+|--------------|-----------|---------------------------------------------------------------|
+| `authorId`   | string    | `uid` of the user who wrote it                                |
+| `authorName` | string    | Must match `"{firstName} {lastName}"` of the author's profile |
+| `text`       | string    | 1–500 characters                                              |
+| `createdAt`  | timestamp | Set by the server on creation                                 |
 
 - Anyone can read comments.
 - Any signed in user can comment on an existing article, only in their own name.
 - Comments cannot be edited; only their author can delete them.
 
-## Cloud Storage: `media/articles/`
-Article thumbnails are stored in the `media/articles/` folder.
+## Cloud Storage
 
-| Constraint   | Value                                    |
-|--------------|------------------------------------------|
-| Path         | `media/articles/{fileName}`              |
-| Content type | `image/*`                                |
-| Max size     | 5 MB                                     |
-| Read         | Public                                   |
-| Write        | Journalists only, create only (no overwrite, no delete) |
+| Folder                 | Content                                         | Read   | Write                                         |
+|------------------------|-------------------------------------------------|--------|-----------------------------------------------|
+| `media/articles/`      | Article thumbnails and images inside articles   | Public | Journalists, create only (no overwrite/delete) |
+| `media/users/{uid}/`   | Profile photo                                   | Public | Owner only: create and delete                 |
+
+All files must be images (`image/*`) smaller than 5 MB.
 
 ## Design decisions
-- **`thumbnailURL` stores the download URL**, not the storage path. The name stays truthful and the app can render the image directly, without an extra request to Cloud Storage.
+- **Download URLs instead of storage paths** (`thumbnailURL`, `photoURL`): the names stay truthful and the app renders images directly, without an extra request to Cloud Storage.
 - **Timestamps are set by the server** (`FieldValue.serverTimestamp()`), so clients cannot fake dates. They are `Timestamp` values, so documents can be sorted and filtered by date.
-- **`authorName` is denormalized** into articles and comments to avoid reading the author's profile for every item in a list. The rules check it against the profile to prevent impersonation. If a user renames themselves, existing items keep the name they had when they were written.
-- **Saved articles and comments are subcollections**, so they are only loaded when needed and ownership rules stay simple.
-- **Character limits** keep documents far below Firestore's 1 MiB document limit and keep the UI predictable.
+- **Public and private user data are split** (`users/{uid}` and `users/{uid}/private/account`), because Firestore rules secure whole documents, not single fields.
+- **`authorName` is denormalized** into articles and comments to avoid reading the author's profile for every item in a list. The rules check it against the profile to prevent impersonation. If users rename themselves, existing items keep the name they had when they were written.
+- **Follows are a top-level collection** instead of a subcollection, so both "followers of a journalist" and "journalists a user follows" are simple queries.
+- **Counters are computed with `count()` queries** instead of stored counters, so they can never get out of sync.
+- **Topics come from a fixed list**, so trends are not split by spelling variations ("gaming", "Gaming", "video games").
+- **Rich text is stored as Quill Delta JSON**, the format of the `flutter_quill` editor, which supports bold, headings, highlighted text and images.
 
 ## Known limitations
-- Deleting an article does not delete its comments or its thumbnail, because the client cannot delete Storage files and Firestore does not delete subcollections automatically. A Cloud Function triggered on article deletion would solve this.
-- Saved articles that point to a deleted article must be ignored by the app.
-
-## Planned extensions
-- Ratings and reviews on articles.
+- **Orphaned data:** deleting an article does not delete its comments or images, and deleting an account keeps the user's articles (on purpose) but also their comments and follows. Firestore does not delete subcollections automatically and the client cannot clean everything up safely. A Cloud Function triggered on deletion would solve this.
+- **"Following" feed:** it shows articles of the followed users who are journalists. Firestore `in` queries accept up to 30 values, so the feed needs several queries when a user follows more than 30 journalists.
+- **Trends** count the articles published per topic in the last 7 days. Counting comments per topic would require Cloud Functions.
+- **Notifications:** sending push notifications when a followed journalist publishes requires a Cloud Function with Firebase Cloud Messaging. The app only stores the user preference for now.

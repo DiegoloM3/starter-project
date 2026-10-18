@@ -3,10 +3,22 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
+    // Article thumbnails and images embedded in article content.
     match /media/articles/{fileName} {
       allow read: if true;
-      allow create: if isJournalist() && isNewFile() && isImage() && isSmallerThanMegabytes(5);
+      allow create: if isJournalist() && isNewFile() && isImageSmallerThanMegabytes(5);
       allow update, delete: if false;
+    }
+
+    match /media/users/{uid}/{fileName} {
+      allow read: if true;
+      allow create: if isSignedInAs(uid) && isImageSmallerThanMegabytes(5);
+      allow update: if false;
+      allow delete: if isSignedInAs(uid);
+    }
+
+    function isSignedInAs(uid) {
+      return request.auth != null && request.auth.uid == uid;
     }
 
     // The role is a custom claim that only the Admin SDK can set.
@@ -14,17 +26,14 @@ service firebase.storage {
       return request.auth != null && request.auth.token.get('role', '') == 'journalist';
     }
 
-    // Prevents overwriting an existing thumbnail.
+    // Prevents overwriting an existing file.
     function isNewFile() {
       return resource == null;
     }
 
-    function isImage() {
-      return request.resource.contentType.matches('image/.*');
-    }
-
-    function isSmallerThanMegabytes(megabytes) {
-      return request.resource.size < megabytes * 1024 * 1024;
+    function isImageSmallerThanMegabytes(megabytes) {
+      return request.resource.contentType.matches('image/.*')
+        && request.resource.size < megabytes * 1024 * 1024;
     }
   }
 }

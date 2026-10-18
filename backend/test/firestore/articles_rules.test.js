@@ -6,6 +6,8 @@ import {
   seedArticle, seedUserProfiles, STORAGE_BUCKET, VALID_THUMBNAIL_URL,
 } from '../test_environment.js';
 
+const MAX_CONTENT_LENGTH = 100000;
+
 describe('Firestore rules: articles', () => {
   let testEnvironment;
 
@@ -78,6 +80,34 @@ describe('Firestore rules: articles', () => {
       await assertFails(createArticleAs(JOURNALIST, { ...buildValidArticle(), title: 5 }));
     });
 
+    it('allows content of exactly the maximum length', async () => {
+      await assertSucceeds(createArticleAs(JOURNALIST, { ...buildValidArticle(), content: 'a'.repeat(MAX_CONTENT_LENGTH) }));
+    });
+
+    it('denies content longer than the maximum length', async () => {
+      await assertFails(createArticleAs(JOURNALIST, { ...buildValidArticle(), content: 'a'.repeat(MAX_CONTENT_LENGTH + 1) }));
+    });
+
+    it('allows up to three topics', async () => {
+      await assertSucceeds(createArticleAs(JOURNALIST, { ...buildValidArticle(), topics: ['gaming', 'technology', 'culture'] }));
+    });
+
+    it('denies an article without topics', async () => {
+      await assertFails(createArticleAs(JOURNALIST, { ...buildValidArticle(), topics: [] }));
+    });
+
+    it('denies more than three topics', async () => {
+      await assertFails(createArticleAs(JOURNALIST, { ...buildValidArticle(), topics: ['gaming', 'technology', 'culture', 'world'] }));
+    });
+
+    it('denies a topic outside the allowed list', async () => {
+      await assertFails(createArticleAs(JOURNALIST, { ...buildValidArticle(), topics: ['cooking'] }));
+    });
+
+    it('denies repeated topics', async () => {
+      await assertFails(createArticleAs(JOURNALIST, { ...buildValidArticle(), topics: ['gaming', 'gaming'] }));
+    });
+
     it('denies a publication date set by the client', async () => {
       await assertFails(createArticleAs(JOURNALIST, { ...buildValidArticle(), publishedAt: Timestamp.now() }));
     });
@@ -100,12 +130,13 @@ describe('Firestore rules: articles', () => {
   describe('update', () => {
     const updateArticleAs = (user, changes) => updateDoc(articleRefAs(user, 'existing'), changes);
 
-    it('allows the author to edit the title, description, content and thumbnail', async () => {
+    it('allows the author to edit the title, description, content, thumbnail and topics', async () => {
       await assertSucceeds(updateArticleAs(JOURNALIST, {
         title: 'New title',
         description: 'New description',
-        content: 'New content',
+        content: '[{"insert":"New content\\n"}]',
         thumbnailURL: VALID_THUMBNAIL_URL.replace('123.jpg', '456.jpg'),
+        topics: ['sports'],
       }));
     });
 
